@@ -1,0 +1,84 @@
+/* Button styles */
+button {
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+  }
+  
+  /* Sign In Button */
+  .btn-signin {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .btn-signin:hover {
+    background-color: #333;
+  }
+  
+  /* Sign Up Button */
+  .btn-signup {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .btn-signup:hover {
+    background-color: #333;
+  }
+  
+  /* Form Styles */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+  }
+  
+  .register-box {
+    display: flex;
+    width: 70%;
+    max-width: 900px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .left-panel {
+    flex: 1;
+    background-color: #5b9aa0;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+  }
+  
+  .right-panel {
+    flex: 1;
+    background-color: #e0e0e0;
+    padding: 40px;
+  }
+  
