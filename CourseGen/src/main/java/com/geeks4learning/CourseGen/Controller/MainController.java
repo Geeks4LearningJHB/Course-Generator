@@ -1,10 +1,10 @@
-package com.geeks4learning.courseGenerator.Controller;
+package com.geeks4learning.CourseGen.Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.geeks4learning.courseGenerator.Model.ChatCompletionRequest;
-import com.geeks4learning.courseGenerator.Model.ChatCompletionResponse;
+import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
+import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
 import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

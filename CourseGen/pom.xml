@@ -45,6 +45,13 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+ 
+        <!-- Docker Compose support for Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <scope>runtime</scope>
+        </dependency>
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

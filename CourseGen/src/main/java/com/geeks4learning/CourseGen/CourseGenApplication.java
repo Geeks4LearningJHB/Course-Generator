@@ -1,7 +1,10 @@
 package com.geeks4learning.CourseGen;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class CourseGenApplication {
@@ -9,7 +12,7 @@ public class CourseGenApplication {
 	@Value("${openai.key}") //injects the key from the application.properties file
 	private String apiKey;
 	public static void main(String[] args) {
-		SpringApplication.run(CourseGeneratorApplication.class, args);
+		SpringApplication.run(CourseGenApplication.class, args);
 	}
 
 	@Bean
