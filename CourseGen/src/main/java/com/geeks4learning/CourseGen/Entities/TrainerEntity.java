@@ -21,7 +21,7 @@ public class TrainerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "UserId")
-    private int UserId;
+    private long UserId;
 
     @Column(name = "Name")
     private String Name;
