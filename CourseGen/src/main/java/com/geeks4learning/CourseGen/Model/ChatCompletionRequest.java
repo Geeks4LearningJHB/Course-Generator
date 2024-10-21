@@ -1,4 +1,4 @@
-package com.geeks4learning.courseGenerator.Model;
+package com.geeks4learning.CourseGen.Model;
 
 import lombok.Data;
 
