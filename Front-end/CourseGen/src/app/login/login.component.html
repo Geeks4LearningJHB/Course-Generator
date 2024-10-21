@@ -1,26 +1,23 @@
 <div class="header">
   <!-- Left: Logo -->
-  <!-- <img src="../../../public/assets/company_logo_login.png" alt="Logo" class="logo" /> -->
   <img src="assets/company_logo_login.png" alt="Company Logo" width="200" />
-
-  <!-- Right: Profile Icon -->
-  <!-- <img src="assets/WhatsApp Image 2024-10-18 at 08.48.52.jpeg" alt="Profile" class="profile-icon" /> -->
 </div>
 
 <div class="login-container">
   <div class="login-box">
     <!-- Left Panel: Sign In Form -->
     <div class="left-panel">
-      <form>
-        <h3>Sign In</h3>
+      <h3>Sign In</h3>
+
+      <form (submit)="onLogin(); $event.preventDefault()">
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" placeholder="Enter your email" />
+          <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="Enter your email" />
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Enter your password" />
+          <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="Enter your password" />
         </div>
 
         <button type="submit" class="btn-signin">Sign In</button>
@@ -35,3 +32,6 @@
     </div>
   </div>
 </div>
+
+
+<!-- <button routerLink="/dashboard">Go to Dashboard (Test)</button> -->
