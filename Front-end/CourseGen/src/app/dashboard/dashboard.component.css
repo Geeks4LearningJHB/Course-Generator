@@ -1,0 +1,68 @@
+/* General styling for the dashboard */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: white;
+  }
+  
+  /* Header styles for logo and profile icon */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .logo {
+    height: 50px;
+  }
+  
+  .profile-icon {
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  /* Title Styling */
+  .title {
+    margin: 20px 0;
+    font-size: 32px;
+    font-weight: bold;
+    color: black;
+  }
+  
+  /* Container for buttons */
+  .button-container {
+    background-color: #133B50;
+    border-radius: 15px;
+    padding: 40px;
+    display: flex;
+    justify-content: space-evenly;
+    width: 80%;
+    max-width: 800px;
+  }
+  
+  /* Styling the buttons */
+  .dashboard-button {
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .dashboard-button:hover {
+    background-color: #d0d0d0;
+  }
+  
+  .icon {
+    font-size: 50px;
+  }
+  
