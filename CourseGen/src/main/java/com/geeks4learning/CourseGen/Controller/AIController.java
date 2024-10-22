@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 @RestController
-public class MainController {
+public class AIController {
 
     @Autowired
     private RestTemplate restTemplate;
