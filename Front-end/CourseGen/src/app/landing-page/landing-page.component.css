@@ -1,17 +1,18 @@
 .landing-page {
     display: flex;
     height: 100vh;
-    background-color: #12324d; /* Uniform background color */
     justify-content: space-between;
     align-items: center;
     padding: 0;
+    height: 100vh;  /* Full height of the viewport */
+    background: linear-gradient(to right, #12324d 75%, white 25%);
   }
   
   .content {
-    width: 50%; /* Left side takes 50% */
     color: white;
     padding-left: 5%;
     text-align: left;
+
   }
   
   .content h1 {
@@ -43,36 +44,12 @@
     background-color: #0f2e3d; /* Darker shade for hover */
   }
   
-  .logo-container {
-    width: 50%; /* Right side takes 50% */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Ensure it fills the entire height */
-  }
   
   .logo {
-    width: 80%; /* Takes 80% of the right side */
-    max-width: 600px; /* Ensure it doesn’t stretch too large */
-    height: auto;
-    border-radius: 1000px; /* Make the image circular */
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow for polish */
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .landing-page {
-      flex-direction: column;
-    }
-  
-    .content, 
-    .logo-container {
-      width: 100%; /* Full width on smaller screens */
-      text-align: center;
-    }
-  
-    .content {
-      padding-left: 0;
-    }
+    width: 100%;  /* Takes 80% of the right side */
+    max-width: 600px;  /* Ensure it doesn’t stretch too large */
+    height: 100%;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);  /* Subtle shadow */
+    border-radius: 50%;
   }
   
