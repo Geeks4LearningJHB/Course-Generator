@@ -26,12 +26,14 @@ public class AdminService {
             admin.setPassword(adminDTO.getPassword());
 
             adminRepository.save(admin);
-
+            System.out.println(admin);
             message.setMessage("Trainer created successfully");
             message.setResponse("Success");
+          
         } catch (Exception e) {
             message.setMessage("Error creating trainer");
             message.setResponse("Failed");
+            e.printStackTrace();
         }
         return message;
     }
