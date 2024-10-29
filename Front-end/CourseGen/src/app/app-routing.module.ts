@@ -4,12 +4,14 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
+import { GenerateContentComponent } from './generate-content/generate-content.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },  // Default landing page
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'generate-content', component: GenerateContentComponent }, // Add route
   { path: '**', redirectTo: '' }  // Redirect unknown routes to the landing page
 ];
 
