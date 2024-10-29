@@ -2,13 +2,13 @@ package com.geeks4learning.CourseGen.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
-import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
 import com.geeks4learning.CourseGen.Entities.AdminEntity;
-import com.geeks4learning.CourseGen.Entities.TrainerEntity;
 import com.geeks4learning.CourseGen.Model.Message;
 import com.geeks4learning.CourseGen.Repositories.AdminRepository;
+
+
+
 
 @Service
 public class AdminService {
@@ -38,4 +38,5 @@ public class AdminService {
         return message;
     }
 
+    
 }
