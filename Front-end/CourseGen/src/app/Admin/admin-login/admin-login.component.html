@@ -1,0 +1,39 @@
+<div class="admin-login-page">
+    <div class="left-section">
+      <img src="assets/company_logo_login.png" alt="Company Logo" class="logo" />
+    </div>
+  
+   
+      <div class="login-container">
+        <h3>Admin Login</h3>
+        <form (submit)="onLogin(); $event.preventDefault()">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              [(ngModel)]="email" 
+              name="email" 
+              placeholder="Enter your email" 
+              required 
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              [(ngModel)]="password" 
+              name="password" 
+              placeholder="Enter your password" 
+              required 
+            />
+          </div>
+  
+          <button type="submit" class="btn-signin">Sign In</button>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </form>
+      </div>
+    </div>
+  
