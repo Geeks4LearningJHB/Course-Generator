@@ -5,6 +5,7 @@ import { RegisterComponent } from './Trainer/landing-page/register/register.comp
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './Trainer/landing-page/landing-page.component';
 import { ViewCoursesComponent } from './Trainer/dashboard/view-courses/view-courses.component';
+import { ViewContentComponent } from './Trainer/dashboard/view-courses/view-content/view-content.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },  // Default landing page
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'view-course', component: ViewCoursesComponent },
+  { path: 'view-content', component: ViewContentComponent },
   { path: '**', redirectTo: '' }  // Redirect unknown routes to the landing page
 ];
 
