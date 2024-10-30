@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';  // Import this module
+import { FormsModule } from '@angular/forms';  
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
+import { HttpClientModule } from '@angular/common/http';
+
+
 
 @NgModule({
   declarations: [
@@ -15,11 +18,13 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
     RegisterComponent,
     DashboardComponent,
     LandingPageComponent
+    
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
-    FormsModule  // Add FormsModule here
+    FormsModule  
   ],
   providers: [
     provideClientHydration()

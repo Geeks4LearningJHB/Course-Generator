@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { RegisterService } from '../Services/register.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'], // Fixed the property name to styleUrls
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   name: string = '';
@@ -12,20 +13,29 @@ export class RegisterComponent {
   email: string = '';
   password: string = '';
   confirmPassword: string = '';
-  registrationSuccess: boolean = false; // To track registration success
+  registrationSuccess: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private registerService: RegisterService, private router: Router) {}
 
   onRegister() {
-    // Here you would typically make an HTTP request to your backend to register the user
-    console.log('Registration form submitted');
-    
-    // Simulate registration logic
-    this.registrationSuccess = true; // Assume registration was successful
+    const trainer = {
+      name: this.name,
+      surname: this.surname,
+      email: this.email,
+      password: this.password
+    };
 
-    // Redirect to the sign-in page after a short delay
-    setTimeout(() => {
-      this.router.navigate(['/login']);
-    }, 3000); // Wait for 3 seconds before redirecting
+    this.registerService.registerUser(trainer).subscribe(
+      response => {
+        console.log('Registration successful', response);
+        this.registrationSuccess = true;
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 3000);
+      },
+      error => {
+        console.error('Error during registration', error);
+      }
+    );
   }
 }

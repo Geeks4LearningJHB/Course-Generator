@@ -16,4 +16,6 @@ public class OpenApiConfig {
             .version("1.0")
             .description("Application for generating course content using OpenAIs GPTs"));
     }
+
+    
 }
