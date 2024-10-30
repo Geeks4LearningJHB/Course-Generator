@@ -12,4 +12,8 @@ export class DashboardComponent {
   navigateToViewCourse() {
     this.router.navigate(['/view-course']); // Use the path defined in your routes
   }
+
+  openGenerateContent() {
+    this.router.navigate(['/generate-content']);
+  }
 }

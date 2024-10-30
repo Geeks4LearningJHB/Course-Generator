@@ -10,6 +10,7 @@ import { LandingPageComponent } from './Trainer/landing-page/landing-page.compon
 import { ViewCoursesComponent } from './Trainer/dashboard/view-courses/view-courses.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
 import { ViewContentComponent } from './Trainer/dashboard/view-courses/view-content/view-content.component';
+import { GenerateContentComponent } from './Trainer/dashboard/generate-content/generate-content.component';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { ViewContentComponent } from './Trainer/dashboard/view-courses/view-cont
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
+    GenerateContentComponent,
     LandingPageComponent,
     ViewCoursesComponent,
     ViewContentComponent,
