@@ -9,6 +9,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { AdminLoginComponent } from './admin-login/admin-login.component';
 import { GenerateContentComponent } from './generate-content/generate-content.component';
+import { ViewContentComponent } from './view-content/view-content.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { GenerateContentComponent } from './generate-content/generate-content.co
     DashboardComponent,
     LandingPageComponent,
     AdminLoginComponent,
-    GenerateContentComponent
+    GenerateContentComponent,
+    ViewContentComponent
   ],
   imports: [
     BrowserModule,
