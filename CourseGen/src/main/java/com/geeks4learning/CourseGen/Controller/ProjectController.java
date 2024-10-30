@@ -22,6 +22,7 @@ public class ProjectController {
 
     @PostMapping("/createAdmin")
     public Message createTrainer(@RequestBody AdminDTO adminDTO) {
+
         return adminService.createAdmin(adminDTO);
     }
 }
