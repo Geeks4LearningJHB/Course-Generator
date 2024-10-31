@@ -33,12 +33,12 @@ export class GenerateContentComponent {
         clearInterval(interval);
         this.completeGeneration();
       }
-    }, 60000); // Updates every minute
+    }, 2000); // Updates every minute
 
     // Simulate fetching data from the backend
     setTimeout(() => {
-      this.generatedData = "Generated course content from backend with extensive information...";
-    }, 1800000); // Simulates a 30-minute backend process
+      this.generatedData = "Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...";
+    }, 18000); // Simulates a 30-minute backend process
   }
 
   completeGeneration() {
