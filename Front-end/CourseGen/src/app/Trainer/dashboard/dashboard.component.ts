@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
+<<<<<<< HEAD
 import { Router } from '@angular/router';
+=======
+>>>>>>> origin/Snenhlanhla
 
 @Component({
   selector: 'app-dashboard',
@@ -7,6 +10,7 @@ import { Router } from '@angular/router';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
+<<<<<<< HEAD
   constructor(private router: Router) {}
 
   navigateToViewCourse() {
@@ -16,4 +20,7 @@ export class DashboardComponent {
   openGenerateContent() {
     this.router.navigate(['/generate-content']);
   }
+=======
+
+>>>>>>> origin/Snenhlanhla
 }

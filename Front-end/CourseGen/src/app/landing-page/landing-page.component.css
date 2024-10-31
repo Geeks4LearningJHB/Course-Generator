@@ -21,9 +21,7 @@
     font-weight: bold;
     line-height: 1.2;
     margin-bottom: 30px;
-    background: linear-gradient(to bottom, hsl(0, 0%, 100%), hsl(0, 0%, 44%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    line-height: 1.2; /* Ensure good line spacing */
   }
   
   .buttons {
@@ -35,8 +33,7 @@
   .btn {
     width: 150px;
     padding: 15px 20px;
-    margin-left: 55px;
-    background-color: #6c757d;
+    background-color: #424445; /* Blue-ish button color */
     border: none;
     border-radius: 8px;
     color: white;
@@ -47,8 +44,7 @@
   }
   
   .btn:hover {
-    background-color: #5a6268;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    background-color: #0f2e3d; /* Darker shade for hover */
   }
   
   
