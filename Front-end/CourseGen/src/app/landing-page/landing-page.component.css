@@ -21,7 +21,11 @@
     font-weight: bold;
     line-height: 1.2;
     margin-bottom: 30px;
-    line-height: 1.2; /* Ensure good line spacing */
+    line-height: 1.2;
+    /* background: linear-gradient(to right, #f32170, #ff6b08,#cf23cf, #eedd44); */
+    background: linear-gradient(to bottom, #ffffff, rgba(124, 124, 124, 0.733));
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
   }
   
   .buttons {

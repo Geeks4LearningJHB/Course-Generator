@@ -6,9 +6,11 @@ import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
 import { ViewContentComponent } from './Trainer/view-content/view-content.component';
-import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
+// import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
+import { ViewCoursesComponent } from './Trainer/dashboard/view-courses/view-courses.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
 import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
+import { UserReviewComponent } from './Admin/admin-dashboard/user-review/user-review.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },  // Default landing page
@@ -20,6 +22,7 @@ const routes: Routes = [
   { path: 'view-content', component: ViewContentComponent }, 
   { path: 'admin-login', component: AdminLoginComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent },
+  { path: 'user-review', component: UserReviewComponent },
   { path: '**', redirectTo: '' }  // Redirect unknown routes to the landing page
 ];
 

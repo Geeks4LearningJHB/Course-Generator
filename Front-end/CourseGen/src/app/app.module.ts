@@ -12,6 +12,7 @@ import { GenerateContentComponent } from './Trainer/generate-content/generate-co
 import { ViewContentComponent } from './Trainer/view-content/view-content.component';
 import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
 import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
+import { UserReviewComponent } from './Admin/admin-dashboard/user-review/user-review.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +24,8 @@ import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard
     GenerateContentComponent,
     ViewContentComponent,
     ViewCoursesComponent,
-    AdminDashboardComponent
+    AdminDashboardComponent,
+    UserReviewComponent
   ],
   imports: [
     BrowserModule,
