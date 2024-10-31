@@ -16,4 +16,33 @@ export class GenerateContentComponent {
     console.log('Duration:', this.duration);
     alert(`Course "${this.courseTitle}" generated successfully!`);
   }
+  isLoading = false;
+  isComplete = false;
+  countdown = 30; // Initial countdown in minutes
+  generatedData: string = ''; // Placeholder for backend data
+
+  startGeneration() {
+    this.isLoading = true;
+    this.isComplete = false;
+    this.countdown = 30;
+
+    // Start countdown timer
+    const interval = setInterval(() => {
+      this.countdown--;
+      if (this.countdown <= 0) {
+        clearInterval(interval);
+        this.completeGeneration();
+      }
+    }, 60000); // Updates every minute
+
+    // Simulate fetching data from the backend
+    setTimeout(() => {
+      this.generatedData = "Generated course content from backend.";
+    }, 1800000); // Simulates a 30-minute backend process
+  }
+
+  completeGeneration() {
+    this.isLoading = false;
+    this.isComplete = true;
+  }
 }

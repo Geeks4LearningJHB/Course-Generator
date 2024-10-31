@@ -50,9 +50,26 @@
           />
         </div>
   
-        <button type="submit" class="generate-btn">
-          <span>📋</span> Generate Course
-        </button>
+       <!-- Generate Course Button -->
+<button type="submit" class="generate-btn" (click)="startGeneration()"> 
+  <span>📋</span> Generate Course 
+</button>
+
+<!-- Loading Modal -->
+<div *ngIf="isLoading" class="loading-modal">
+  <div class="modal-content">
+    <h2>Generating Course...</h2>
+    <p>Estimated Time Remaining: {{ countdown }} minutes</p>
+    <div class="loader"></div>
+  </div>
+</div>
+
+<!-- Display Data When Loading is Complete -->
+<div *ngIf="!isLoading && isComplete" class="generated-data">
+  <h2>Done!</h2>
+  <p>{{ generatedData }}</p>
+</div>
+
       </form>
     </div>
   </div>
