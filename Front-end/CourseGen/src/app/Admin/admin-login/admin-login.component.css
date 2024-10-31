@@ -1,104 +1,90 @@
-/* Header styling */
-.header {
+.admin-login-page {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 10px 20px;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #ddd;
+    height: 100vh;
+    background: linear-gradient(to right, #12324d 75%, #12324d 75%);
   }
   
-  /* Logo styling */
+  
   .logo {
-    height: 50px;
-    cursor: pointer;
-  }
-  
-  /* Profile Icon styling */
-  .profile-icon {
-    height: 40px;
-    width: 40px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
-    cursor: pointer;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   }
+
   
-  /* Login Container Styling */
   .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 80px); /* Adjust height to account for the header */
-    background-color: #f5f5f5;
-  }
-  
-  .login-box {
-    display: flex;
-    width: 70%;
-    max-width: 900px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .left-panel {
-    flex: 1;
-    background-color: #e0e0e0;
-    padding: 40px;
-  }
-  
-  .right-panel {
-    flex: 1;
-    background-color: #133B50;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-  }
-  
-  /* Global Button Styles */
-  button {
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    padding: 10px 20px;
-    transition: background-color 0.3s ease;
-    text-transform: uppercase;
-    width: 100%;
+    width: 80%;
+    max-width: 400px;
     text-align: center;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   }
   
-  /* Sign In Button */
-  .btn-signin {
-    background-color: black;
-    color: white;
+  .login-container h3 {
+    margin-bottom: 30px;
+    color: #12324d;
   }
   
-  .btn-signin:hover {
-    background-color: #333;
-  }
-  
-  /* Sign Up Button */
-  .btn-signup {
-    background-color: black;
-    color: white;
-  }
-  
-  .btn-signup:hover {
-    background-color: #4a8287;
-  }
-  
-  /* Form Group Styling */
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-align: left;
   }
   
   input {
     width: 100%;
     padding: 10px;
-    border-radius: 5px;
+    margin-top: 5px;
     border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #12324d;
+    box-shadow: 0 0 5px rgba(18, 50, 77, 0.5);
+  }
+  
+  .btn-signin {
+    width: 100%;
+    padding: 15px;
+    background-color: #424445;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 18px;
+  }
+  
+  .btn-signin:hover {
+    background-color: #0f2e3d;
+  }
+  
+  .forgot-password {
+    display: block;
+    margin-top: 15px;
+    color: #12324d;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+  .content-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align content towards the right */
+    gap: 50px; /* Space between the logo and login container */
+    width: 90%; /* Adjust the width to make room for both sections */
+  }
+  
+  .login-container {
+    margin-right: 50px; /* Push the login container slightly to the right */
   }
   
