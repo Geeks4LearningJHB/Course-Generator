@@ -1,30 +1,51 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-generate-content',
   templateUrl: './generate-content.component.html',
-  styleUrl: './generate-content.component.css'
+  styleUrls: ['./generate-content.component.css']
 })
 export class GenerateContentComponent {
   courseTitle: string = '';
   difficulty: string = 'Beginner';
   duration: number | null = null;
-
-  onGenerateCourse() {
-    console.log('Course Title:', this.courseTitle);
-    console.log('Difficulty:', this.difficulty);
-    console.log('Duration:', this.duration);
-    alert(`Course "${this.courseTitle}" generated successfully!`);
-  }
   isLoading = false;
   isComplete = false;
   countdown = 30; // Initial countdown in minutes
   generatedData: string = ''; // Placeholder for backend data
 
+  constructor(private http: HttpClient) {}
+
+  onGenerateCourse() {
+    this.startGeneration();
+  }
+
   startGeneration() {
     this.isLoading = true;
     this.isComplete = false;
     this.countdown = 30;
+
+    const courseRequest = {
+      courseTitle: this.courseTitle,
+      difficulty: this.difficulty,
+      duration: this.duration
+    };
+
+    // Send the request to the backend
+    this.http.post('http://localhost:8080/AI/generateCourse', courseRequest, { responseType: 'text' })
+    .subscribe(
+        (response: string) => {
+            this.generatedData = response; // response should now be valid
+            this.isLoading = false;
+            this.isComplete = true;
+        },
+        (error) => {
+            console.error('Error generating course:', error);
+            this.isLoading = false;
+            this.isComplete = true; // End loading on error
+        }
+    );
 
     // Start countdown timer
     const interval = setInterval(() => {
@@ -34,11 +55,6 @@ export class GenerateContentComponent {
         this.completeGeneration();
       }
     }, 60000); // Updates every minute
-
-    // Simulate fetching data from the backend
-    setTimeout(() => {
-      this.generatedData = "Generated course content from backend.";
-    }, 1800000); // Simulates a 30-minute backend process
   }
 
   completeGeneration() {

@@ -2,6 +2,7 @@ package com.geeks4learning.CourseGen.Controller;
 
 import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
+import com.geeks4learning.CourseGen.Model.CourseRequest;
 import com.geeks4learning.CourseGen.Services.AdminService;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -9,14 +10,18 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 @RestController
+@RequestMapping("/AI")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AIController {
 
     @Autowired
@@ -26,16 +31,16 @@ public class AIController {
     private String completionsURL;
 
     @PostMapping("/generateCourse")
-    public String promptHandler(@RequestBody String prompt) {
-        String valueAddedPrompt = "Please generate a detailed course outline for a textbook teaching about: " + prompt +
-                ". The outline should be organized as a Module. A Module should contain several Units. " +
+    public String promptHandler(@RequestBody CourseRequest courseRequest) {
+        String valueAddedPrompt = "Please generate a detailed course outline for a textbook teaching about: "
+                + courseRequest.getCourseTitle() +
+                ". The course should be designed for a " + courseRequest.getDifficulty()
+                + " level and is intended to be completed in " + courseRequest.getDuration() + " months. " +
+                "The outline should be organized as a Module. A Module should contain several Units. " +
                 "Each Unit should include topics covered, suggested activities, and an assessment.";
-        ;
 
-        // Generate outline
         String outline = respondToPrompt(valueAddedPrompt);
 
-        // Split the outline into sections to request content for each unit
         String detailedContent = generateDetailedContentForOutline(outline);
         exportToWord(detailedContent, "CourseOutline.docx");
 
