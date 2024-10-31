@@ -10,11 +10,10 @@ import { Observable } from 'rxjs';
 export class LoginService {
     private apiUrl = 'http://localhost:8080/Admin/Adminlogin';
 
-  constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {}
 
-  login(email: string, password: string): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post(this.apiUrl, { email, password }, { headers, responseType: 'text' as 'json' });
-}
+  loginAdmin(credentials: { email: string; password: string }): Observable<any> {
+    return this.http.post<any>(this.apiUrl, credentials);
+  }
 
 }

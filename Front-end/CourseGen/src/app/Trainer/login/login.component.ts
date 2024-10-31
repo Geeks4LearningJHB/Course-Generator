@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginService } from '../Services/adminLogin.service';
+import { TrainerLoginService } from '../../Services/trainer-login.service';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +11,7 @@ export class LoginComponent {
   email: string = '';
   password: string = '';
 
-  constructor(private router: Router, private loginService: LoginService) {}
+  constructor(private router: Router, private loginService: TrainerLoginService) {}
 
   onLogin() {
     this.loginService.login(this.email, this.password).subscribe(

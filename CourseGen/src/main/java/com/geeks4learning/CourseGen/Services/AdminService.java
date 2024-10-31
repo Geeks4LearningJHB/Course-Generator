@@ -15,8 +15,6 @@ public class AdminService {
     @Autowired
     private AdminRepository adminRepository;
 
-    @Autowired
-    private TrainerRepository trainerRepository;
 
     // public Message createAdmin(AdminDTO adminDTO) {
     // Message message = new Message();
@@ -40,27 +38,7 @@ public class AdminService {
     // return message;
     // }
 
-    public Message createTrainer(TrainerDTO trainerDTO) {
-        Message message = new Message();
-        try {
-            TrainerEntity Trainer = new TrainerEntity();
-            Trainer.setName(trainerDTO.getName());
-            Trainer.setSurname(trainerDTO.getSurname());
-            Trainer.setEmail(trainerDTO.getEmail());
-            Trainer.setPassword(trainerDTO.getPassword());
-
-            trainerRepository.save(Trainer);
-            System.out.println(Trainer);
-            message.setMessage("Trainer created successfully");
-            message.setResponse("Success");
-
-        } catch (Exception e) {
-            message.setMessage("Error creating trainer");
-            message.setResponse("Failed");
-            e.printStackTrace();
-        }
-        return message;
-    }
+   
 
     public Message authenticateAdmin(String email, String password) {
         // Check if user exists with matching credentials

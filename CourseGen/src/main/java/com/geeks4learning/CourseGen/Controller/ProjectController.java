@@ -1,7 +1,7 @@
 package com.geeks4learning.CourseGen.Controller;
 
 import com.geeks4learning.CourseGen.Services.AdminService;
-
+import com.geeks4learning.CourseGen.Services.TrainerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.geeks4learning.CourseGen.DTOs.AdminLogin;
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
+import com.geeks4learning.CourseGen.DTOs.TrainerLogin;
 import com.geeks4learning.CourseGen.Model.Message;
 
 @RestController
@@ -23,25 +24,40 @@ public class ProjectController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private TrainerService trainerService;
+
     // @PostMapping("/createAdmin")
     // public Message createTrainer(@RequestBody AdminDTO adminDTO) {
-    //     return adminService.createAdmin(adminDTO);
+    // return adminService.createAdmin(adminDTO);
     // }
 
     @PostMapping("/createTrainer")
     public Message createTrainer(@RequestBody TrainerDTO TrainerDTO) {
-        return adminService.createTrainer(TrainerDTO);
+        return trainerService.createTrainer(TrainerDTO);
     }
+
     @PostMapping("/Adminlogin")
     public ResponseEntity<String> login(@RequestBody AdminLogin adminLogin) {
-        // Call the service method to authenticate
+
         Message authResponse = adminService.authenticateAdmin(adminLogin.getEmail(), adminLogin.getPassword());
-    
-        // Check the status of the response and set appropriate HTTP status
+
         if ("Success".equals(authResponse.getResponse())) {
-            return ResponseEntity.ok(authResponse.getMessage()); // HTTP 200 OK
+            return ResponseEntity.ok(authResponse.getMessage());
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.getMessage()); // HTTP 401 Unauthorized
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.getMessage());
+        }
+    }
+
+    @PostMapping("/Trainerlogin")
+    public ResponseEntity<String> login(@RequestBody TrainerLogin trainerLogin) {
+
+        Message authResponse = trainerService.authenticateTrainer(trainerLogin.getEmail(), trainerLogin.getPassword());
+
+        if ("Success".equals(authResponse.getResponse())) {
+            return ResponseEntity.ok(authResponse.getMessage());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.getMessage());
         }
     }
 }
