@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './Trainer/login/login.component';
-import { RegisterComponent } from './Trainer/register/register.component';
+import { LoginComponent } from './landing-page/login/login.component';
+import { RegisterComponent } from './landing-page/register/register.component';
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';

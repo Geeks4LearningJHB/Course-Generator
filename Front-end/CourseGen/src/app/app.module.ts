@@ -3,8 +3,8 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './Trainer/login/login.component';
-import { RegisterComponent } from './Trainer/register/register.component';
+import { LoginComponent } from './landing-page/login/login.component';
+import { RegisterComponent } from './landing-page/register/register.component';
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';

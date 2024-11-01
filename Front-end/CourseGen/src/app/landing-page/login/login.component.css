@@ -101,3 +101,32 @@ input {
   border-radius: 5px;
   border: 1px solid #ccc;
 }
+
+
+
+
+.login.component {
+  align-items: center;
+}
+
+.L-Container {
+  display: flex;
+  width: 707px;
+  height: 357px;
+  background-color: #133B50;
+  border-radius: 30px;
+}
+.Sign-In {
+  border-radius: 30px;
+  width: 353.5px;
+  height: 357px;
+  background-color: #D9D9D9;
+  float: right;
+}
+.form-group1 {
+  /* margin-bottom: 15px; */
+  padding: 10px;
+}
+.free-form {
+  float: left;
+}
