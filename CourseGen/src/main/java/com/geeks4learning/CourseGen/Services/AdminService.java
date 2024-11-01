@@ -2,6 +2,7 @@ package com.geeks4learning.CourseGen.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
 import com.geeks4learning.CourseGen.Entities.AdminEntity;
 import com.geeks4learning.CourseGen.Model.Message;
@@ -38,5 +39,7 @@ public class AdminService {
         return message;
     }
 
+
+    
     
 }
