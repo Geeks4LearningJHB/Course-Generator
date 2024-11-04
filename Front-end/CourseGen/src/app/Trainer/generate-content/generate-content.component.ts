@@ -10,42 +10,22 @@ export class GenerateContentComponent {
   courseTitle: string = '';
   difficulty: string = 'Beginner';
   duration: number | null = null;
+
+  onGenerateCourse() {
+    console.log('Course Title:', this.courseTitle);
+    console.log('Difficulty:', this.difficulty);
+    console.log('Duration:', this.duration);
+    alert(`Course "${this.courseTitle}" generated successfully!`);
+  }
   isLoading = false;
   isComplete = false;
   countdown = 30; // Initial countdown in minutes
   generatedData: string = ''; // Placeholder for backend data
 
-  constructor(private http: HttpClient) {}
-
-  onGenerateCourse() {
-    this.startGeneration();
-  }
-
   startGeneration() {
     this.isLoading = true;
     this.isComplete = false;
-    this.countdown = 30;
-
-    const courseRequest = {
-      courseTitle: this.courseTitle,
-      difficulty: this.difficulty,
-      duration: this.duration
-    };
-
-    // Send the request to the backend
-    this.http.post('http://localhost:8080/AI/generateCourse', courseRequest, { responseType: 'text' })
-    .subscribe(
-        (response: string) => {
-            this.generatedData = response; // response should now be valid
-            this.isLoading = false;
-            this.isComplete = true;
-        },
-        (error) => {
-            console.error('Error generating course:', error);
-            this.isLoading = false;
-            this.isComplete = true; // End loading on error
-        }
-    );
+    this.countdown = 1;
 
     // Start countdown timer
     const interval = setInterval(() => {
@@ -54,11 +34,28 @@ export class GenerateContentComponent {
         clearInterval(interval);
         this.completeGeneration();
       }
-    }, 60000); // Updates every minute
+    }, 2000); // Updates every minute
+
+    // Simulate fetching data from the backend
+    setTimeout(() => {
+      this.generatedData = "Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...";
+    }, 18000); // Simulates a 30-minute backend process
   }
 
   completeGeneration() {
     this.isLoading = false;
     this.isComplete = true;
+  }
+
+  closeModal() {
+    this.isComplete = false;
+  }
+
+  onSave() {
+    alert('Course content saved successfully!');
+  }
+
+  onPreview() {
+    alert('Preview of the course content');
   }
 }

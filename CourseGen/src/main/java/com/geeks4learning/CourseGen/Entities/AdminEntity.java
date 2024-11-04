@@ -25,8 +25,8 @@ public class AdminEntity {
     private String Surname;
 
     @Column(name = "Email")
-    private String email;
+    private String Email;
 
     @Column(name = "Password")
-    private String password;
+    private String Password;
 }
