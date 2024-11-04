@@ -3,7 +3,6 @@ package com.geeks4learning.CourseGen.Controller;
 import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
 import com.geeks4learning.CourseGen.Model.CourseRequest;
-import com.geeks4learning.CourseGen.Services.AdminService;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -72,9 +71,12 @@ public class AIController {
             String sectionPrompt = "Please provide detailed content for the Unit titled: " + section;
             String sectionContent = respondToPrompt(sectionPrompt);
 
+            detailedContentBuilder.append("<h2>").append("Section: ").append(section).append("</h2>");
+            detailedContentBuilder.append("<p>").append(sectionContent).append("</p>");
+
             // Append section and its content
-            detailedContentBuilder.append("Section: ").append(section).append("\n");
-            detailedContentBuilder.append(sectionContent).append("\n\n");
+            // detailedContentBuilder.append("Section: ").append(section).append("\n");
+            // detailedContentBuilder.append(sectionContent).append("\n\n");
         }
 
         return detailedContentBuilder.toString();

@@ -21,7 +21,7 @@ public class TrainerService {
 
         Message message = new Message();
 
-        if (trainer != null) {
+        if (trainer.isPresent()) {
 
             message.setResponse("Success");
             message.setMessage("Authentication successful!");

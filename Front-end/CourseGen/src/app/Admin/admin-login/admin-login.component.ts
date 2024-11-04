@@ -16,15 +16,20 @@ export class AdminLoginComponent {
   onLogin() {
     this.loginService.loginAdmin({ email: this.email, password: this.password }).subscribe(
       (response) => {
-        if (response.success) {
+        console.log('Login Response:', response); 
+  
+        if (response.response === "Success") { 
           this.router.navigate(['/admin-dashboard']);
         } else {
-          alert('Invalid credentials!');
+          alert('Invalid credentials!'); 
         }
       },
       (error) => {
+        console.error('Login Error:', error); 
         alert('Login failed: ' + error.message);
       }
     );
   }
+  
+  
 }
