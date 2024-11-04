@@ -8,6 +8,7 @@ import { RegisterComponent } from './Trainer/register/register.component';
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { HttpClientModule } from '@angular/common/http';
+import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
 
 
 
@@ -17,7 +18,8 @@ import { HttpClientModule } from '@angular/common/http';
     RegisterComponent,
     LoginComponent,
     DashboardComponent,
-    LandingPageComponent
+    LandingPageComponent,
+    GenerateContentComponent
     
   ],
   imports: [
