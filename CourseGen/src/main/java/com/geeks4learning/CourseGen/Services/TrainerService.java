@@ -20,7 +20,6 @@ public class TrainerService {
 
     }
 
-   
     @Transactional
     public TrainerEntity acceptTrainer(Long id){
         TrainerEntity trainer = getTrainerById(id);
@@ -28,5 +27,12 @@ public class TrainerService {
         return trainerRepository.save(trainer);
     }
 
+    @Transactional
+    public TrainerEntity rejectTrainer(Long id){
+        TrainerEntity trainer = getTrainerById(id);
+        trainer.setStatus(TrainerEntity.Status.REJECTED);
+        return trainerRepository.save(trainer);
+    }
+  
 
 }

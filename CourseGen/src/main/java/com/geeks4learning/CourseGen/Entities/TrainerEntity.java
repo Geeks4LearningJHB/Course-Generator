@@ -1,7 +1,10 @@
 package com.geeks4learning.CourseGen.Entities;
 
+//import Trainer.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,4 +37,20 @@ public class TrainerEntity {
     
     @Column(name = "Password")
     private String Password;
+
+   
+
+
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PENDING;
+
+    public enum Status{
+        PENDING, ACCEPTED, REJECTED
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+
 }
