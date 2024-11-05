@@ -33,10 +33,10 @@ public class TrainerEntity {
     private String Surname;
 
     @Column(name = "Email")
-    private String Email;
-    
+    private String email;
+
     @Column(name = "Password")
-    private String Password;
+    private String password;
 
    
 

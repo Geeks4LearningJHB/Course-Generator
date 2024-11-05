@@ -1,0 +1,114 @@
+<div class="header">
+  <img src="assets/company_logo_login.png" alt="Logo" class="logo" />
+</div>
+
+<div class="register-container">
+  <div class="register-box">
+    <div class="left-panel">
+      <h2>HAVE AN ACCOUNT?</h2>
+      <button class="btn-signin" routerLink="/login">Sign In</button>
+    </div>
+
+    <div class="right-panel">
+      <form (ngSubmit)="onRegister()" #registerForm="ngForm">
+        <h3>Sign Up</h3>
+
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="name"
+            name="name"
+            placeholder="Enter your name"
+            required
+            #nameInput="ngModel"
+          />
+          <div *ngIf="nameInput.invalid && nameInput.touched" class="error-message">
+            Name is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="surname">Surname</label>
+          <input
+            type="text"
+            id="surname"
+            [(ngModel)]="surname"
+            name="surname"
+            placeholder="Enter your surname"
+            required
+            #surnameInput="ngModel"
+          />
+          <div *ngIf="surnameInput.invalid && surnameInput.touched" class="error-message">
+            Surname is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+            #emailInput="ngModel"
+          />
+          <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
+            Valid email is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter password"
+            required
+            #passwordInput="ngModel"
+          />
+          <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error-message">
+            Password is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            placeholder="Confirm password"
+            required
+            #confirmPasswordInput="ngModel"
+          />
+          <div *ngIf="confirmPasswordInput.invalid && confirmPasswordInput.touched" class="error-message">
+            Confirm password is required.
+          </div>
+          <div *ngIf="password !== confirmPassword && confirmPasswordInput.touched" class="error-message">
+            Passwords do not match.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <input type="checkbox" id="remember" />
+          <label for="remember">Remember me</label>
+        </div>
+
+        <button type="submit" class="btn-signup" [disabled]="!registerForm.valid || password !== confirmPassword">
+          Sign Up
+        </button>
+      </form>
+
+      <div *ngIf="registrationSuccess" class="success-message">
+        Registered successfully! Please wait for admin approval.
+      </div>
+    </div>
+  </div>
+</div>

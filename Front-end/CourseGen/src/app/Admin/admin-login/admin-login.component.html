@@ -1,0 +1,48 @@
+<div class="admin-login-page">
+  <div class="left-section">
+    <img src="assets/company_logo_login.png" alt="Company Logo" class="logo" />
+  </div>
+
+  <div class="login-container">
+    <h3>Admin Login</h3>
+    <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+          #emailInput="ngModel"
+        />
+        <!-- Optional error message for empty email field -->
+        <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
+          Email is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+          #passwordInput="ngModel"
+        />
+        <!-- Optional error message for empty password field -->
+        <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error-message">
+          Password is required.
+        </div>
+      </div>
+
+      <!-- Disable button unless form is valid -->
+      <button class="btn-signin" type="submit" [disabled]="!loginForm.valid">Sign In</button>
+      <a href="#" class="forgot-password">Forgot password?</a>
+    </form>
+  </div>
+</div>
