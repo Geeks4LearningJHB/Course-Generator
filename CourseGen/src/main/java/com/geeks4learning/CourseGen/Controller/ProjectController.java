@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.geeks4learning.CourseGen.DTOs.AdminLogin;
+import com.geeks4learning.CourseGen.DTOs.AdminDTO;
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
-import com.geeks4learning.CourseGen.DTOs.TrainerLogin;
 import com.geeks4learning.CourseGen.Entities.AdminEntity;
 import com.geeks4learning.CourseGen.Model.Message;
 import com.geeks4learning.CourseGen.Repositories.AdminRepository;
@@ -46,7 +45,7 @@ public class ProjectController {
     }
 
     @PostMapping("/Adminlogin")
-    public ResponseEntity<Message> authenticateAdmin(@RequestBody AdminLogin adminLogin) {
+    public ResponseEntity<Message> authenticateAdmin(@RequestBody AdminDTO adminLogin) {
         Optional<AdminEntity> admin = adminRepository.findByEmailAndPassword(adminLogin.getEmail(),
                 adminLogin.getPassword());
 
@@ -66,7 +65,7 @@ public class ProjectController {
     }
 
     @PostMapping("/Trainerlogin")
-    public ResponseEntity<String> login(@RequestBody TrainerLogin trainerLogin) {
+    public ResponseEntity<String> login(@RequestBody TrainerDTO trainerLogin) {
 
         Message authResponse = trainerService.authenticateTrainer(trainerLogin.getEmail(), trainerLogin.getPassword());
 
