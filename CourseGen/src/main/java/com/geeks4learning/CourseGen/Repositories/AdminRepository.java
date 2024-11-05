@@ -10,4 +10,3 @@ public interface AdminRepository extends JpaRepository<AdminEntity, Long> {
     Optional<AdminEntity> findByEmailAndPassword(String Email, String Password);
 }
 
-}
