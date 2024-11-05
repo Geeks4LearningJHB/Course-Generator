@@ -42,11 +42,12 @@ public class AdminService {
 
     public Message authenticateAdmin(String email, String password) {
         Optional<AdminEntity> admin = adminRepository.findByEmailAndPassword(email, password);
+
         Message message = new Message();
     
         if (admin.isPresent()) {
-            message.setResponse("Success");
-            message.setMessage("Authentication successful!");
+            message.setMessage("password");
+            message.setResponse("password");
         } else {
             message.setResponse("Failure");
             message.setMessage("Invalid email or password.");
