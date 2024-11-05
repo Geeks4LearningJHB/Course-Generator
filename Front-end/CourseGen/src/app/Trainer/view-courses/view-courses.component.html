@@ -1,0 +1,21 @@
+<div class="courses-container">
+    <div class="header">
+      <img src="assets/company_logo_login.png" alt="Company Logo" class="logo" />
+      <img src="assets/WhatsApp Image 2024-10-18 at 08.48.52.jpeg" alt="Profile Icon" class="profile-icon" />
+    </div>
+  
+    <h1 class="title">COURSES</h1>
+  
+    <div class="course-list">
+      <div class="course-item" *ngFor="let course of courses">
+        <div class="course-details">
+          <h2>{{ course.title }}</h2>
+          <p>{{ course.description }}</p>
+        </div>
+        <button class="view-button" (click)="viewCourse(course.id)">
+          View
+        </button>
+      </div>
+    </div>
+  </div>
+  
