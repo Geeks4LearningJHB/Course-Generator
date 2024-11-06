@@ -3,27 +3,34 @@ package com.geeks4learning.CourseGen.Controller;
 import com.geeks4learning.CourseGen.Services.AdminService;
 import com.geeks4learning.CourseGen.Services.TrainerService;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
+import com.geeks4learning.CourseGen.DTOs.PendingDTO;
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
 import com.geeks4learning.CourseGen.Entities.AdminEntity;
+import com.geeks4learning.CourseGen.Entities.TrainerEntity;
 import com.geeks4learning.CourseGen.Model.Message;
 import com.geeks4learning.CourseGen.Repositories.AdminRepository;
+import com.geeks4learning.CourseGen.Repositories.TrainerRepository;
 
 @RestController
-@RequestMapping("/Admin")
+@RequestMapping("/Trainer")
 @CrossOrigin(origins = "http://localhost:4200")
-public class ProjectController {
+public class AdminController {
 
     @Autowired
     private AdminService adminService;
@@ -33,6 +40,9 @@ public class ProjectController {
 
     @Autowired
     private TrainerService trainerService;
+
+    @Autowired
+    private TrainerRepository trainerRepository;
 
     // @PostMapping("/createAdmin")
     // public Message createTrainer(@RequestBody AdminDTO adminDTO) {
@@ -74,5 +84,31 @@ public class ProjectController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.getMessage());
         }
+    }
+
+   @GetMapping("/pending-trainers")
+public List<PendingDTO> getPendingTrainers() {
+    List<TrainerEntity> trainers = trainerRepository.findByStatus("pending");
+    return trainers.stream()
+                   .map(trainer -> new PendingDTO(trainer.getName(), trainer.getSurname()))
+                   .collect(Collectors.toList());
+}
+
+    @PostMapping("/approve-trainer/{id}")
+    public ResponseEntity<?> approveTrainer(@PathVariable Long id) {
+        Optional<TrainerEntity> trainer = trainerRepository.findById(id);
+        if (trainer.isPresent()) {
+            TrainerEntity t = trainer.get();
+            t.setStatus("active");
+            trainerRepository.save(t);
+            return ResponseEntity.ok("Trainer approved");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainer not found");
+    }
+
+    @PostMapping("/reject-trainer/{id}")
+    public ResponseEntity<?> rejectTrainer(@PathVariable Long id) {
+        trainerRepository.deleteById(id);
+        return ResponseEntity.ok("Trainer rejected");
     }
 }

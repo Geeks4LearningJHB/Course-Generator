@@ -34,4 +34,7 @@ public class TrainerEntity {
 
     @Column(name = "Password")
     private String password;
+
+    @Column(nullable = false)
+    private String status = "pending";
 }
