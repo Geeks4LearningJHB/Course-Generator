@@ -1,31 +1,28 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { TrainerLoginService } from '../../Services/trainer-login.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   email: string = '';
   password: string = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private loginService: TrainerLoginService) {}
 
   onLogin() {
-    console.log('Entered Email:', this.email);
-    console.log('Entered Password:', this.password);
-
-    // Trim inputs to avoid whitespace issues
-    const trimmedEmail = this.email.trim();
-    const trimmedPassword = this.password.trim();
-
-    // Check if credentials match
-    if (trimmedEmail === 'Sinenhlanhla_iveco@geeks4learning' && trimmedPassword === 'Password@123') {
-      console.log('Login successful!');
-      this.router.navigate(['/dashboard']);  // Navigate to dashboard
-    } else {
-      console.error('Invalid credentials!');
-      alert('Invalid credentials!');
-    }
+    this.loginService.login(this.email, this.password).subscribe(
+      (response) => {
+        console.log('Login successful:', response);
+        this.router.navigate(['/dashboard']);
+      },
+      (error) => {
+        console.error('Login failed:', error);
+        alert('Invalid credentials!');
+      }
+    );
   }
 }

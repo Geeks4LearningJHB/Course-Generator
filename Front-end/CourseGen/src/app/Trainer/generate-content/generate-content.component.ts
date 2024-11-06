@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-generate-content',
   templateUrl: './generate-content.component.html',
-  styleUrl: './generate-content.component.css'
+  styleUrls: ['./generate-content.component.css']
 })
 export class GenerateContentComponent {
   courseTitle: string = '';
@@ -24,7 +26,7 @@ export class GenerateContentComponent {
   startGeneration() {
     this.isLoading = true;
     this.isComplete = false;
-    this.countdown = 30;
+    this.countdown = 1;
 
     // Start countdown timer
     const interval = setInterval(() => {
@@ -33,16 +35,28 @@ export class GenerateContentComponent {
         clearInterval(interval);
         this.completeGeneration();
       }
-    }, 60000); // Updates every minute
+    }, 2000); // Updates every minute
 
     // Simulate fetching data from the backend
     setTimeout(() => {
-      this.generatedData = "Generated course content from backend.";
-    }, 1800000); // Simulates a 30-minute backend process
+      this.generatedData = "Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...";
+    }, 18000); // Simulates a 30-minute backend process
   }
 
   completeGeneration() {
     this.isLoading = false;
     this.isComplete = true;
+  }
+
+  closeModal() {
+    this.isComplete = false;
+  }
+
+  onSave() {
+    alert('Course content saved successfully!');
+  }
+
+  onPreview() {
+    alert('Preview of the course content');
   }
 }

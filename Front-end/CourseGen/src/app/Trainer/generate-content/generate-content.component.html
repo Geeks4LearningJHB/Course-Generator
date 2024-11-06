@@ -39,7 +39,7 @@
         </div>
   
         <div class="form-group">
-          <label for="duration">Duration (hours)</label>
+          <label for="duration">Duration</label>
           <input
             type="number"
             id="duration"
@@ -50,7 +50,7 @@
           />
         </div>
   
-       <!-- Generate Course Button -->
+    <!-- Generate Course Button -->
 <button type="submit" class="generate-btn" (click)="startGeneration()"> 
   <span>📋</span> Generate Course 
 </button>
@@ -64,13 +64,22 @@
   </div>
 </div>
 
-<!-- Display Data When Loading is Complete -->
-<div *ngIf="!isLoading && isComplete" class="generated-data">
-  <h2>Done!</h2>
-  <p>{{ generatedData }}</p>
-</div>
-
-      </form>
-    </div>
-  </div>
+<!-- Display Generated Data Modal When Loading is Complete -->
+<div *ngIf="!isLoading && isComplete" class="generated-data-modal">
+  <!-- <div class="modal-header"> -->
+   
+  <!-- </div> -->
   
+  <!-- <div class="modal-body"> -->
+    <!-- Scrollable content area for large content -->
+    <div class="content-box">
+      <h2>Generated Course Content</h2>
+      <button class="close-btn" (click)="closeModal()">X</button>
+      
+      <p>{{ generatedData }}</p>
+    <!-- </div> -->
+
+    <button class="save-btn" (click)="onSave()">Save</button>
+    <button class="preview-btn" (click)="onPreview()">Preview</button>
+  </div>
+</div>
