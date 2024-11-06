@@ -1,0 +1,22 @@
+.fade-out {
+    animation: fadeOut 0.8s forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.zoom-out {
+    animation: zoomOut 0.8s forwards;
+}
+
+@keyframes zoomOut {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0; }
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-in;
+}
+
