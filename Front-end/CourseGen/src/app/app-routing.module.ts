@@ -10,23 +10,25 @@ import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.compon
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
 import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
 import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-password.component';
+import { ProfileManagementComponent } from './profile-management/profile-management.component';
 
 const routes: Routes = [
-  { path: '', component: LandingPageComponent },  // Default landing page
+  { path: '', component: LandingPageComponent }, // Default landing page
   { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent},
-  {path: 'forgot-password', component: ForgotPasswordComponent},
+  { path: 'login', component: LoginComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'generate-content', component: GenerateContentComponent }, 
-  { path: 'view-courses', component: ViewCoursesComponent }, 
-  { path: 'view-content', component: ViewContentComponent }, 
+  { path: 'generate-content', component: GenerateContentComponent },
+  { path: 'view-courses', component: ViewCoursesComponent },
+  { path: 'view-content', component: ViewContentComponent },
   { path: 'admin-login', component: AdminLoginComponent },
+  { path: 'profile-management', component: ProfileManagementComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent },
-  { path: '**', redirectTo: '' }  // Redirect unknown routes to the landing page
+  { path: '**', redirectTo: '' }, // Redirect unknown routes to the landing page
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

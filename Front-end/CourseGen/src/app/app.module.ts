@@ -12,6 +12,7 @@ import { ViewContentComponent } from './Trainer/view-content/view-content.compon
 import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
 import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-password.component';
+import { ProfileManagementComponent } from './profile-management/profile-management.component';
 
 
 
@@ -25,7 +26,8 @@ import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-passwo
     ViewContentComponent,
     GenerateContentComponent,
     AdminLoginComponent,
-    ForgotPasswordComponent
+    ForgotPasswordComponent,
+    ProfileManagementComponent
     
   ],
   imports: [
