@@ -9,7 +9,7 @@
     <div class="left-panel">
       <h3>Sign In</h3>
 
-      <form (submit)="onLogin(); $event.preventDefault()">
+      <form (submit)="onLogin();">
         <div class="form-group">
           <label for="email">Email</label>
           <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="Enter your email" />
@@ -21,7 +21,7 @@
         </div>
 
         <button type="submit" class="btn-signin">Sign In</button>
-        <a href="#" class="forgot-password">Forgot password?</a>
+        <a routerLink="/forgot-password" class="forgot-password">Forgot password?</a>
       </form>
     </div>
 

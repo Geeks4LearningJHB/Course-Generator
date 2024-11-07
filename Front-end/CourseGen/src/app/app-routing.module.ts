@@ -9,11 +9,13 @@ import { ViewContentComponent } from './Trainer/view-content/view-content.compon
 import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
 import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
+import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-password.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },  // Default landing page
   { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent},
+  {path: 'forgot-password', component: ForgotPasswordComponent},
   { path: 'dashboard', component: DashboardComponent },
   { path: 'generate-content', component: GenerateContentComponent }, 
   { path: 'view-courses', component: ViewCoursesComponent }, 
