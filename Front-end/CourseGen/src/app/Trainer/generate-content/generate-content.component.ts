@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-generate-content',
@@ -9,10 +11,6 @@ export class GenerateContentComponent {
   courseTitle: string = '';
   difficulty: string = 'Beginner';
   duration: number | null = null;
-  isLoading = false;
-  isComplete = false;
-  countdown = 1; // Initial countdown in minutes
-  generatedData: string = ''; // Placeholder for backend data
 
   onGenerateCourse() {
     console.log('Course Title:', this.courseTitle);
@@ -20,6 +18,10 @@ export class GenerateContentComponent {
     console.log('Duration:', this.duration);
     alert(`Course "${this.courseTitle}" generated successfully!`);
   }
+  isLoading = false;
+  isComplete = false;
+  countdown = 30; // Initial countdown in minutes
+  generatedData: string = ''; // Placeholder for backend data
 
   startGeneration() {
     this.isLoading = true;

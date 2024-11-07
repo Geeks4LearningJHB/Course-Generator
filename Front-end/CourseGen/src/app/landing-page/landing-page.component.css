@@ -20,14 +20,25 @@
     font-size: 48px;
     font-weight: bold;
     margin-bottom: 30px;
-    line-height: 1.2; /* Ensure good line spacing */
   }
   
   .buttons {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    animation: zoomOutButtons 1s ease-out forwards;
+    animation-delay: 0.4s;
   }
+  @keyframes zoomOutButtons {
+    0% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
   
   .btn {
     width: 150px;
@@ -42,15 +53,23 @@
   }
   
   .btn:hover {
-    background-color: #0f2e3d; /* Darker shade for hover */
+    background-color: #5a6268;
   }
   
+  .logo-container {
+    width: 50%;  /* Right side takes 50% */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;  /* Optional: background to match the circle */
+    height: 100vh;  /* Ensure it fills the entire page height */
+  }
   
   .logo {
-    width: 100%;  /* Takes 80% of the right side */
+    width: 80%;  /* Takes 80% of the right side */
     max-width: 600px;  /* Ensure it doesn’t stretch too large */
-    height: 100%;
+    height: auto;
+    border-radius: 1000px;  /* Circular image */
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);  /* Subtle shadow */
-    border-radius: 50%;
   }
   

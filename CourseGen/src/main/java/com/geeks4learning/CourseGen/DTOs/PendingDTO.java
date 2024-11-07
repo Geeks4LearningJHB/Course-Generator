@@ -1,15 +1,14 @@
 package com.geeks4learning.CourseGen.DTOs;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class AdminDTO {
+public class PendingDTO {
+private String Name;
+private String Surname;
 
-    private String Name;
-    private String Surname;
-    private String email;
-    private String password;
 }
