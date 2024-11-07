@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PendingDTO } from '../Admin/admin-dashboard/user-management/user-management.component';
+// import { PendingDTO } from '../Admin/admin-dashboard/user-management/user-management.component';
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +12,10 @@ export class UserManagementService {
 
   constructor(private http: HttpClient) {}
 
-  // Get pending trainers
-  getPendingTrainers(): Observable<PendingDTO[]> {
-    return this.http.get<PendingDTO[]>(`${this.apiUrl}/pending-trainers`);
-  }
+  // // Get pending trainers
+  // getPendingTrainers(): Observable<PendingDTO[]> {
+  //   return this.http.get<PendingDTO[]>(`${this.apiUrl}/pending-trainers`);
+  // }
 
   // Approve a trainer
   approveTrainer(id: number): Observable<any> {
