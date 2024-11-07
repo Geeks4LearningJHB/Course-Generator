@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class PendingDTO {
 private String Name;
 private String Surname;
+
 }

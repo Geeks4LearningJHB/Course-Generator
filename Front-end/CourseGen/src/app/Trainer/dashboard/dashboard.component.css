@@ -2,53 +2,51 @@
 .dashboard-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    height: 100vh;
     background-color: white;
   }
   
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-}
+  /* Header styles for logo and profile icon */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+  }
   
-.logo {
+  .logo {
     height: 50px;
-}
+  }
   
-.profile-icon {
+  .profile-icon {
     height: 40px;
     border-radius: 50%;
     cursor: pointer;
-}
+  }
   
-
-.title {
-    text-align: center;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  /* Title Styling */
+  .title {
+    margin: 20px 0;
     font-size: 32px;
     font-weight: bold;
-    background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+    color: black;
+  }
   
-/* .c-2 {
-  align-items: center;
-  display: flex;
-} */
+  /* Container for buttons */
   .button-container {
     background-color: #133B50;
     border-radius: 15px;
     padding: 40px;
     display: flex;
     justify-content: space-evenly;
-    margin: auto;
-    width: 80vw;
+    width: 80%;
+    max-width: 800px;
   }
   
+  /* Styling the buttons */
   .dashboard-button {
-    padding: 20px;
+    padding: 15px 30px;
     font-size: 18px;
     border: none;
     border-radius: 10px;
