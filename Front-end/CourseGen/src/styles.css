@@ -20,3 +20,13 @@
     animation: fadeIn 0.8s ease-in;
 }
 
+.dash-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+    width: 80vw;
+    border-radius: 15px;
+    background-color: #12324d;
+  }

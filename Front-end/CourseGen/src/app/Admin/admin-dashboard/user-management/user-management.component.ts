@@ -24,9 +24,9 @@ export class UserManagementComponent implements OnInit {
  
   // Fetch the pending trainers
   loadPendingTrainers(): void {
-    this.userManagementService.getPendingTrainers().subscribe((trainers) => {
-      this.pendingTrainers = trainers;
-    });
+    // this.userManagementService.getPendingTrainers().subscribe((trainers) => {
+    //   this.pendingTrainers = trainers;
+    // });
   }
  
   // Approve a trainer

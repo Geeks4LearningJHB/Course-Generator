@@ -10,4 +10,5 @@ public interface TrainerRepository extends JpaRepository<TrainerEntity,Long> {
 
     Optional<TrainerEntity> findByEmailAndPassword(String email,String Passsword);
     List<TrainerEntity> findByStatus(String status);
+    TrainerEntity findByEmail(String email);
 }

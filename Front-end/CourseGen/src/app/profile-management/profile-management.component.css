@@ -54,28 +54,19 @@
   margin-bottom: 20px;
 }
 
-/* Styling for the labels */
-.profile-section label {
-  display: block;
+label {
+  display: flex;
   margin-bottom: 5px;
   font-weight: bold;
+  color: #333;
 }
 
-/* Styling for the input fields */
-.profile-section input {
-  width: 100%;
+input{
+  width: 70%;
   padding: 10px;
-  margin-bottom: 15px;
+  margin-top: 5px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 16px;
-  
-  /* Adding a subtle shadow */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  
-  /* Transition effect for focus */
-  transition: box-shadow 0.3s ease;
 }
 
 /* Change shadow when input is focused */
@@ -83,10 +74,13 @@
   border-color: #007bff; /* Blue border on focus */
   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4); /* Increased shadow on focus */
 }
+button{
+  padding-top: 15px;
+}
 
 /* Button styling */
 .profile-section button {
-  width: 100%;
+  width: 70%;
   padding: 10px;
   background-color: #007bff;
   color: white;
