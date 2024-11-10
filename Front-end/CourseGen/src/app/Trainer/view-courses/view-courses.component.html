@@ -1,21 +1,17 @@
-<div class="courses-container">
-    <div class="header">
-      <img src="assets/company_logo_login.png" alt="Company Logo" class="logo" />
-      <img src="assets/WhatsApp Image 2024-10-18 at 08.48.52.jpeg" alt="Profile Icon" class="profile-icon" />
-    </div>
-  
-    <h1 class="title">COURSES</h1>
-  
-    <div class="course-list">
-      <div class="course-item" *ngFor="let course of courses">
-        <div class="course-details">
-          <h2>{{ course.title }}</h2>
-          <p>{{ course.description }}</p>
-        </div>
-        <button class="view-button" (click)="viewCourse(course.id)">
-          View
-        </button>
-      </div>
+<div class="dashboard-container">
+  <div class="header">
+    <img style="cursor: pointer" routerLink="/dashboard" src="assets/company_logo_login.png" alt="Logo" class="logo" />
+    <h1 class="dashboard-title">COURSE GENERATOR</h1>
+    <img src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
+  </div>
+
+  <div class="VC-container">
+  <div class="container-2">
+    <div *ngFor="let course of courses" class="course-card">
+      <h3>{{ course.title }}</h3>
+      <p>{{ course.description }}</p>
+      <button class="view-button" (click)="viewCourse(course.id)">View</button>
     </div>
   </div>
-  
+</div>
+</div>

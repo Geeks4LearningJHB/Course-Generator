@@ -49,6 +49,11 @@
   padding: 0;
 }
 
+form{
+display: flex;
+flex-direction: column;
+align-items : stretch ;
+}
 /* Each section styling */
 .profile-section {
   margin-bottom: 20px;
@@ -94,4 +99,8 @@ button{
 /* Change button color on hover */
 .profile-section button:hover {
   background-color: #0056b3;
+}
+
+.logoutbtn{
+  background-color: crimson;
 }

@@ -1,6 +1,6 @@
 <div class="admin-dashboard-container">
   <div class="dashboard-header">
-    <img routerLink="/admin-dashboard" src="assets/company_logo_login.png" alt="Logo" class="logo" />
+    <img routerLink="/admin-dashboard" style="cursor: pointer" src="assets/company_logo_login.png" alt="Logo" class="logo" />
     <h1 class="dashboard-title">COURSE GENERATOR</h1>
     <img routerLink="/profile-management" src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
   </div>
@@ -29,6 +29,7 @@
           required />
       </div>
 
+      <div class="gen-content">
       <!-- Generate Course Button -->
       <button type="submit" class="generate-btn" (click)="startGeneration()">
         <span>📋</span> Generate Course
@@ -59,6 +60,7 @@
           <!-- </div> -->
 
           <button class="save-btn" (click)="onSave()">Save</button>
-          <button class="preview-btn" (click)="onPreview()">Preview</button>
+          <button class="preview-btn" routerLink="/view-content">Preview</button>
+        </div>
         </div>
       </div>
