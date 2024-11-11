@@ -68,4 +68,7 @@
   .view-button:hover {
     background-color: #5a6268;
   }
-  
+  :host {
+    display: block;
+    animation: fadeIn 0.8s ease-in; 
+  }

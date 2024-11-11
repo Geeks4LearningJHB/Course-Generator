@@ -13,7 +13,7 @@ export class LandingPageComponent {
   navigateWithAnimation(route: string) {
     const landingPage = document.getElementById('landingPage');
 
-    landingPage?.classList.add('zoom-out');
+    landingPage?.classList.add('fade-out');
 
     setTimeout(() => {
       this.router.navigate([route]);
