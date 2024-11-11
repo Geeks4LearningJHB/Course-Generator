@@ -1,21 +1,42 @@
-.d1-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* Aligns items to start from the top */
-  width: 100%;
-  max-width: 1000px; /* Set maximum width */
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  min-height: 100vh; /* Full-page height */
-  text-align: center;
-  box-sizing: border-box;
-  }  
+/* General styling for the dashboard */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: white;
+  }
+  
+  /* Header styles for logo and profile icon */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .logo {
+    height: 50px;
+  }
+  
+  .profile-icon {
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  /* Title Styling */
+  .title {
+    margin: 20px 0;
+    font-size: 32px;
+    font-weight: bold;
+    color: black;
+  }
+  
 
-.button-container {
-    border-radius: 15px;
-    padding: 40px;
+  /* Container for buttons */
+  .button-container {
+    /* padding: 40px; */
     display: flex;
     justify-content: space-evenly;
     width: 80%;

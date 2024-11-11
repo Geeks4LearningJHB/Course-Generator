@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
@@ -113,5 +114,17 @@ public List<PendingDTO> getPendingTrainers() {
     public ResponseEntity<?> rejectTrainer(@PathVariable Long id) {
         trainerRepository.deleteById(id);
         return ResponseEntity.ok("Trainer rejected");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
+        TrainerEntity user = trainerRepository.findByEmail(email);
+        if (user != null) {
+            user.setPassword(newPassword);  // In a real-world scenario, hash the password
+            trainerRepository.save(user);
+            return ResponseEntity.ok("Password reset successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("User with the provided email does not exist.");
+        }
     }
 }

@@ -56,7 +56,7 @@ export class GenerateContentComponent {
     alert('Course content saved successfully!');
   }
 
-  onPreview() {
-    alert('Preview of the course content');
-  }
+  // onPreview() {
+  //   alert('Preview of the course content');
+  // }
 }

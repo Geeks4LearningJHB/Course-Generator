@@ -1,0 +1,41 @@
+<div class="admin-dashboard-container">
+  <div class="dashboard-header">
+    <img routerLink="/dashboard" src="assets/company_logo_login.png" alt="Logo" class="logo" />
+  <h1 class="dashboard-title">Profile Management</h1>
+  <img src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
+  </div>
+
+  <div class="dash-container">
+    <!-- Profile Header -->
+    
+    <!-- Profile Sections List -->
+    <ul class="profile-sections">
+      <!-- Personal Details Section -->
+      <li class="profile-section">
+        <form class="form-box">
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Enter your name">
+          
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email">
+          
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="Enter your phone number">
+          
+          
+          <label for="current-password">Current Password</label>
+          <input type="password" id="current-password" placeholder="Enter current password">
+          
+          <label for="new-password">New Password</label>
+          <input type="password" id="new-password" placeholder="Enter new password">
+          
+          <label for="confirm-password">Confirm New Password</label>
+          <input type="password" id="confirm-password" placeholder="Confirm new password">
+          
+          <button type="submit">Update Profile</button>
+          <button style="background-color: crimson" routerLink="/landing-page" type="submit">Log Out</button>
+        </form>
+      </li>
+    </ul>
+  </div>
+
