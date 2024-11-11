@@ -10,12 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class TrainerDTO {
 
- 
     private String Name;
     private String Surname;
     private String email;
     private String password;
 
-
-   
 }
