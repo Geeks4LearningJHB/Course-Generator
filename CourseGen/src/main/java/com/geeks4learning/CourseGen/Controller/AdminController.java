@@ -28,7 +28,7 @@ import com.geeks4learning.CourseGen.Repositories.AdminRepository;
 import com.geeks4learning.CourseGen.Repositories.TrainerRepository;
 
 @RestController
-@RequestMapping("/Trainer")
+@RequestMapping("/Admin")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AdminController {
 
@@ -86,17 +86,20 @@ public class AdminController {
         }
     }
 
-   @GetMapping("/pending-trainers")
+   // Backend Controller - Example
+@GetMapping("/pending-trainers")
 public List<PendingDTO> getPendingTrainers() {
     List<TrainerEntity> trainers = trainerRepository.findByStatus("pending");
     return trainers.stream()
-                   .map(trainer -> new PendingDTO(trainer.getName(), trainer.getSurname()))
+                   .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname()))
                    .collect(Collectors.toList());
 }
 
-    @PostMapping("/approve-trainer/{id}")
-    public ResponseEntity<?> approveTrainer(@PathVariable Long id) {
-        Optional<TrainerEntity> trainer = trainerRepository.findById(id);
+    
+
+    @PostMapping("/approve-trainer/{UserId}")
+    public ResponseEntity<?> approveTrainer(@PathVariable Long UserId) {
+        Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
         if (trainer.isPresent()) {
             TrainerEntity t = trainer.get();
             t.setStatus("active");
