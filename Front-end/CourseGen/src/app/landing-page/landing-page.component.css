@@ -19,8 +19,8 @@
   .content h1 {
     font-size: 48px;
     font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     margin-bottom: 30px;
-<<<<<<< HEAD
     line-height: 1.2;
     /* background: linear-gradient(to right, #f32170, #ff6b08,#cf23cf, #eedd44); */
     background: linear-gradient(to bottom, #ffffff, rgba(124, 124, 124, 0.733));
@@ -28,9 +28,6 @@
     -webkit-background-clip: text;
     animation: zoomOutText 1s ease-out alternate;
     animation-delay: 0.2s;
-=======
-    line-height: 1.2; /* Ensure good line spacing */
->>>>>>> origin/LemoBranch
   }
   @keyframes zoomOutText {
     0% {
