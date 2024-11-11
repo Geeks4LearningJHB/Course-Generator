@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class PendingDTO {
-private String Name;
-private String Surname;
+
+    private long userId;
+    private String Name;
+    private String Surname;
 
 }
