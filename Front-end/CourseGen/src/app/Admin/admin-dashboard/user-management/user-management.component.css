@@ -25,19 +25,7 @@
     -webkit-text-fill-color: transparent;
 }
 
-.container-2 {
-    gap: 20px;
-    padding: 25px;
-    background-color: #133B50;
-    /* border-radius: 15px; */
-    /* padding: 40px; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: left;
-    /* width: auto; */
-    overflow-x: hidden;
-  }
+
   
 .u-card {
     background-color: white;

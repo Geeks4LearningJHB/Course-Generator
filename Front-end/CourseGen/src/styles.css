@@ -28,6 +28,17 @@
     100% { opacity: 0; }
   }
 
+  .container-2 {
+    gap: 20px;
+    padding: 25px;
+    background-color: #133B50;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    overflow-x: hidden;
+  }
+
 .d2-container{
      display: flex;
     flex-direction: column;
