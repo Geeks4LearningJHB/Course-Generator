@@ -1,11 +1,7 @@
 /* Header styling */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 /* Logo styling */
@@ -27,7 +23,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 80px); /* Adjust height to account for the header */
+  /* height: calc(100vh - 80px); Adjust height to account for the header */
   background-color: #f5f5f5;
 }
 
@@ -43,7 +39,7 @@
 /* Left Panel */
 .left-panel {
   flex: 1;
-  background-color: #133B50;
+  background-color: #12324d;
   color: white;
   display: flex;
   flex-direction: column;
@@ -102,4 +98,8 @@ input {
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+
+.error-message{
+  color: #df0b0b;
 }
