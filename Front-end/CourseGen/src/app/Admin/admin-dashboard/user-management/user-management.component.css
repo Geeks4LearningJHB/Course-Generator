@@ -1,39 +1,20 @@
-.header {
+.header-1 {
     display: flex;
     justify-content: space-between;
-    /* width: 100%; */
     padding: 20px;
 }
   
-.logo {
+.logo-1 {
     height: 50px;
 }
   
-.profile-icon {
+.profile-icon1 {
     height: 40px;
     border-radius: 50%;
     cursor: pointer;
 }
-
-/* .image-container {
-    width: 200px; 
-    height: 200px; 
-    overflow: hidden; 
-    position: relative; 
-} */
   
-/* .image-container profile-icon {
-    position: absolute;
-    top: 50%; 
-    left: 50%; 
-    width: auto; 
-    height: auto; 
-    min-width: 100%; 
-    min-height: 100%; 
-    transform: translate(-50%, -50%); 
-  } */
-  
-.title {
+.title-1 {
     margin-top: 0px;
     text-align: center;
     font-family: Arial, sans-serif;
@@ -44,19 +25,7 @@
     -webkit-text-fill-color: transparent;
 }
 
-.container-2 {
-    gap: 20px;
-    padding: 25px;
-    background-color: #133B50;
-    /* border-radius: 15px; */
-    /* padding: 40px; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: left;
-    /* width: auto; */
-    overflow-x: hidden;
-  }
+
   
 .u-card {
     background-color: white;
@@ -100,4 +69,8 @@
     transform: scale(110%);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+  }
+  :host {
+    display: block;
+    animation: fadeIn 0.8s ease-in; 
   }

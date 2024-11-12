@@ -106,8 +106,7 @@
   .generate-btn:hover {
     background-color: #5a6268;
   }
-/* 
-  .gen-content{
-    max-height: 450px
+  :host {
+    display: block;
+    animation: fadeIn 0.8s ease-in; 
   }
-   */

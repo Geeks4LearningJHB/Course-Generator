@@ -25,6 +25,10 @@
   padding: 20px;
   
 }
+:host {
+  display: block;
+  animation: fadeIn 0.8s ease-in; 
+}
 
 .logo {
   height: 50px;

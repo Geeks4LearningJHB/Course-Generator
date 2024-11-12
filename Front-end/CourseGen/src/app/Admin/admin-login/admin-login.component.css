@@ -93,8 +93,7 @@
   .login-container {
     margin-right: 50px; /* Push the login container slightly to the right */
   }
-  
-  /* .img{
-    height: 100%;
-    width: 100%;
-  } */
+  :host {
+    display: block;
+    animation: fadeIn 0.8s ease-in; 
+  }

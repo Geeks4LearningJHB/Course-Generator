@@ -1,42 +1,50 @@
 <div class="admin-login-page">
-  
-  
-  
-      <div class="login-container">
-        <h3>Admin Login</h3>
-        <form (submit)="onLogin(); $event.preventDefault()">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input 
-              type="email" 
-              id="email" 
-              [(ngModel)]="email" 
-              name="email" 
-              placeholder="Enter your email" 
-              required 
-            />
-          </div>
-  
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              [(ngModel)]="password" 
-              name="password" 
-              placeholder="Enter your password" 
-              required 
-            />
-          </div>
-  
-          <button routerLink="/admin-dashboard" class="btn-signin">Sign In</button>
-          <a href="#" class="forgot-password">Forgot password?</a>
-        </form>
+  <div class="login-container">
+    <h3>Admin Login</h3>
+    <form (submit)="onLogin(); $event.preventDefault()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          [(ngModel)]="email" 
+          name="email" 
+          placeholder="Enter your email" 
+          required 
+          #emailInput="ngModel"
+        />
       </div>
 
-      <div class="logo-container">
-        <img src="assets/266029052_440814094377424_7370804340925552208_n.png" alt="Geeks4Learning Logo" class="logo" />
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          [(ngModel)]="password" 
+          name="password" 
+          placeholder="Enter your password" 
+          required 
+          #passwordInput="ngModel"
+        />
       </div>
+
+      <!-- Display general error message -->
+      <div *ngIf="loginError" class="alert">
+        {{ loginError }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn-signin"
+      >
+        Sign In
+      </button>
       
-    </div>
-  
+      <a href="#" class="forgot-password">Forgot password?</a>
+    </form>
+  </div>
+
+  <div class="logo-container">
+    <img src="assets/266029052_440814094377424_7370804340925552208_n.png" alt="Geeks4Learning Logo" class="logo" />
+  </div>
+</div>
