@@ -20,5 +20,15 @@ export class LoginService {
       })
     );
   }
+
+  resetPassword(email: string, newPassword: string): Observable<any> {
+    return this.http.post(
+      `http://localhost:8080/Admin/reset-password?email=${email}&newPassword=${newPassword}`,
+      {},
+      { responseType: 'text' }  // Specify response type as text
+    ).pipe(
+      
+    );
+  }
   
 }

@@ -57,7 +57,7 @@
     margin-top: 20px;
     margin-right: 10px;
     padding: 15px;
-    background-color: #6c757d;
+    background-color: #870a64;
     color: white;
     border: none;
     border-radius: 5px;
@@ -67,7 +67,7 @@
   }
   
   .re-generate-button:hover, .download-button:hover {
-    background-color: #5a6268;
+    background-color: #52073d;
   }
   
   .modify-container {
