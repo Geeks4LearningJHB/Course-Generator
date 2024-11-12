@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginService } from '../../Services/adminLogin.service';
+import { Router } from 'express';
 
 @Component({
   selector: 'app-forgot-password',
@@ -10,7 +11,7 @@ import { LoginService } from '../../Services/adminLogin.service';
 export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private loginService: LoginService) {
+  constructor(private fb: FormBuilder, private loginService: LoginService, private router: Router) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -35,5 +36,7 @@ export class ForgotPasswordComponent {
       next: () => alert('Password reset successful! Please log in with your new password.'),
       error: (error) => alert('Error resetting password: ' + (error.error.message || 'Please try again later.'))
     });
+
+    
   }
 }

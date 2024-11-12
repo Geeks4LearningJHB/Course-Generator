@@ -23,15 +23,12 @@ export class LoginService {
   }
 
   resetPassword(email: string, newPassword: string): Observable<any> {
-    const params = new HttpParams()
-      .set('email', email)
-      .set('newPassword', newPassword);
-
-    return this.http.post(this.resetPasswordUrl, {}, { params }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Reset password error:', error); // Log the error for debugging
-        return throwError('Something went wrong; please try again later.');
-      })
+    return this.http.post(
+      `http://localhost:8080/Admin/reset-password?email=${email}&newPassword=${newPassword}`,
+      {},
+      { responseType: 'text' }  // Specify response type as text
+    ).pipe(
+      
     );
   }
 }
