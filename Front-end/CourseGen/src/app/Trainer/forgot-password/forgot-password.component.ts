@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.css'
+  styleUrls: ['./forgot-password.component.css']  // Changed to `styleUrls`
 })
 export class ForgotPasswordComponent {
 
@@ -14,9 +14,9 @@ export class ForgotPasswordComponent {
 
   constructor(private fb: FormBuilder, private loginservice:LoginService, private router: Router){
     this.forgotPasswordForm = this.fb.group({
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      newPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required]
     });
   }
 
