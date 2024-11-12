@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-
+import { FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-generate-content',
   templateUrl: './generate-content.component.html',
