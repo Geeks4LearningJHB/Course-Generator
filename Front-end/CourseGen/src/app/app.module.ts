@@ -8,9 +8,10 @@ import { RegisterComponent } from './Trainer/register/register.component';
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
-
-
-
+import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
+import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
+import { ViewContentComponent } from './Trainer/view-content/view-content.component';
+import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,7 +19,11 @@ import { GenerateContentComponent } from './Trainer/generate-content/generate-co
     RegisterComponent,
     DashboardComponent,
     LandingPageComponent,
-    GenerateContentComponent 
+    GenerateContentComponent,
+    AdminLoginComponent, 
+    AdminDashboardComponent,
+    ViewContentComponent,
+    ViewCoursesComponent
     
   ],
   imports: [
