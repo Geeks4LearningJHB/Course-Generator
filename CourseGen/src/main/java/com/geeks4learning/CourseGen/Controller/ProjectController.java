@@ -1,10 +1,5 @@
 package com.geeks4learning.CourseGen.Controller;
 
-<<<<<<< HEAD
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-=======
 import com.geeks4learning.CourseGen.Services.AdminService;
 import com.geeks4learning.CourseGen.Services.TrainerService;
 
@@ -14,30 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
->>>>>>> origin/LemoBranch
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
-import com.geeks4learning.CourseGen.Model.Message;
-import com.geeks4learning.CourseGen.Services.AdminService;
-import com.geeks4learning.CourseGen.Services.TrainerService;
-
-=======
-import com.geeks4learning.CourseGen.DTOs.AdminLogin;
-=======
-import com.geeks4learning.CourseGen.DTOs.AdminDTO;
->>>>>>> 0531e53ad192613b9263ac22c14438d54af2a07f
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
 import com.geeks4learning.CourseGen.Entities.AdminEntity;
 import com.geeks4learning.CourseGen.Model.Message;
 import com.geeks4learning.CourseGen.Repositories.AdminRepository;
->>>>>>> origin/LemoBranch
 
 @RestController
 @RequestMapping("/Admin")
@@ -46,14 +27,7 @@ public class ProjectController {
 
     @Autowired
     private AdminService adminService;
-    private TrainerService trainerService;
 
-<<<<<<< HEAD
-    @PostMapping("/createAdmin")
-    public Message createTrainer(@RequestBody AdminDTO adminDTO) {
-
-        return adminService.createAdmin(adminDTO);
-=======
     @Autowired
     private AdminRepository adminRepository;
 
@@ -100,20 +74,5 @@ public class ProjectController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.getMessage());
         }
->>>>>>> origin/LemoBranch
     }
-
-    @PutMapping("/{id}/accept")
-    public ResponseEntity<String> acceptTrainer(@PathVariable Long id) {
-        trainerService.acceptTrainer(id);
-        return ResponseEntity.ok("Trainer accepted successfully");
-    }
-
-    @PutMapping("/{id}/reject")
-    public ResponseEntity<String> rejectTrainer(@PathVariable Long id) {
-        trainerService.rejectTrainer(id);
-        return ResponseEntity.ok("Trainer rejected successfully");
-    }
-   
-    
 }

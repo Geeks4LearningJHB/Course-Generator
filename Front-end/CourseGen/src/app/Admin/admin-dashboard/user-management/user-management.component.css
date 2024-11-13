@@ -1,0 +1,76 @@
+.header-1 {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+  
+.logo-1 {
+    height: 50px;
+}
+  
+.profile-icon1 {
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+  
+.title-1 {
+    margin-top: 0px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+  
+.u-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: left;
+}
+  
+.u-card h3 {
+    font-family: Arial, Helvetica, sans-serif;
+    left:0;
+    margin-top: 0px;
+    margin-bottom: 15px;
+    color:black;
+  }
+
+.accept-btn {
+    background-color:rgb(0, 231, 77) ;
+    border: none;
+    float: left;
+    border-radius: 16%;
+    margin-right: 10px;
+}
+
+.accept-btn:hover {
+    transform: scale(110%);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+.reject-btn {
+    background-color: red;
+    border: none;
+    float: left;
+    border-radius: 16%;
+}
+
+.reject-btn:hover {
+    transform: scale(110%);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+  :host {
+    display: block;
+    animation: fadeIn 0.8s ease-in; 
+  }

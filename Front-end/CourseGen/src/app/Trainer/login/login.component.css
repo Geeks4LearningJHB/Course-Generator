@@ -1,11 +1,7 @@
 /* Header styling */
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 /* Logo styling */
@@ -100,4 +96,8 @@ input {
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+:host {
+  display: block;
+  animation: fadeIn 0.8s ease-in; 
 }

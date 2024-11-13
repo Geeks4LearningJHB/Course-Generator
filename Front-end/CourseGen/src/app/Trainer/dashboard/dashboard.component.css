@@ -33,11 +33,10 @@
     color: black;
   }
   
+
   /* Container for buttons */
   .button-container {
-    background-color: #133B50;
-    border-radius: 15px;
-    padding: 40px;
+    /* padding: 40px; */
     display: flex;
     justify-content: space-evenly;
     width: 80%;
@@ -65,4 +64,7 @@
   .icon {
     font-size: 24px;
   }
-  
+  :host {
+    display: block;
+    animation: fadeIn 0.8s ease-in; 
+  }

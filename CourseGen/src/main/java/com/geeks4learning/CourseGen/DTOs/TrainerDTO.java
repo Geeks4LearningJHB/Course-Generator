@@ -1,16 +1,16 @@
 package com.geeks4learning.CourseGen.DTOs;
 
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class TrainerDTO {
 
-    private String Email;
+    private String Name;
+    private String Surname;
+    private String email;
+    private String password;
 
-    private String Password;
-
-    public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
-    }
 }

@@ -1,0 +1,17 @@
+<div class="user-review">
+  <div class="dashboard-container">
+    <div class="header-1">
+      <img src="assets/company_logo_login.png" alt="Logo" class="logo-1" />
+      <h1 class="title-1">USER REGISTRATION</h1>
+      <img src="assets/userIcon.png" alt="Profile Icon" class="profile-icon1" />
+    </div>
+  </div>
+  
+  <div class="container-2">
+    <div *ngFor="let trainer of pendingTrainers" class="u-card">
+      <h3>{{ trainer.name }} {{ trainer.surname }}</h3>
+      <button class="accept-btn" (click)="approveTrainer(trainer.userId)">Accept</button>
+      <button class="reject-btn" (click)="rejectTrainer(trainer.userId)">Reject</button>
+    </div>   
+  </div>
+</div>
