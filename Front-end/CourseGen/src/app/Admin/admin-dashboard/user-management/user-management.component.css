@@ -29,26 +29,34 @@
   
 .u-card {
     background-color: white;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
     text-align: left;
+    display: inline;
 }
   
 .u-card h3 {
     font-family: Arial, Helvetica, sans-serif;
     left:0;
     margin-top: 0px;
-    margin-bottom: 15px;
+    margin-bottom: 0px;
     color:black;
   }
+
+.u-card h5 {
+    margin: 0%;
+    text-decoration: underline;
+}
 
 .accept-btn {
     background-color:rgb(0, 231, 77) ;
     border: none;
+    font-weight: bold;
     float: left;
-    border-radius: 16%;
+    border-radius: 5px;
+    margin-top: 10px;
     margin-right: 10px;
 }
 
@@ -61,8 +69,10 @@
 .reject-btn {
     background-color: red;
     border: none;
+    font-weight: bold;
     float: left;
-    border-radius: 16%;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
 .reject-btn:hover {

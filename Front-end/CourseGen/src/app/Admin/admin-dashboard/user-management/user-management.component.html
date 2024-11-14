@@ -10,6 +10,7 @@
   <div class="container-2">
     <div *ngFor="let trainer of pendingTrainers" class="u-card">
       <h3>{{ trainer.name }} {{ trainer.surname }}</h3>
+      <h5>{{ trainer.email }}</h5>
       <button class="accept-btn" (click)="approveTrainer(trainer.userId)">Accept</button>
       <button class="reject-btn" (click)="rejectTrainer(trainer.userId)">Reject</button>
     </div>   
