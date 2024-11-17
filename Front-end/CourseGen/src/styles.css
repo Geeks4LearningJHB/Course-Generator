@@ -108,3 +108,140 @@
     border-radius: 5px;
     border: 1px solid #ccc;
   }
+
+   /* sidebar.component.css */
+   .sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #ffffff;
+    position: fixed;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    transition: width 0.3s ease;
+    box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    margin-top: 30px;
+  }
+  
+  .sidebar.collapsed {
+    width: 70px;
+  }
+  
+  /* Sidebar List */
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar ul li {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 25px;
+  }
+  
+  .sidebar ul li:hover {
+    background-color: #133B50;
+    opacity: 0.85;
+  }
+  
+  .sidebar ul li .icon {
+    font-size: 20px;
+    color: #333;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+  }
+  
+  .sidebar ul li:hover .icon {
+    color: white;
+  }
+  
+  .sidebar ul li span {
+    font-size: 16px;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  
+  .sidebar ul li:hover span {
+    color: white;
+  }
+  
+  .sidebar.collapsed ul li span {
+    display: none;
+  }
+  
+  .divider {
+    border: 0;
+    height: 1px;
+    background-color: #555;
+    margin: 10px 0;
+  }
+  
+  .toggle-btn {
+    background-color: #145570;
+    border: none;
+    color: white;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .toggle-btn:hover {
+    background-color: #11627d;
+  }
+  
+
+/* top-nav.component.css */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 10px 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  width: 200px;
+  margin-left: 15px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-btn:hover {
+  opacity: 0.7;
+}

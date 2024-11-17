@@ -1,27 +1,4 @@
-/* Main container */
-.admin-dashboard-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Aligns items to start from the top */
-    width: 100%;
-    max-width: 1000px; /* Set maximum width */
-    margin: 0 auto; /* Center horizontally */
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    min-height: 100vh; /* Full-page height */
-    text-align: center;
-    box-sizing: border-box;
-  }
-  
-  /* Header styling - logo aligned left, profile icon aligned right */
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px 0;
-  }
+
   
   .logo {
     height: 60px;
@@ -79,3 +56,4 @@
     margin-right: 8px;
   }
   
+ 

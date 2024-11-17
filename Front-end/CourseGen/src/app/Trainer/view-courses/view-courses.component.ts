@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
   styleUrl: './view-courses.component.css'
 })
 export class ViewCoursesComponent {
+
+  isCollapsed = false;
+  
   courses = [
     {
       id: 1,
@@ -31,5 +34,9 @@ export class ViewCoursesComponent {
   viewCourse(courseId: number) {
     // Navigate to view-content and pass the courseId via query parameters
     this.router.navigate(['/view-content'], { queryParams: { id: courseId } });
+  }
+
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
   }
 }
