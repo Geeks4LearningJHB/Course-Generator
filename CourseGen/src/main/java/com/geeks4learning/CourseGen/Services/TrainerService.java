@@ -39,7 +39,7 @@ public class TrainerService {
         try {
             TrainerEntity Trainer = new TrainerEntity();
             Trainer.setName(trainerDTO.getName());
-            Trainer.setSurname(trainerDTO.getName());
+            Trainer.setSurname(trainerDTO.getSurname());
             Trainer.setEmail(trainerDTO.getEmail());
             Trainer.setPassword(trainerDTO.getPassword());
 
