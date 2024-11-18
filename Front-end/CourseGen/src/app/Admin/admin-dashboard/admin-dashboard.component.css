@@ -1,30 +1,4 @@
-<<<<<<< HEAD
 
-=======
-.admin-dashboard-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Aligns items to start from the top */
-    width: 100%;
-    max-width: 1000px; /* Set maximum width */
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    min-height: 100vh; /* Full-page height */
-    text-align: center;
-    box-sizing: border-box;
-  }
-  
-  /* Header styling - logo aligned left, profile icon aligned right */
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px 0;
-  }
->>>>>>> PresentationBranch
   
   .logo {
     height: 60px;
@@ -50,11 +24,12 @@
     display: flex;
     flex-wrap: wrap; /* Allows buttons to wrap in case of smaller screens */
     gap: 20px;
-    background-color: #12324d;
+    /* background-color: #1a3b5d; */
     padding: 30px;
     border-radius: 15px;
     width: 80%; /* Control width of button section */
     justify-content: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   }
   
   /* Button styling */
@@ -80,14 +55,5 @@
   .icon {
     margin-right: 8px;
   }
-<<<<<<< HEAD
   
  
-=======
-
-  :host {
-    display: block;
-    animation: fadeIn 0.8s ease-in; 
-  }
-  
->>>>>>> PresentationBranch

@@ -40,6 +40,7 @@ import { UserManagementComponent } from './Admin/admin-dashboard/user-management
 
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,

@@ -1,4 +1,4 @@
-
+// trainer.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -19,10 +19,10 @@ export class UserManagementService {
 
   
 approveTrainer(userId: number): Observable<any> {
-  return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {}, { responseType: 'text' });
+  return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {});
 }
 
 rejectTrainer(userId: number): Observable<any> {
-  return this.http.post(`${this.apiUrl}/reject-trainer/${userId}`, {}, { responseType: 'text' });
+  return this.http.post(`${this.apiUrl}/reject-trainer/${userId}`, {});
 }
 }

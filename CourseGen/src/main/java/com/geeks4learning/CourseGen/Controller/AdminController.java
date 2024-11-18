@@ -92,7 +92,7 @@ public class AdminController {
 public List<PendingDTO> getPendingTrainers() {
     List<TrainerEntity> trainers = trainerRepository.findByStatus("pending");
     return trainers.stream()
-                   .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname(), trainer.getEmail()))
+                   .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname()))
                    .collect(Collectors.toList());
 }
 
@@ -118,10 +118,10 @@ public List<PendingDTO> getPendingTrainers() {
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
-        AdminEntity user = adminRepository.findByEmail(email);
+        TrainerEntity user = trainerRepository.findByEmail(email);
         if (user != null) {
             user.setPassword(newPassword);  // In a real-world scenario, hash the password
-            adminRepository.save(user);
+            trainerRepository.save(user);
             return ResponseEntity.ok("Password reset successfully.");
         } else {
             return ResponseEntity.badRequest().body("User with the provided email does not exist.");
