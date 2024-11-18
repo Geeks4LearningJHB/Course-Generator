@@ -1,21 +1,27 @@
 .admin-login-page {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(to right, #12324d 75%, #12324d 75%);
+    padding: 0;
+    background: linear-gradient(to right, #12324d 75%, #ffffff 75%);
   }
   
   
   .logo {
-    width: 300px;
-    height: 300px;
+    width: 100%;
+    float: right;
+    max-width: 600px;  
+    height: 100%;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);  /* Subtle shadow */
     border-radius: 50%;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    animation: zoomOutLogo 1.5s ease-out forwards;
+    animation-delay: 0.5s;
   }
 
   
   .login-container {
+    margin-left: 50vh;
     width: 80%;
     max-width: 400px;
     text-align: center;
@@ -88,3 +94,7 @@
     margin-right: 50px; /* Push the login container slightly to the right */
   }
   
+  /* .img{
+    height: 100%;
+    width: 100%;
+  } */

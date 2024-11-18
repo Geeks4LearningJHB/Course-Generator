@@ -1,18 +1,48 @@
 <div class="admin-dashboard-container">
-    <div class="dashboard-header">
-      <img src="assets/company_logo_login.png" alt="Logo" class="logo" />
-      <img src="assets/profile_icon.png" alt="Profile Icon" class="profile-icon" />
+  <div class="sidebar" [class.collapsed]="isCollapsed">
+    <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+    <ul>
+        <li>
+            <i class="icon fa fa-home"></i>
+            <span *ngIf="!isCollapsed">Dashboard</span>
+        </li>
+        <li>
+            <i class="icon fas fa-book"></i>
+            <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+        </li>
+        <li>
+            <i class="icon fas fa-users"></i>
+            <span *ngIf="!isCollapsed">User Acceptance</span>
+        </li>
+        <hr class="divider" />
+        <li>
+            <i class="icon fas fa-sign-out-alt"></i>
+            <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+        </li>
+    </ul>
+</div>
+  
+  
+  
+  <div class="top-nav">
+    <div class="logo">
+      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
     </div>
+    <div class="nav-right">
+      <button class="profile-btn">
+        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
+      </button>
+    </div>
+  </div>
   
-    <h1 class="dashboard-title">COURSE GENERATOR</h1>
-  
+  <div class="dash-container">
     <div class="dashboard-button-container">
       <!-- Buttons with links to respective components -->
       <button class="dashboard-button" routerLink="/generate-content">
         <span class="icon">✏️</span> Generate Course
       </button>
   
-      <button class="dashboard-button" routerLink="/view-content">
+      <button class="dashboard-button" routerLink="/view-courses">
         <span class="icon">📄</span> View Content
       </button>
   
@@ -20,9 +50,10 @@
         <span class="icon">📊</span> View History
       </button>
   
-      <button class="dashboard-button" routerLink="/accept-trainers">
+      <button class="dashboard-button" routerLink="/user-management">
         <span class="icon">✔️</span> Accept Trainers
       </button>
+    </div>
     </div>
   </div>
   

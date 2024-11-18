@@ -9,19 +9,44 @@
     <div class="left-panel">
       <h3>Sign In</h3>
 
-      <form (submit)="onLogin(); $event.preventDefault()">
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="Enter your email" />
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+            #emailInput="ngModel"
+          />
+          <!-- Optional error message for empty email field -->
+          <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
+            Email is required.
+          </div>
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="Enter your password" />
+          <input
+            type="password"
+            id="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            #passwordInput="ngModel"
+          />
+          <!-- Optional error message for empty password field -->
+          <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error-message">
+            Password is required.
+          </div>
         </div>
 
-        <button type="submit" class="btn-signin">Sign In</button>
-        <a href="#" class="forgot-password">Forgot password?</a>
+        <!-- Disable button unless form is valid -->
+        <button type="submit" class="btn-signin" [disabled]="!loginForm.valid">Sign In</button>
+        <a routerLink="/forgot-password" class="forgot-password">Forgot password?</a>
       </form>
     </div>
 
@@ -33,5 +58,11 @@
   </div>
 </div>
 
+<div clas="Container-1">
+
+</div>
+
+
 
 <!-- <button routerLink="/dashboard">Go to Dashboard (Test)</button> -->
+ 

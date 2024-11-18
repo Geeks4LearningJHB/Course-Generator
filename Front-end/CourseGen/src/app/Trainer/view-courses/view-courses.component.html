@@ -1,21 +1,45 @@
-<div class="courses-container">
-    <div class="header">
-      <img src="assets/company_logo_login.png" alt="Company Logo" class="logo" />
-      <img src="assets/WhatsApp Image 2024-10-18 at 08.48.52.jpeg" alt="Profile Icon" class="profile-icon" />
+<div class="dashboard-container">
+  <div class="sidebar" [class.collapsed]="isCollapsed">
+    <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+    <ul>
+        <li>
+            <i class="icon fa fa-home"></i>
+            <span *ngIf="!isCollapsed">Dashboard</span>
+        </li>
+        <li>
+            <i class="icon fas fa-book"></i>
+            <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+        </li>
+        <li>
+            <i class="icon fas fa-users"></i>
+            <span *ngIf="!isCollapsed">User Acceptance</span>
+        </li>
+        <hr class="divider" />
+        <li>
+            <i class="icon fas fa-sign-out-alt"></i>
+            <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+        </li>
+    </ul>
+</div>
+  
+  <div class="top-nav">
+    <div class="logo">
+      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
     </div>
-  
-    <h1 class="title">COURSES</h1>
-  
-    <div class="course-list">
-      <div class="course-item" *ngFor="let course of courses">
-        <div class="course-details">
-          <h2>{{ course.title }}</h2>
-          <p>{{ course.description }}</p>
-        </div>
-        <button class="view-button" (click)="viewCourse(course.id)">
-          View
-        </button>
-      </div>
+    <div class="nav-right">
+      <button class="profile-btn">
+        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
+      </button>
     </div>
   </div>
-  
+
+  <div class="VC-container">
+  <div class="container-2">
+    <div *ngFor="let course of courses" class="course-card">
+      <h3>{{ course.title }}</h3>
+      <p>{{ course.description }}</p>
+      <button class="view-button" (click)="viewCourse(course.id)">View</button>
+    </div>
+  </div>
+</div>
+</div>

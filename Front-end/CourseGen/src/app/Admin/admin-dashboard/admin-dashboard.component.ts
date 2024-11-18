@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { faHome, faUser, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -7,4 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AdminDashboardComponent {
 
+  faHome = faHome;
+  isCollapsed = false;
+
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
 }
