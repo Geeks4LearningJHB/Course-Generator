@@ -90,7 +90,7 @@ select {
 .generate-btn, .save-btn, .preview-btn {
   width: 100%;
   padding: 12px;
-  background-color: #870a64;
+  background-color: #7f7f7f7e;
   color: white;
   border: none;
   border-radius: 5px;
@@ -104,11 +104,11 @@ select {
 }
 
 .generate-btn:hover, .save-btn:hover, .preview-btn:hover {
-  background-color: #52073d;
+  background-color: #7f7f7f7e;
 }
 
 .save-btn, .preview-btn{
-  background-color: #870a64;
+  background-color: #7f7f7f7e;
 }
 /* 
 .gen-content{
