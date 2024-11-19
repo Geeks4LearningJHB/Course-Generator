@@ -30,7 +30,7 @@
     align-items: center;
     justify-content: center;
     margin-top: 100px;
-    height: 80vh;
+    /* height: 80vh; */
     width: 80vw;
     border-radius: 15px;
     background-color: #e4e9ef;
@@ -42,14 +42,14 @@
     align-items: center;
     justify-content: flex-start; /* Aligns items to start from the top */
     width: 100%;
-    max-width: 1000px; /* Set maximum width */
-    margin: 0 auto; /* Center horizontally */
-    padding: 20px;
+    max-width: 2000px; /* Set maximum width */
+    /* margin: 0 auto; Center horizontally */
+    /* padding: 20px; */
     font-family: Arial, sans-serif;
     min-height: 100vh; /* Full-page height */
     text-align: center;
     box-sizing: border-box;
-    background-color: #e4e9ef;
+    /* background-color: #e4e9ef; */
   }
   
 
