@@ -1,38 +1,26 @@
 package com.geeks4learning.CourseGen.Entities;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Data
-@Entity
-@Table(name = "Activity")
+@Document(collection = "activities") // Consistent naming (lowercase, plural)
 public class Activity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "activity_id")
-    private Long activityId;
+    private String activityId; // MongoDB ObjectId as String
 
-    @Column(name = "activity_name", columnDefinition = "TEXT")
     private String activityName;
 
-    @Column(name = "duration")
     private int duration;
 
-    @Column(name = "instructions", columnDefinition = "TEXT")
     private String instructions;
 
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
-    private Unit unit;
-
-    public Activity(String activityName, Unit unit) {
-        this.activityName = activityName;
-        this.unit = unit;
-    }
-
-
+    @DBRef
+    private Unit unit; // Reference to the Unit collection
 }

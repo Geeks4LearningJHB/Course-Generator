@@ -1,51 +1,39 @@
 package com.geeks4learning.CourseGen.Entities;
 
-import java.util.*;
-
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity
-@Table(name = "Units")
+@Document(collection = "units")
 public class Unit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "unit_id")
-    private Long unitId;
+    private String unitId; // MongoDB uses String (ObjectId) for IDs
 
-    @Column(name = "unit_name", columnDefinition = "TEXT")
     private String unitName;
 
-    @Column(name = "unit_description", columnDefinition = "TEXT")
     private String unitDescription;
 
-    @Column(name = "unit_num")
     private int unitNum;
 
-    @Lob
-    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "duration")
     private int duration;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "module_id", nullable = false)
-    private CourseModule module;
+    @DBRef
+    private CourseModule module; // Reference to another collection
 
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY) 
-    private List<Assessment> assessmentUnits;
+    @DBRef
+    private List<Assessment> assessmentUnits; // References to assessments
 
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY) 
-    private List<Activity> activityUnits;
+    @DBRef
+    private List<Activity> activityUnits; // References to activities
 
-    public Unit(String unitName, String content, CourseModule module) {
-        this.unitName = unitName;
-        this.content = content;
-        this.module = module;
-    }
+    
 }

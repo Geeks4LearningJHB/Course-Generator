@@ -1,11 +1,8 @@
 package com.geeks4learning.CourseGen.Repositories;
 
-import java.util.List;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import com.geeks4learning.CourseGen.Entities.Activity;
 
-import org.springframework.data.jpa.repository.*;
-
-import com.geeks4learning.CourseGen.Entities.*;
-
-public interface activityRepository extends JpaRepository<Activity, Long>{
-    List<Activity> findByUnit_Module_ModuleId(Long moduleId);
+public interface activityRepository extends MongoRepository<Activity, String> {
+    // Custom query methods if needed
 }

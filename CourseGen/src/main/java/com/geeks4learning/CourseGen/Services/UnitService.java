@@ -31,23 +31,5 @@ public class UnitService {
        return unitRepository.findAll();
     }
 
-
-    @Transactional(readOnly = true)
-    public List<UnitDTO> convertUnitsToDTO(List<Unit> units) {
-        return units.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
-    }
-
-    // Helper method to convert a single Unit to UnitDTO
-    @Transactional(readOnly = true)
-    private UnitDTO convertToDTO(Unit unit) {
-        return new UnitDTO(
-                unit.getUnitId(),
-                unit.getUnitName(),
-                unit.getUnitDescription(),
-                unit.getDuration(),
-                unit.getContent(),
-                unit.getUnitNum());
-    }
+  
 }

@@ -1,16 +1,27 @@
 
-
 services:
   postgres:
-    image: postgres:latest  # Use the official PostgreSQL image
+    image: postgres:latest
     environment:
       POSTGRES_USER: g4l_dev
       POSTGRES_PASSWORD: P@ssword!
       POSTGRES_DB: courseGenDB
     ports:
-      - "5433:5432"  # Map host port 5433 to container port 5432
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Persist database data
+      - postgres_data:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: g4l_dev
+      MONGO_INITDB_ROOT_PASSWORD: P@ssword!
+    volumes:
+      - mongodb_data:/data/db
 
 volumes:
-  postgres_data:  # Define a named volume for PostgreSQL data persistence
+  postgres_data: 
+  mongodb_data:  

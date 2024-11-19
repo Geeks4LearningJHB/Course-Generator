@@ -25,7 +25,7 @@ public class PromptService {
 
         Promt savedPromt = promptRepository.save(prompt);
 
-        if (savedPromt.getPromtId() > 0 && savedPromt != null) {
+        if (savedPromt.getPromtId() != null && savedPromt != null) {
             message.setMessage("Promt saved");
             message.setResponse("Status OK");
         }else{
@@ -35,7 +35,7 @@ public class PromptService {
         return message;
     }
 
-    public Promt findPromptById(Long id) {
-        return promptRepository.findById(id).orElse(null);
+    // public Promt findPromptById(Long id) {
+    //     return promptRepository.findById(id).orElse(null);
+    // }
     }
-}

@@ -73,13 +73,13 @@ public class AIController {
         String moduleOutline = respondToPrompt(moduleOutlinePrompt);
 
         // Parse module details
-        CourseModule module = parseModuleOutline(moduleOutline);
-        moduleService.saveModule(module);
+        // CourseModule module = parseModuleOutline(moduleOutline);
+        // moduleService.saveModule(module);
 
-        // Ensure units list is initialized if it is null
-        if (module.getUnits() == null) {
-            module.setUnits(new ArrayList<>());
-        }
+        // // Ensure units list is initialized if it is null
+        // if (module.getUnits() == null) {
+        //     module.setUnits(new ArrayList<>());
+        // }
 
 
         // Step 3: Generate and save units
@@ -88,20 +88,20 @@ public class AIController {
 
         Unit unit = new Unit();
 
-            int chapterNumber = module.getUnits().size() + 1; // Example to generate sequence
-            String unitName = "Chapter " + chapterNumber + ": Introduction to " + module.getModuleName();
+            // int chapterNumber = module.getUnits().size() + 1; // Example to generate sequence
+            // String unitName = "Chapter " + chapterNumber + ": Introduction to " + module.getModuleName();
 
-            unit.setUnitName(unitName); // Set dynamic name for each unit
-            unit.setContent(unitContent);
-            unit.setModule(module); // Link 'module' (CourseModule instance)
-            unitService.saveUnit(unit);
-            module.getUnits().add(unit); // Add unit to module’s list of units
+            // unit.setUnitName(unitName); // Set dynamic name for each unit
+            // unit.setContent(unitContent);
+            // unit.setModule(module); // Link 'module' (CourseModule instance)
+            // unitService.saveUnit(unit);
+            // module.getUnits().add(unit); // Add unit to module’s list of units
 
-            // Step 5: Generate and save activities
-            String activityPrompt = "Generate activities related to the module on " + prompt;
-            String activityContent = respondToPrompt(activityPrompt);
-            Activity activity = new Activity(activityContent, unit); // Now 'unit' is defined
-            activityService.saveActivity(activity);
+            // // Step 5: Generate and save activities
+            // String activityPrompt = "Generate activities related to the module on " + prompt;
+            // String activityContent = respondToPrompt(activityPrompt);
+            // Activity activity = new Activity(activityContent, unit); // Now 'unit' is defined
+            // activityService.saveActivity(activity);
         }
 
         // // Step 4: Generate and save assessments
@@ -143,13 +143,13 @@ public class AIController {
         return detailedContentBuilder.toString();
     }
 
-    private CourseModule parseModuleOutline(String outline) {
-        String[] parts = outline.split("#", 3);
-        String name = parts[0].trim();
-        String description = parts.length > 1 ? parts[1].trim() : "";
-        String duration = parts.length > 2 ? parts[2].trim() : "";
-        return new CourseModule(name, description, duration);
-    }
+    // private CourseModule parseModuleOutline(String outline) {
+    //     String[] parts = outline.split("#", 3);
+    //     String name = parts[0].trim();
+    //     String description = parts.length > 1 ? parts[1].trim() : "";
+    //     String duration = parts.length > 2 ? parts[2].trim() : "";
+    //     return new CourseModule(name, description, duration);
+    // }
 
     // @GetMapping("/getCourseModuleDetails/{id}")
     // public String getCourseModuleDetails(@PathVariable Long id) {
@@ -179,23 +179,23 @@ public class AIController {
     //     }
     // }
 
-    @GetMapping("/findModule")
-    public List<CourseModuleDTO> findModule(@RequestParam(required = false, defaultValue = "") String search) {
-        // Fetch modules based on the search criteria
-        List<CourseModule> modules = moduleService.findModuleByName(search);
+    // @GetMapping("/findModule")
+    // public List<CourseModuleDTO> findModule(@RequestParam(required = false, defaultValue = "") String search) {
+    //     // Fetch modules based on the search criteria
+    //     List<CourseModule> modules = moduleService.findModuleByName(search);
 
-        // Convert the modules to DTOs
-        return moduleService.convertModulesToDTO(modules);
-    }
+    //     // Convert the modules to DTOs
+    //     return moduleService.convertModulesToDTO(modules);
+    // }
 
 // Helper method to convert to CourseModuleDTO
-private CourseModuleDTO convertToDTO(CourseModule module) {
-    return new CourseModuleDTO(module.getModuleId(), 
-                                module.getModuleName(), 
-                                module.getModuleDescription(), 
-                                module.getDuration(), 
-                                unitService.convertUnitsToDTO(module.getUnits()));
-}
+// private CourseModuleDTO convertToDTO(CourseModule module) {
+//     return new CourseModuleDTO(module.getModuleId(), 
+//                                 module.getModuleName(), 
+//                                 module.getModuleDescription(), 
+//                                 module.getDuration(), 
+//                                 unitService.convertUnitsToDTO(module.getUnits()));
+// }
     
 
 }

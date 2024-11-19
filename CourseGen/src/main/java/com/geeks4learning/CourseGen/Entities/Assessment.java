@@ -1,6 +1,10 @@
 package com.geeks4learning.CourseGen.Entities;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+
 import lombok.*;
 
 
@@ -8,28 +12,17 @@ import lombok.*;
 @NoArgsConstructor
 
 @Data
-@Entity
-@Table(name = "Assessment")
+@Document(collection = "Assessment")
 public class Assessment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "assessment_id")
-    private Long assessmentId;
+    private String assessmentId;
 
-    @Column(name = "assessment_name", columnDefinition = "TEXT")
     private String assessmentName;
 
-    @Column(name = "duration")
     private int duration;
 
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
+    @DBRef
     private Unit unit;
 
-    public Assessment(String assessmentName, int duration, Unit unit) {
-        this.assessmentName = assessmentName;
-        this.duration = duration;
-        this.unit = unit;
-    }
 }

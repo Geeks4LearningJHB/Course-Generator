@@ -25,10 +25,10 @@ public class ModuleService {
         return moduleRepository.save(module);
     }
 
-    @Transactional(readOnly = true)  // Applied readOnly for retrieval
-    public Optional<CourseModule> findCourseModuleById(Long id) {
-        return moduleRepository.findById(id);
-    }
+    // @Transactional(readOnly = true)  // Applied readOnly for retrieval
+    // public Optional<CourseModule> findCourseModuleById(Long id) {
+    //     return moduleRepository.findById(id);
+    // }
 
     @Transactional(readOnly = true)  // Applied readOnly for retrieval
     public List<CourseModule> findAllModules() {
@@ -40,21 +40,21 @@ public class ModuleService {
         return moduleRepository.findByModuleName(search);
     }
 
-    @Transactional(readOnly = true)  // Applied readOnly for DTO conversion
-public List<CourseModuleDTO> convertModulesToDTO(List<CourseModule> modules) {
-    return modules.stream()
-                  .map(this::convertToDTO)
-                  .collect(Collectors.toList());
-}
+//     @Transactional(readOnly = true)  // Applied readOnly for DTO conversion
+// public List<CourseModuleDTO> convertModulesToDTO(List<CourseModule> modules) {
+//     return modules.stream()
+//                   .map(this::convertToDTO)
+//                   .collect(Collectors.toList());
+// }
 
 // Conversion helper for CourseModule to CourseModuleDTO
-private CourseModuleDTO convertToDTO(CourseModule module) {
-    return new CourseModuleDTO(
-        module.getModuleId(),
-        module.getModuleName(),
-        module.getModuleDescription(),
-        module.getDuration(),
-        unitService.convertUnitsToDTO(module.getUnits()));
-}
+// private CourseModuleDTO convertToDTO(CourseModule module) {
+//     return new CourseModuleDTO(
+//         module.getModuleId(),
+//         module.getModuleName(),
+//         module.getModuleDescription(),
+//         module.getDuration(),
+//         unitService.convertUnitsToDTO(module.getUnits()));
+// }
     
 }
