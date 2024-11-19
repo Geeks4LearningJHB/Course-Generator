@@ -11,49 +11,26 @@ import { FormsModule } from '@angular/forms';
 export class AdminLoginComponent {
   email: string = '';
   password: string = '';
-  loginError: string = '';
-  isLoading: boolean = false;
-    successMessage: string = '';
 
   constructor(private router: Router, private loginService: LoginService) {}
 
   onLogin() {
-    // Reset the error message
-    this.loginError = '';
-
-    // Check if email and password are empty
-    if (!this.email || !this.password) {
-      this.loginError = 'Please enter both email and password.';
-      return;
-    }
-
-    // If fields are not empty, proceed with login
     this.loginService.loginAdmin({ email: this.email, password: this.password }).subscribe(
       (response) => {
-        console.log('Login Response:', response);
-
-        if (response.response === "Success") {
-          // Show loading overlay with success message
-          this.isLoading = true;
-          this.successMessage = 'Sign in successfully';
-        //   alert('Sign in successfully');
-        //   this.router.navigate(['/admin-dashboard']);
-        // } else {
-        //   this.loginError = 'Invalid credentials!';
-        // }
-        setTimeout(() => {
-          this.isLoading = false;
+        console.log('Login Response:', response); 
+  
+        if (response.response === "Success") { 
           this.router.navigate(['/admin-dashboard']);
-        }, 1000); // Adjust delay as needed
-      } else {
-        this.loginError = 'Invalid credentials!';
-      }
-
+        } else {
+          alert('Invalid credentials!'); 
+        }
       },
       (error) => {
-        console.error('Login Error:', error);
-        this.loginError = 'Login failed. Please correct your inputs.';
+        console.error('Login Error:', error); 
+        alert('Login failed: ' + error.message);
       }
     );
   }
+  
+  
 }

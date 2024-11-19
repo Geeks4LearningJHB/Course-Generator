@@ -1,6 +1,6 @@
 // src/app/auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -9,7 +9,6 @@ import { catchError } from 'rxjs/operators';
 })
 export class LoginService {
   private apiUrl = 'http://localhost:8080/Admin/Adminlogin';
-  private resetPasswordUrl = 'http://localhost:8080/Admin/reset-password';
 
   constructor(private http: HttpClient) {}
 
@@ -19,16 +18,6 @@ export class LoginService {
         console.error('Login error:', error); // Log the error for debugging
         return throwError('Something went wrong; please try again later.');
       })
-    );
-  }
-
-  resetPassword(email: string, newPassword: string): Observable<any> {
-    return this.http.post(
-      `http://localhost:8080/Admin/reset-password?email=${email}&newPassword=${newPassword}`,
-      {},
-      { responseType: 'text' }  // Specify response type as text
-    ).pipe(
-      
     );
   }
   

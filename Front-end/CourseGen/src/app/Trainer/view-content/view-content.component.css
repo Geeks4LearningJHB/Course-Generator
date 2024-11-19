@@ -37,7 +37,6 @@
     border-radius: 15px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     width: 600px;
-    margin: 0 auto;
     text-align: center;
     max-height: 80%;
     overflow-y: auto;
@@ -57,7 +56,7 @@
     margin-top: 20px;
     margin-right: 10px;
     padding: 15px;
-    background-color: #870a64;
+    background-color: #6c757d;
     color: white;
     border: none;
     border-radius: 5px;
@@ -67,7 +66,7 @@
   }
   
   .re-generate-button:hover, .download-button:hover {
-    background-color: #52073d;
+    background-color: #5a6268;
   }
   
   .modify-container {
@@ -75,7 +74,7 @@
   }
   
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 1px;
     text-align: left;
   }
   
@@ -105,7 +104,11 @@
   .send-button:hover {
     background-color: #5a6268;
   }
-  :host {
-    display: block;
-    animation: fadeIn 0.8s ease-in; 
+  .back-button{
+    background-color: darkblue;
+    margin-left: 80%;
+    margin-bottom: 15%;
+    color: white;
   }
+  
+  

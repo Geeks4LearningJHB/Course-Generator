@@ -6,6 +6,8 @@
   </div>
 
 <div class="dash-container">
+  <button class="back-button" routerLink="/admin-dashboard">
+    <span class="icon"></span> Back </button>
   <div class="form-box">
     <form (ngSubmit)="onGenerateCourse()">
       <div class="form-group">
@@ -31,36 +33,36 @@
 
       <div class="gen-content">
       <!-- Generate Course Button -->
-      <button type="submit" class="generate-btn" (click)="startGeneration()">
+      <button type="submit" class="generate-btn" routerLink="/view-content">
         <span>📋</span> Generate Course
       </button>
 
       <!-- Loading Modal -->
-      <div *ngIf="isLoading" class="loading-modal">
+      <!-- <div *ngIf="isLoading" class="loading-modal">
         <div class="modal-content">
           <h2>Generating Course...</h2>
           <p>Estimated Time Remaining: {{ countdown }} minutes</p>
           <div class="loader"></div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Display Generated Data Modal When Loading is Complete -->
-      <div *ngIf="!isLoading && isComplete" class="generated-data-modal">
+      <!-- <div *ngIf="!isLoading && isComplete" class="generated-data-modal"> -->
         <!-- <div class="modal-header"> -->
 
         <!-- </div> -->
 
         <!-- <div class="modal-body"> -->
         <!-- Scrollable content area for large content -->
-        <div class="content-box">
-          <h2>Generated Course Content</h2>
+        <!-- <div class="content-box">
+          <h2>Generated Course Content</h2> -->
           <!-- <button class="close-btn" (click)="closeModal()">X</button> -->
 
-          <p>{{ generatedData }}</p>
+          <!-- <p>{{ generatedData }}</p> -->
           <!-- </div> -->
 
-          <button class="save-btn" (click)="onSave()">Save</button><br>
+          <!-- <button class="save-btn" (click)="onSave()">Save</button>
           <button class="preview-btn" routerLink="/view-content">Preview</button>
         </div>
-        </div>
+        </div> -->
       </div>

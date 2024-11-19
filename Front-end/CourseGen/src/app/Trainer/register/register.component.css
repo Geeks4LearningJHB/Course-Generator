@@ -103,7 +103,3 @@ input {
 .error-message{
   color: #df0b0b;
 }
-:host {
-  display: block;
-  animation: fadeIn 0.8s ease-in; 
-}

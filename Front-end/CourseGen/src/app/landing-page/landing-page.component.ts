@@ -13,8 +13,15 @@ export class LandingPageComponent {
   navigateWithAnimation(route: string) {
     const landingPage = document.getElementById('landingPage');
 
-    landingPage?.classList.add('fade-out');
+    landingPage?.classList.add('zoom-out');
 
+    // setTimeout(() => {
+    //   if (role === 'admin') {
+    //     this.router.navigate(['/admin']);
+    //   } else if (role === 'trainer') {
+    //     this.router.navigate(['/trainer']);
+    //   }
+    // }, 800);  // Match this duration to the animation timing
     setTimeout(() => {
       this.router.navigate([route]);
     }, 800);
