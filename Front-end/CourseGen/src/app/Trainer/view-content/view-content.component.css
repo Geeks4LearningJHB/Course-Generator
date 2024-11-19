@@ -74,7 +74,7 @@
   }
   
   .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 1px;
     text-align: left;
   }
   
@@ -104,6 +104,11 @@
   .send-button:hover {
     background-color: #5a6268;
   }
-
+  .back-button{
+    background-color: darkblue;
+    margin-left: 80%;
+    margin-bottom: 15%;
+    color: white;
+  }
   
   

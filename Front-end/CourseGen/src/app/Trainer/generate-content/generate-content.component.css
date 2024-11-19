@@ -111,3 +111,9 @@
     max-height: 450px
   }
    */
+.back-button{
+  background-color: darkblue;
+  margin-left: 80%;
+  margin-bottom: 15%;
+  color: white;
+}

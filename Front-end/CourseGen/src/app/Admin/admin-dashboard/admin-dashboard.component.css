@@ -29,7 +29,7 @@
     border-radius: 15px;
     width: 80%; /* Control width of button section */
     justify-content: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); */
   }
   
   /* Button styling */
@@ -40,11 +40,12 @@
     border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
-    color: #333;
+    color: #010A45;
     min-width: 150px;
     transition: background-color 0.3s ease;
     max-width: 200px; /* Control maximum width of each button */
     text-align: center;
+  
   }
   
   .dashboard-button:hover {
@@ -56,4 +57,28 @@
     margin-right: 8px;
   }
   
- 
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .card {
+    margin: 20px;
+    text-align: center;
+  }
+  
+  .card img {
+    height: 150px; /* Ensure consistent image height */
+    object-fit: cover;
+  }
+  
+  .dashboard-container {
+    padding: 30px;
+  }
+  
+.body {
+  margin-top: 61px;
+  overflow: hidden;
+}

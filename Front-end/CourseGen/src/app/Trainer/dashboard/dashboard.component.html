@@ -5,20 +5,59 @@
     <img routerLink="/profile-management" src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
   </div>
 
-  <div class="dash-container">
-  <div class="button-container">
-    <!-- Button to navigate to Generate Content -->
-    <button class="dashboard-button" routerLink="/generate-content">
-      <span class="icon">✏️</span> Generate Course
-    </button>
-
-    <button class="dashboard-button" routerLink="/view-courses">
-      <span class="icon">📄</span> View Content
-    </button>
-
-    <button class="dashboard-button">
-      <span class="icon">📊</span> View History
-    </button>
+  <div class="dashboard-container">
+    <div class="header">
+      <img src="assets/company_logo_login.png" alt="Logo" class="logo" />
+      <h1 class="title">COURSE GENERATOR</h1>
+      <img routerLink="/profile-management" src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
+    </div>
+  
+    
   </div>
+  
 </div>
+<div class="dash-container">
+  <div class="button-container">
+    <!-- Card for Generate Course -->
+    <div class="card" style="width: 18rem;">
+      <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+      <div class="card-body">
+        <h5 class="card-title">Generate Course</h5>
+        <p class="card-text">
+          Create and customize courses with ease using our generation tools.
+        </p>
+        <a class="btn btn-primary dashboard-button" routerLink="/generate-content">
+          <span class="icon">✏️</span> Generate Course
+        </a>
+      </div>
+    </div>
+
+    <!-- Card for View Content -->
+    <div class="card" style="width: 18rem;">
+      <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+      <div class="card-body">
+        <h5 class="card-title">View Content</h5>
+        <p class="card-text">
+          Explore all the generated courses and manage your content effortlessly.
+        </p>
+        <a class="btn btn-primary dashboard-button" routerLink="/view-courses">
+          <span class="icon">📄</span> View Content
+        </a>
+      </div>
+    </div>
+
+    <!-- Card for View History -->
+    <div class="card" style="width: 18rem;">
+      <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+      <div class="card-body">
+        <h5 class="card-title">View History</h5>
+        <p class="card-text">
+          Access the history of all generated and managed courses.
+        </p>
+        <a class="btn btn-primary dashboard-button">
+          <span class="icon">📊</span> View History
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
