@@ -27,16 +27,6 @@
     animation: zoomOutText 1s ease-out alternate;
     animation-delay: 0.2s;
   }
-  @keyframes zoomOutText {
-    0% {
-        transform: scale(1.5);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
   
   .buttons {
     display: flex;
@@ -68,28 +58,24 @@
     transition: background-color 0.3s ease;
   }
   
-.btn:hover {
-  background-color: #0f2e3d; /* Darker shade for hover */
-}
-  
-  
-.logo {
-  width: 100%;  /* Takes 80% of the right side */
-  max-width: 600px;  /* Ensure it doesn’t stretch too large */
-  height: 100%;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);  /* Subtle shadow */
-  border-radius: 50%;
-  animation: zoomOutLogo 1.5s ease-out forwards;
-  animation-delay: 0.5s;
-}
-
-@keyframes zoomOutLogo {
-  0% {
-      transform: scale(2.5);
-      opacity: 0;
+  .btn:hover {
+    background-color: #5a6268;
   }
-  100% {
-      transform: scale(1);
-      opacity: 1;
+  
+  .logo-container {
+    width: 50%;  /* Right side takes 50% */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;  /* Optional: background to match the circle */
+    height: 100vh;  /* Ensure it fills the entire page height */
   }
-}
+  
+  .logo {
+    width: 80%;  /* Takes 80% of the right side */
+    max-width: 600px;  /* Ensure it doesn’t stretch too large */
+    height: auto;
+    border-radius: 1000px;  /* Circular image */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);  /* Subtle shadow */
+  }
+  

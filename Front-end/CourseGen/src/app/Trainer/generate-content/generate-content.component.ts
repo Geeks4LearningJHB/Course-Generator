@@ -22,6 +22,7 @@ export class GenerateContentComponent {
   isComplete = false;
   countdown = 30; // Initial countdown in minutes
   generatedData: string = ''; // Placeholder for backend data
+  isCollapsed = false;
 
   startGeneration() {
     this.isLoading = true;
@@ -56,7 +57,7 @@ export class GenerateContentComponent {
     alert('Course content saved successfully!');
   }
 
-  onPreview() {
-    alert('Preview of the course content');
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
   }
 }

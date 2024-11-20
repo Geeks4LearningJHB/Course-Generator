@@ -1,22 +1,23 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,ReactiveFormsModule } from '@angular/forms';  
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './Trainer/login/login.component';
 import { RegisterComponent } from './Trainer/register/register.component';
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
-import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
 import { ViewContentComponent } from './Trainer/view-content/view-content.component';
+import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
+import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
+import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-password.component';
+import { ProfileManagementComponent } from './profile-management/profile-management.component';
 import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
 import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
 import { UserManagementService } from './Services/user-management.service';
-import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserManagementComponent } from './Admin/admin-dashboard/user-management/user-management.component';
 
 @NgModule({
@@ -27,9 +28,11 @@ import { UserManagementComponent } from './Admin/admin-dashboard/user-management
     LoginComponent,
     DashboardComponent,
     LandingPageComponent,
-    AdminLoginComponent,
-    GenerateContentComponent,
     ViewContentComponent,
+    GenerateContentComponent,
+    AdminLoginComponent,
+    ForgotPasswordComponent,
+    ProfileManagementComponent,
     ViewCoursesComponent,
     AdminDashboardComponent,
     UserManagementComponent,
@@ -41,7 +44,9 @@ import { UserManagementComponent } from './Admin/admin-dashboard/user-management
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    FormsModule  
+    FormsModule,
+    FontAwesomeModule,
+    ReactiveFormsModule
   ],
   providers: [
     provideClientHydration()

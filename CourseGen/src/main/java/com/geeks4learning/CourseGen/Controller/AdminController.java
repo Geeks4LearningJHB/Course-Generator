@@ -105,4 +105,6 @@ public class AdminController {
         trainerRepository.deleteById(id);
         return ResponseEntity.ok("Trainer rejected");
     }
+
+   
 }

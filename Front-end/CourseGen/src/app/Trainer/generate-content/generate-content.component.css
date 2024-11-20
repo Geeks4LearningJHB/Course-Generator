@@ -6,6 +6,48 @@
     height: 100vh;
     background-color: #12324d;
   }
+
+  .admin-dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Aligns items to start from the top */
+    width: 100%;
+    max-width: 1000px; /* Set maximum width */
+    font-family: Arial, sans-serif;
+    min-height: 100vh; /* Full-page height */
+    text-align: center;
+    box-sizing: border-box;
+    background-color: #e4e9ef;
+  }
+  
+
+  .dashboard-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 20px 0;
+    color: #000;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+  }
+  
+  .logo {
+    height: 60px;
+    width: auto;
+  }
+  
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
   
   h1 {
     font-size: 32px;
@@ -20,6 +62,9 @@
     border-radius: 15px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     width: 400px;
+    max-height: 100%;
+    overflow-y: visible;
+    margin-bottom: 25px;
   }
   
   .form-group {
@@ -42,7 +87,7 @@
     border: 1px solid #ccc;
   }
   
-  .generate-btn {
+  .generate-btn, .save-btn, .preview-btn {
     width: 100%;
     padding: 12px;
     background-color: #6c757d;
@@ -61,4 +106,19 @@
   .generate-btn:hover {
     background-color: #5a6268;
   }
-  
+/* 
+  .gen-content{
+    max-height: 450px
+  }
+   */
+.back-button{
+  position: absolute;
+  top: 10px; /* Distance from the top of the container */
+  right: 10px; /* Distance from the right of the container */
+  background-color: #007bff; /* Example background color */
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
