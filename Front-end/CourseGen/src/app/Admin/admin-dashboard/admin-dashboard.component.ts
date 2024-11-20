@@ -9,7 +9,7 @@ import { faHome, faUser, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg
 export class AdminDashboardComponent {
 
   faHome = faHome;
-  isCollapsed = false;
+  isCollapsed = true;
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
