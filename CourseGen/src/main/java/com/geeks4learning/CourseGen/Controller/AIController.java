@@ -4,9 +4,11 @@ import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
 import com.geeks4learning.CourseGen.Model.CourseRequest;
 
+
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -62,6 +64,7 @@ public class AIController {
 
         String[] sections = outline.split("\n");
         for (String section : sections) {
+            
             // Skip empty lines or irrelevant sections
             if (section.trim().isEmpty()) {
                 continue;
@@ -82,6 +85,22 @@ public class AIController {
         return detailedContentBuilder.toString();
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public void exportToWord(String detailedContent, String fileName) {
         try (XWPFDocument document = new XWPFDocument()) {
             // Create a paragraph in the document
@@ -97,4 +116,5 @@ public class AIController {
             e.printStackTrace();
         }
     }
+
 }
