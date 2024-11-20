@@ -7,21 +7,6 @@
     background-color: #12324d;
   }
 
-  .admin-dashboard-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Aligns items to start from the top */
-    width: 100%;
-    max-width: 1000px; /* Set maximum width */
-    font-family: Arial, sans-serif;
-    min-height: 100vh; /* Full-page height */
-    text-align: center;
-    box-sizing: border-box;
-    background-color: #e4e9ef;
-  }
-  
-
   .dashboard-title {
     font-size: 30px;
     font-weight: bold;
@@ -72,7 +57,7 @@
   }
   
   label {
-    display: block;
+    /* display: block; */
     margin-bottom: 5px;
     font-weight: bold;
     color: #333;
@@ -87,7 +72,7 @@
     border: 1px solid #ccc;
   }
   
-  .generate-btn, .save-btn, .preview-btn {
+.generate-btn, .save-btn, .preview-btn {
     width: 100%;
     padding: 12px;
     background-color: #6c757d;
@@ -103,22 +88,6 @@
     gap: 10px;
   }
   
-  .generate-btn:hover {
-    background-color: #5a6268;
-  }
-/* 
-  .gen-content{
-    max-height: 450px
-  }
-   */
-.back-button{
-  position: absolute;
-  top: 10px; /* Distance from the top of the container */
-  right: 10px; /* Distance from the right of the container */
-  background-color: #007bff; /* Example background color */
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
+.generate-btn:hover {
+  background-color: #5a6268;
 }

@@ -1,13 +1,48 @@
 <div class="admin-dashboard-container">
-  <div class="dashboard-header">
-    <img routerLink="/admin-dashboard" src="assets/company_logo_login.png" alt="Logo" class="logo" />
-    <h1 class="dashboard-title">COURSE GENERATOR</h1>
-    <img routerLink="/profile-management" src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
+  
+  <div class="top-nav">
+    <div class="logo">
+      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
+    </div>
+    <div class="nav-right">
+      <button class="profile-btn">
+        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
+      </button>
+    </div>
   </div>
 
-  <div class="dash-container">
-    <button class="back-button" routerLink="/admin-dashboard">
+  <div class="body">
+    <div class="sidebar" [class.collapsed]="isCollapsed">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+      <ul>
+        <li>
+          <i class="icon fa fa-home"></i>
+          <span *ngIf="!isCollapsed" routerLink="/admin-dashboard">Dashboard</span>
+        </li>
+        <li>
+          <i class="icon fas fa-book"></i>
+          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+        </li>
+        <li>
+          <i class="icon fas fa-users"></i>
+          <span *ngIf="!isCollapsed" routerLink="/user-management">User Acceptance</span>
+        </li>
+        <hr class="divider"/>
+        <li>
+          <i class="icon fas fa-sign-out-alt"></i>
+          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sub-header" [class.shifted]="isCollapsed">
+      <h3 class="sub-heading">GENERATE CONTENT</h3>
+      <button class="back-button" routerLink="/admin-dashboard">
       <span class="icon"></span> Back </button>
+    </div>
+
+    
+  <div class="dash-container-1">
     <div class="form-container">
       <h2 class="form-title">Java Programming for Beginners</h2>
 
@@ -63,4 +98,5 @@
       </div>
     </div>
   </div>
+</div>
 </div>

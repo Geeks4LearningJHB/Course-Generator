@@ -5,19 +5,19 @@
     justify-content: center;
     height: 100vh;
     background-color: #12324d;
-  }
+}
   
-  .header {
-    display: flex;
-    justify-content: space-between;
-    width: 90%;
-    padding: 10px;
-    align-items: center;
-  }
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  padding: 10px;
+  align-items: center;
+}
   
-  .logo {
-    height: 50px;
-  }
+.logo {
+  height: 50px;
+}
   
   .profile-icon {
     height: 40px;
@@ -104,11 +104,5 @@
   .send-button:hover {
     background-color: #5a6268;
   }
-  .back-button{
-    background-color: darkblue;
-    margin-left: 80%;
-    margin-bottom: 15%;
-    color: white;
-  }
-  
+ 
   
