@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 public class UnitDTO {
 
-    private Long unitId;
+    private String unitId;
     private String unitName;
     private String unitDescription;
     private int duration;

@@ -18,9 +18,9 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
-    // public List<Activity> findActivitiesByModuleId(Long moduleId) {
-    //     return activityRepository.findByUnit_Module_ModuleId(moduleId);
-    // }
+    public List<Activity> findActivitiesByModuleId(String moduleId) {
+        return activityRepository.findByUnit_Module_ModuleId(moduleId);
+    }
 
     public List<Activity> getAllActivities() {
         return activityRepository.findAll();

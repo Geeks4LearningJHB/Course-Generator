@@ -20,16 +20,15 @@ public class UnitService {
         return unitRepository.save(unit);
     }
 
-    @Transactional
     public List<Unit> findUnitsByModuleId(Long moduleId) {
         return unitRepository.findByModule_ModuleId(moduleId);
     }
 
-    @Transactional
     public List<Unit> getAllUnits() {
         
        return unitRepository.findAll();
     }
+
 
   
 }

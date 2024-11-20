@@ -18,22 +18,25 @@ public class PromptService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Message savePrompt(PromtDTO promptDTO) {
-        Message message = new Message();
-
+    public Promt savePrompt(PromtDTO promptDTO) {
         Promt prompt = modelMapper.map(promptDTO, Promt.class);
-
-        Promt savedPromt = promptRepository.save(prompt);
-
-        if (savedPromt.getPromtId() != null && savedPromt != null) {
-            message.setMessage("Promt saved");
-            message.setResponse("Status OK");
-        }else{
-            message.setMessage("error while saving");
-            message.setResponse("Please rectify error");
+    
+        try {
+            // Save the prompt
+            Promt savedPromt = promptRepository.save(prompt);
+    
+            // Check if the save was successful
+            if (savedPromt.getPromtId() != null) {
+                return savedPromt; // Return the saved Promt
+            } else {
+                throw new RuntimeException("Failed to save the prompt");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("An exception occurred: " + e.getMessage());
         }
-        return message;
     }
+    
+    
 
     // public Promt findPromptById(Long id) {
     //     return promptRepository.findById(id).orElse(null);

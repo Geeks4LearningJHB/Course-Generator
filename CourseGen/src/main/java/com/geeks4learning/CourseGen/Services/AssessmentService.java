@@ -18,7 +18,7 @@ public class AssessmentService {
         return assessmentRepository.save(assessment);
     }
 
-    public List<Assessment> findAssessmentsByModuleId(Long moduleId) {
+    public List<Assessment> findAssessmentsByModuleId(String moduleId) {
         return assessmentRepository.findByUnit_Module_ModuleId(moduleId);
     }
 
