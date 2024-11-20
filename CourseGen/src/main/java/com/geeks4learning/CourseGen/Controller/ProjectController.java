@@ -1,24 +1,32 @@
 package com.geeks4learning.CourseGen.Controller;
 
-import com.geeks4learning.CourseGen.Services.AdminService;
-import com.geeks4learning.CourseGen.Services.TrainerService;
-
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
 import com.geeks4learning.CourseGen.Entities.AdminEntity;
+import com.geeks4learning.CourseGen.Entities.TrainerEntity;
 import com.geeks4learning.CourseGen.Model.Message;
 import com.geeks4learning.CourseGen.Repositories.AdminRepository;
+import com.geeks4learning.CourseGen.Services.AdminService;
+import com.geeks4learning.CourseGen.Services.TrainerService;
+
+
+
 
 @RestController
 @RequestMapping("/Admin")
@@ -74,5 +82,35 @@ public class ProjectController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.getMessage());
         }
+    }
+
+    @GetMapping("/pending")
+    public List<TrainerEntity> getPendingTrainers() {
+        return trainerService.getAllPendingTrainers();
+    }
+
+    @PutMapping("/{id}/accept")
+    public TrainerEntity acceptTrainer(@PathVariable Long id) {
+        return trainerService.acceptTrainer(id);
+    }
+
+    @PutMapping("/{id}/reject")
+    public void rejectTrainer(@PathVariable Long id) {
+        trainerService.rejectTrainer(id);
+    }
+
+    @GetMapping("/email")
+    public List<TrainerEntity> findTrainersByEmail(@RequestParam String email) {
+        return  trainerService.findByEmail(email);
+    }
+    
+    @GetMapping("/name")
+    public List<TrainerEntity> findTrainersByName(@RequestParam String name) {
+        return  trainerService.findByName(name);
+    }
+
+    @GetMapping("/surname")
+    public List<TrainerEntity> findTrainersBySurname(@RequestParam String surname) {
+        return  trainerService.findBySurname(surname);
     }
 }
