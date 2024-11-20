@@ -14,12 +14,11 @@
     justify-content: flex-start; /* Aligns items to start from the top */
     width: 100%;
     max-width: 1000px; /* Set maximum width */
-    margin: 0 auto; /* Center horizontally */
-    padding: 20px;
     font-family: Arial, sans-serif;
     min-height: 100vh; /* Full-page height */
     text-align: center;
     box-sizing: border-box;
+    background-color: #e4e9ef;
   }
   
 
@@ -63,8 +62,9 @@
     border-radius: 15px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     width: 400px;
-    max-height: 80%;
-    overflow-y: auto;
+    max-height: 100%;
+    overflow-y: visible;
+    margin-bottom: 25px;
   }
   
   .form-group {
@@ -112,8 +112,13 @@
   }
    */
 .back-button{
-  background-color: darkblue;
-  margin-left: 80%;
-  margin-bottom: 15%;
+  position: absolute;
+  top: 10px; /* Distance from the top of the container */
+  right: 10px; /* Distance from the right of the container */
+  background-color: #007bff; /* Example background color */
   color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }

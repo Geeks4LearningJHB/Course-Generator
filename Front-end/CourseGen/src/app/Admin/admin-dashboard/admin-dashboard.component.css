@@ -10,48 +10,44 @@
   margin-right: 10px;
   }
 
-.dashboard-title {
-  font-size: 30px;
-  font-weight: bold;
-  margin: 20px 0;
-}
-  
-.dashboard-button-container {
+.button-container {
   display: flex;
-  flex-wrap: wrap; /* Allows buttons to wrap in case of smaller screens */
-  gap: 20px;
-  padding: 30px;
-  border-radius: 15px;
-  width: 80%;
+  flex-wrap: wrap;
   justify-content: center;
-}
-  
-.icon {
-    margin-right: 8px;
-  }
-  
-  .button-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+} 
   
   .card {
     margin: 20px;
     text-align: center;
   }
   
-  .card img {
-    height: 150px; /* Ensure consistent image height */
-    object-fit: cover;
-  }
-  
-  .dashboard-container {
-    padding: 30px;
-  }
-  
-.body {
-  margin-top: 61px;
-  background-color: #e4e9ef;;
+.card img {
+  height: 150px; /* Ensure consistent image height */
+  object-fit: cover;
 }
+  
+/* .body {
+  margin-top: 79px;
+  background-color: #e4e9ef;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.dash-container-1{
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  padding: 60px;
+  width: 80vw;
+  background-color: #e4e9ef;
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+  margin-left: 250px;
+}
+
+.sidebar.collapsed + .dash-container-1 {
+  margin-left: 85px;
+} */
