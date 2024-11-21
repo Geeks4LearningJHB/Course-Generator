@@ -113,4 +113,15 @@ public class ProjectController {
     public List<TrainerEntity> findTrainersBySurname(@RequestParam String surname) {
         return  trainerService.findBySurname(surname);
     }
+
+    @GetMapping("/status")
+    public List<TrainerEntity> findTrainerByStatus(@RequestParam TrainerEntity.Status status) {
+        return trainerService.findByStatus(status);
+    }
+
+    // @GetMapping("/trainers")
+    // public List<TrainerEntity> getByTrainersAllFields(@RequestParam String email, @RequestParam String surname, @RequestParam String name, @RequestParam TrainerEntity.Status status) {
+    //     return trainerService.findByAllFields(email, surname, name, status);
+    // }
+    
 }

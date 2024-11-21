@@ -18,4 +18,11 @@ public interface TrainerRepository extends JpaRepository<TrainerEntity,Long> {
     List<TrainerEntity> findByName(String Name);
 
     List<TrainerEntity> findBySurname(String surname);
+
+    // List<TrainerEntity> findByTrainersAllFields(
+    //     String email,
+    //     String surname,
+    //     String name,
+    //     TrainerEntity.Status status
+    // );
 }

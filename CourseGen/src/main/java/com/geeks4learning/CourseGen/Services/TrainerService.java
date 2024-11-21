@@ -71,6 +71,7 @@ public class TrainerService {
         .orElseThrow(() -> new RuntimeException("Trainer not found"));
     }
 
+    //if trainer rejected delete from database
     public void rejectTrainer(Long id) {
         trainerRepository.findById(id)
         .map(trainer -> {
@@ -93,4 +94,12 @@ public class TrainerService {
     public List<TrainerEntity> findBySurname(String surname) {
         return trainerRepository.findBySurname(surname);
     }
+
+    public List<TrainerEntity> findByStatus(TrainerEntity.Status status) {
+        return trainerRepository.findByStatus(status);
+    }
+
+    // public List<TrainerEntity> findByAllFields(String email, String surname, String name, TrainerEntity.Status status) {
+    //     return trainerRepository.findByTrainersAllFields(email, surname, email, status);
+    // }
 }
