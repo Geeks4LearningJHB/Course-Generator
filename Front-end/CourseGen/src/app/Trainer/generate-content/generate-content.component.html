@@ -1,41 +1,81 @@
-<div class="admin-dashboard-container">
-  <div class="dashboard-header">
-    <img routerLink="/admin-dashboard" style="cursor: pointer" src="assets/company_logo_login.png" alt="Logo" class="logo" />
-    <h1 class="dashboard-title">COURSE GENERATOR</h1>
-    <img routerLink="/profile-management" src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
+<div class="admin-dashboard-container" style="background-color: #e4e9ef;">
+
+  <div class="top-nav">
+    <div class="logo">
+      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
+    </div>
+    <div class="nav-right">
+      <button class="profile-btn">
+        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
+      </button>
+    </div>
   </div>
 
-<div class="dash-container">
-  <button class="back-button" routerLink="/admin-dashboard">
-    <span class="icon"></span> Back </button>
-  <div class="form-box">
-    <form (ngSubmit)="onGenerateCourse()">
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" id="title" [(ngModel)]="courseTitle" name="title" placeholder="Enter course title"
-          required />
-      </div>
+  <div class="body">
+    <div class="sidebar" [class.collapsed]="isCollapsed">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+      <ul>
+        <li>
+          <i class="icon fa fa-home"></i>
+          <span *ngIf="!isCollapsed" routerLink="/admin-dashboard">Dashboard</span>
+        </li>
+        <li>
+          <i class="icon fas fa-book"></i>
+          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+        </li>
+        <li>
+          <i class="icon fas fa-users"></i>
+          <span *ngIf="!isCollapsed" routerLink="/user-management">User Acceptance</span>
+        </li>
+        <hr class="divider"/>
+        <li>
+          <i class="icon fas fa-sign-out-alt"></i>
+          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+        </li>
+      </ul>
+    </div>
 
-      <div class="form-group">
-        <label for="difficulty">Difficulty</label>
-        <select id="difficulty" [(ngModel)]="difficulty" name="difficulty" required>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
-      </div>
+    <div class="sub-header" [class.shifted]="isCollapsed">
+      <h3 class="sub-heading">GENERATE CONTENT</h3>
+      <button class="back-button" routerLink="/admin-dashboard">
+      <span class="icon"></span> Back </button>
+    </div>
 
-      <div class="form-group">
-        <label for="duration">Duration</label>
-        <input type="number" id="duration" [(ngModel)]="duration" name="duration" placeholder="Enter duration in months"
-          required />
-      </div>
+    <div class="dash-container-1">
+    
+      <div class="form-box">
+        <form (ngSubmit)="onGenerateCourse()">
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" [(ngModel)]="courseTitle" name="title" placeholder="Enter course title"
+            required />
+          </div>
 
-      <div class="gen-content">
-      <!-- Generate Course Button -->
-      <button type="submit" class="generate-btn" routerLink="/view-content">
-        <span>📋</span> Generate Course
-      </button>
+          <div class="form-group">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty" [(ngModel)]="difficulty" name="difficulty" required>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="duration">Duration</label>
+            <input type="number" id="duration" [(ngModel)]="duration" name="duration" placeholder="Enter duration" required />
+          </div>
+
+          <div class="gen-content">
+            <button type="submit" class="generate-btn" routerLink="/view-content">
+              <span>📋</span> Generate Course
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+    
 
       <!-- Loading Modal -->
       <!-- <div *ngIf="isLoading" class="loading-modal">
@@ -63,6 +103,4 @@
 
           <!-- <button class="save-btn" (click)="onSave()">Save</button>
           <button class="preview-btn" routerLink="/view-content">Preview</button>
-        </div>
         </div> -->
-      </div>

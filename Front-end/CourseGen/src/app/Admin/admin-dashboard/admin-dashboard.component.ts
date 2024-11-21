@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener ,OnInit } from '@angular/core';
 import { faHome, faUser, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -9,9 +9,17 @@ import { faHome, faUser, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg
 export class AdminDashboardComponent {
 
   faHome = faHome;
-  isCollapsed = false;
+  isCollapsed = true;
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
+  }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
   }
 }

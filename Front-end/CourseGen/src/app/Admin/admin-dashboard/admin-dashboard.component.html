@@ -1,4 +1,4 @@
-<div class="admin-dashboard-container">
+<div class="admin-dashboard-container"style="background-color:  #e4e9ef;">
   <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
@@ -9,49 +9,86 @@
       </button>
     </div>
   </div>
+  
   <div class="body">
     <div class="sidebar" [class.collapsed]="isCollapsed">
       <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
     <ul>
-        <li>
-            <i class="icon fa fa-home"></i>
-            <span *ngIf="!isCollapsed">Dashboard</span>
-        </li>
-        <li>
-            <i class="icon fas fa-book"></i>
-            <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-            <i class="icon fas fa-users"></i>
-            <span *ngIf="!isCollapsed">User Acceptance</span>
-        </li>
-        <hr class="divider" />
-        <li>
-            <i class="icon fas fa-sign-out-alt"></i>
-            <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-        </li>
+      <li>
+        <i class="icon fa fa-home"></i>
+        <span *ngIf="!isCollapsed">Dashboard</span>
+      </li>
+      <li>
+        <i class="icon fas fa-book"></i>
+        <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+      </li>
+      <li>
+        <i class="icon fas fa-users"></i>
+        <span *ngIf="!isCollapsed">User Management</span>
+      </li>
+      <li>
+        <i class="icon fas fa-users"></i>
+        <span *ngIf="!isCollapsed">View All Users</span>
+      </li>
+      <hr class="divider" />
+      <li>
+        <i class="icon fas fa-sign-out-alt"></i>
+        <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+      </li>
     </ul>
   </div>
 
-  
+  <div class="sub-header" [class.shifted]="isCollapsed">
+    <h3 class="sub-heading">DASHBOARD</h3>
+    <button class="back-button" routerLink="/admin-login">
+      <span class="icon"></span> Back </button>
+  </div>
 
-  <div class="dash-container">
-    <div class="dashboard-button-container">
-      <button class="dashboard-button" routerLink="/generate-content">
-        <span class="icon">✏️</span> Generate Course
-      </button>
-  
-      <button class="dashboard-button" routerLink="/view-courses">
-        <span class="icon">📄</span> View Content
-      </button>
-  
-      <button class="dashboard-button" routerLink="/view-history">
-        <span class="icon">📊</span> View History
-      </button>
-  
-      <button class="dashboard-button" routerLink="/user-management">
-        <span class="icon">✔️</span> Accept Trainers
-      </button>
+  <div class="dash-container-1" [class.shifted]="isCollapsed">
+    <div class="button-container">
+      <div class="card" style="width: 18rem;">
+        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <div class="card-body">
+          <h5 class="card-title">Generate Course</h5>
+          <p class="card-text">Create and customize courses with ease using our tools.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/generate-content">
+            <span class="icon">✏️</span> Generate Course
+          </a>
+        </div>
+      </div>
+
+      <div class="card" style="width: 18rem;">
+        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <div class="card-body">
+          <h5 class="card-title">View Content</h5>
+          <p class="card-text">Explore all generated courses and manage your content effortlessly.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/view-courses">
+            <span class="icon">📄</span> View Content
+          </a>
+        </div>
+      </div>
+
+      <!-- <div class="card" style="width: 18rem;">
+        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <div class="card-body">
+          <h5 class="card-title">View History</h5>
+          <p class="card-text">Access the history of all generated and managed courses.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/view-history">
+            <span class="icon">📊</span> View History
+          </a>
+        </div>
+      </div> -->
+
+      <div class="card" style="width: 18rem;">
+        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <div class="card-body">
+          <h5 class="card-title">Accept Trainers</h5>
+          <p class="card-text">Manage and accept trainers efficiently.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/user-management">
+            <span class="icon">✔️</span> Accept Trainers
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
