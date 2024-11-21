@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
@@ -99,29 +98,9 @@ public class ProjectController {
         trainerService.rejectTrainer(id);
     }
 
-    @GetMapping("/email")
-    public List<TrainerEntity> findTrainersByEmail(@RequestParam String email) {
-        return  trainerService.findByEmail(email);
+    @GetMapping("/trainers")
+    public List<TrainerEntity> getAcceptedTrainers() {
+       return trainerService.getAcceptedTrainers();
     }
-    
-    @GetMapping("/name")
-    public List<TrainerEntity> findTrainersByName(@RequestParam String name) {
-        return  trainerService.findByName(name);
-    }
-
-    @GetMapping("/surname")
-    public List<TrainerEntity> findTrainersBySurname(@RequestParam String surname) {
-        return  trainerService.findBySurname(surname);
-    }
-
-    @GetMapping("/status")
-    public List<TrainerEntity> findTrainerByStatus(@RequestParam TrainerEntity.Status status) {
-        return trainerService.findByStatus(status);
-    }
-
-    // @GetMapping("/trainers")
-    // public List<TrainerEntity> getByTrainersAllFields(@RequestParam String email, @RequestParam String surname, @RequestParam String name, @RequestParam TrainerEntity.Status status) {
-    //     return trainerService.findByAllFields(email, surname, name, status);
-    // }
     
 }

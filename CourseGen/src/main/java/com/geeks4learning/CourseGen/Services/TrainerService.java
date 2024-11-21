@@ -62,6 +62,11 @@ public class TrainerService {
         return trainerRepository.findByStatus(TrainerEntity.Status.PENDING);
     }
 
+    //Get all accepted trainers
+    public List<TrainerEntity> getAcceptedTrainers() {
+        return trainerRepository.findByStatus(TrainerEntity.Status.ACCEPTED);
+    }
+
     public TrainerEntity acceptTrainer(Long id) {
         return trainerRepository.findById(id)
         .map(trainer -> {
@@ -83,23 +88,4 @@ public class TrainerService {
         .orElseThrow(() -> new RuntimeException("Trainer not found"));
     }
 
-    public List<TrainerEntity> findByEmail(String email) {
-        return trainerRepository.findByEmail(email);
-    }
-
-    public List<TrainerEntity> findByName(String name) {
-        return trainerRepository.findByName(name);
-    }
-
-    public List<TrainerEntity> findBySurname(String surname) {
-        return trainerRepository.findBySurname(surname);
-    }
-
-    public List<TrainerEntity> findByStatus(TrainerEntity.Status status) {
-        return trainerRepository.findByStatus(status);
-    }
-
-    // public List<TrainerEntity> findByAllFields(String email, String surname, String name, TrainerEntity.Status status) {
-    //     return trainerRepository.findByTrainersAllFields(email, surname, email, status);
-    // }
 }
