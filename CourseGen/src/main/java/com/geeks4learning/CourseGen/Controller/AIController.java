@@ -1,5 +1,6 @@
 package com.geeks4learning.CourseGen.Controller;
 
+import com.geeks4learning.CourseGen.DTOs.CourseNode;
 import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
 import com.geeks4learning.CourseGen.Model.CourseRequest;
@@ -11,6 +12,9 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,58 +35,70 @@ public class AIController {
     @Value("${openai.completions}")
     private String completionsURL;
 
-    @PostMapping("/generateCourse")
-    public String promptHandler(@RequestBody CourseRequest courseRequest) {
-        String valueAddedPrompt = "Please generate a detailed course outline for a textbook teaching about: "
-                + courseRequest.getCourseTitle() +
-                ". The course should be designed for a " + courseRequest.getDifficulty()
-                + " level and is intended to be completed in " + courseRequest.getDuration() + " months. " +
-                "The outline should be organized as a Module. A Module should contain several Units. " +
-                "Each Unit should include topics covered, suggested activities, and an assessment.";
+    @Value("${openai.api-key}")
+    private String apiKey;
 
-        String outline = respondToPrompt(valueAddedPrompt);
+    
+@PostMapping("/generateCourse")
+    public CourseNode promptHandler(@RequestBody CourseRequest courseRequest) {
+        return generateCourseTree(
+            courseRequest.getCourseTitle(),
+            courseRequest.getDifficulty(),
+            courseRequest.getDuration()
+        );
+    }
 
-        String detailedContent = generateDetailedContentForOutline(outline);
-        exportToWord(detailedContent, "CourseOutline.docx");
+    private CourseNode generateCourseTree(String courseTitle, String difficulty, int duration) {
+        String courseOutlinePrompt = "Please generate a detailed course outline for a textbook teaching about: "
+                + courseTitle +
+                ". The course should be designed for a " + difficulty
+                + " level and is intended to be completed in " + duration + " months. " +
+                "The outline should be organized as Modules. Each Module should contain Units with topics, suggested activities, and assessments.";
 
-        return detailedContent;
+        String outline = respondToPrompt(courseOutlinePrompt);
+        CourseNode root = new CourseNode(courseTitle);
+
+        String[] modules = outline.split("Module");
+        for (String module : modules) {
+            if (module.trim().isEmpty()) continue;
+
+            CourseNode moduleNode = new CourseNode("Module " + module.trim());
+            String moduleDetailsPrompt = "Provide detailed content for " + moduleNode.getTitle();
+            String moduleDetails = respondToPrompt(moduleDetailsPrompt);
+            moduleNode.setContent(moduleDetails);
+
+            String[] units = moduleDetails.split("Unit");
+            for (String unit : units) {
+                if (unit.trim().isEmpty()) continue;
+
+                CourseNode unitNode = new CourseNode("Unit " + unit.trim());
+                String unitDetailsPrompt = "Provide detailed content for " + unitNode.getTitle();
+                String unitDetails = respondToPrompt(unitDetailsPrompt);
+                unitNode.setContent(unitDetails);
+
+                moduleNode.addChild(unitNode);
+            }
+
+            root.addChild(moduleNode);
+        }
+
+        return root;
     }
 
     private String respondToPrompt(String prompt) {
-        ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest("gpt-4o-mini", prompt);
-        ChatCompletionResponse chatCompletionResponse = restTemplate.postForObject(completionsURL,
-                chatCompletionRequest,
-                ChatCompletionResponse.class);
-        assert chatCompletionResponse != null;
+        ChatCompletionRequest request = new ChatCompletionRequest("gpt-4-mini", prompt);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String strResponse = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
-        return strResponse;
-    }
+        HttpEntity<ChatCompletionRequest> entity = new HttpEntity<>(request, headers);
+        ChatCompletionResponse response = restTemplate.postForObject(completionsURL, entity, ChatCompletionResponse.class);
 
-    private String generateDetailedContentForOutline(String outline) {
-        StringBuilder detailedContentBuilder = new StringBuilder();
-
-        String[] sections = outline.split("\n");
-        for (String section : sections) {
-            
-            // Skip empty lines or irrelevant sections
-            if (section.trim().isEmpty()) {
-                continue;
-            }
-
-            // Generate content for each section
-            String sectionPrompt = "Please provide detailed content for the Unit titled: " + section;
-            String sectionContent = respondToPrompt(sectionPrompt);
-
-            detailedContentBuilder.append("<h2>").append("Section: ").append(section).append("</h2>");
-            detailedContentBuilder.append("<p>").append(sectionContent).append("</p>");
-
-            // Append section and its content
-            // detailedContentBuilder.append("Section: ").append(section).append("\n");
-            // detailedContentBuilder.append(sectionContent).append("\n\n");
+        if (response != null && !response.getChoices().isEmpty()) {
+            return response.getChoices().get(0).getMessage().getContent();
         }
 
-        return detailedContentBuilder.toString();
+        return "";
     }
 
 
