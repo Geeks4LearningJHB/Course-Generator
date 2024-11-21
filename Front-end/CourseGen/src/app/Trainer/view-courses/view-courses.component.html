@@ -44,7 +44,7 @@
       <span class="icon"></span> Back </button>
   </div>
 
-  <div class="dash-container-1">
+  <div class="dash-container-1" [class.shifted]="isCollapsed">
   <div class="container-2">
     <div *ngFor="let course of courses" class="course-card">
       <h3>{{ course.title }}</h3>

@@ -7,30 +7,6 @@
     background-color: #12324d;
 }
   
-.header {
-  display: flex;
-  justify-content: space-between;
-  width: 90%;
-  padding: 10px;
-  align-items: center;
-}
-  
-.logo {
-  height: 50px;
-}
-  
-  .profile-icon {
-    height: 40px;
-    border-radius: 50%;
-  }
-  
-  .title {
-    font-size: 36px;
-    color: white;
-    margin: 10px 0;
-    text-align: center;
-  }
-  
   .form-container {
     background-color: white;
     padding: 30px;

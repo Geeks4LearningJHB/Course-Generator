@@ -47,12 +47,12 @@
       </div>
     
       <div class="sub-header" [class.shifted]="isCollapsed">
-        <h3 class="sub-heading">DASHBOARD</h3>
+        <h3 class="sub-heading">USER ACCEPTANCE</h3>
         <button class="back-button" routerLink="/admin-login">
           <span class="icon"></span> Back </button>
       </div>
 
-      <div class="dash-container-1">
+      <div class="dash-container-1" [class.shifted]="isCollapsed">
 
     <div class="container-2">
       <div *ngFor="let trainer of pendingTrainers" class="u-card">

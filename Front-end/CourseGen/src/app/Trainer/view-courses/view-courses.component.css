@@ -17,24 +17,6 @@
   background-color: #12324d;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  /* width: 100%; */
-  padding: 20px;
-  
-}
-
-.logo {
-  height: 50px;
-}
-
-.profile-icon {
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
 .title {
   margin-top: 0px;
   text-align: center;
@@ -48,8 +30,9 @@
 
 .container-2 {
   gap: 20px;
-  padding: 25px;
-  /* background-color: #133b50; */
+  /* padding: 25px; */
+  /* padding-top: 25px; */
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
