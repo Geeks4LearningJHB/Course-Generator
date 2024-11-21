@@ -1,7 +1,9 @@
 // src/app/models/pending-dto.model.ts
 export interface PendingDTO {
   userId: number;
-    name: string;
-    surname: string;
+  name: string;
+  surname: string;
+  email: string;
+  status: string
   }
   

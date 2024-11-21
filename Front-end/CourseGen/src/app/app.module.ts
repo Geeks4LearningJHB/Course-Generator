@@ -19,6 +19,7 @@ import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard
 import { UserManagementService } from './Services/user-management.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserManagementComponent } from './Admin/admin-dashboard/user-management/user-management.component';
+import { ViewUsersComponent } from './Admin/view-users/view-users.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { UserManagementComponent } from './Admin/admin-dashboard/user-management
     ViewCoursesComponent,
     AdminDashboardComponent,
     UserManagementComponent,
+    ViewUsersComponent,
     
 
   ],
