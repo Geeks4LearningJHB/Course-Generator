@@ -28,7 +28,7 @@
       </li>
       <li>
         <i class="icon fas fa-users"></i>
-        <span *ngIf="!isCollapsed">View All Users</span>
+        <span *ngIf="!isCollapsed" routerLink="/view-users">View All Users</span>
       </li>
       <hr class="divider" />
       <li>
@@ -38,9 +38,13 @@
     </ul>
   </div>
 
-  
+  <div class="sub-header" [class.shifted]="isCollapsed">
+    <h3 class="sub-heading">DASHBOARD</h3>
+    <button class="back-button" routerLink="/admin-login">
+      <span class="icon"></span> Back </button>
+  </div>
 
-  <div class="dash-container-1">
+  <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="button-container">
       <div class="card" style="width: 18rem;">
         <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">

@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class ViewCoursesComponent {
 
-  isCollapsed = false;
+  isCollapsed = true;
   
   courses = [
     {

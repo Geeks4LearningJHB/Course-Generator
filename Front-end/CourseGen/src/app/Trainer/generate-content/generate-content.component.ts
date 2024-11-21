@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,   HostListener } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
@@ -11,6 +11,7 @@ export class GenerateContentComponent {
   courseTitle: string = '';
   difficulty: string = 'Beginner';
   duration: number | null = null;
+  isCollapsed = true;
 
   onGenerateCourse() {
     console.log('Course Title:', this.courseTitle);
@@ -22,7 +23,7 @@ export class GenerateContentComponent {
   isComplete = false;
   countdown = 30; // Initial countdown in minutes
   generatedData: string = ''; // Placeholder for backend data
-  isCollapsed = false;
+  // isCollapsed = false;
 
   startGeneration() {
     this.isLoading = true;
@@ -59,5 +60,13 @@ export class GenerateContentComponent {
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
+  }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
   }
 }
