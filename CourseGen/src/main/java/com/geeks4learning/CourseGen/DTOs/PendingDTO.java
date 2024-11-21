@@ -12,5 +12,6 @@ public class PendingDTO {
     private long userId;
     private String Name;
     private String Surname;
+    private String Email;
 
 }

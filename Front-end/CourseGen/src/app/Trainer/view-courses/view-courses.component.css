@@ -4,7 +4,6 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  /* background-color: #12324d; */
 }
 
 .VC-container{
@@ -16,28 +15,6 @@
   /* width: 80vw; */
   border-radius: 15px;
   background-color: #12324d;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  /* width: 100%; */
-  padding: 20px;
-  
-}
-:host {
-  display: block;
-  animation: fadeIn 0.8s ease-in; 
-}
-
-.logo {
-  height: 50px;
-}
-
-.profile-icon {
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
 }
 
 .title {
@@ -53,8 +30,9 @@
 
 .container-2 {
   gap: 20px;
-  padding: 25px;
-  /* background-color: #133b50; */
+  /* padding: 25px; */
+  /* padding-top: 25px; */
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -85,7 +63,7 @@
 
 .view-button {
   padding: 8px 16px;
-  background-color: #870a64;
+  background-color: #6c757d;
   color: white;
   border: none;
   border-radius: 5px;
@@ -95,7 +73,7 @@
 }
 
 .view-button:hover {
-  background-color: #52073d;
+  background-color: #5a6268;
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }

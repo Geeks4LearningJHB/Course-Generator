@@ -8,6 +8,5 @@ import com.geeks4learning.CourseGen.Entities.AdminEntity;
 
 public interface AdminRepository extends JpaRepository<AdminEntity, Long> {
     Optional<AdminEntity> findByEmailAndPassword(String Email, String Password);
-    AdminEntity findByEmail(String email);
 }
 

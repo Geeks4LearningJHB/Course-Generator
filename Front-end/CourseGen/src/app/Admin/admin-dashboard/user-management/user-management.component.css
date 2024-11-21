@@ -1,20 +1,4 @@
-.header-1 {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-}
-  
-.logo-1 {
-    height: 50px;
-}
-  
-.profile-icon1 {
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-}
-  
-.title-1 {
+.title {
     margin-top: 0px;
     text-align: center;
     font-family: Arial, sans-serif;
@@ -25,7 +9,16 @@
     -webkit-text-fill-color: transparent;
 }
 
-
+.container-2 {
+    gap: 20px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    width: 100%;
+    overflow-x: hidden;
+  }
   
 .u-card {
     background-color: white;
@@ -37,19 +30,25 @@
 }
   
 .u-card h3 {
-    font-family: Arial, Helvetica, sans-serif;
-    left:0;
-    margin-top: 0px;
-    margin-bottom: 15px;
-    color:black;
-  }
+  font-family: Arial, Helvetica, sans-serif;
+  left:0;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  color:black;
+}
+.u-card h5 {
+  margin: 0%;
+  text-decoration: underline;
+}
 
 .accept-btn {
-    background-color:rgb(0, 231, 77) ;
-    border: none;
-    float: left;
-    border-radius: 16%;
-    margin-right: 10px;
+  background-color:rgb(0, 231, 77) ;
+  border: none;
+  font-weight: bold;
+  float: left;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 
 .accept-btn:hover {
@@ -59,18 +58,16 @@
   }
 
 .reject-btn {
-    background-color: red;
-    border: none;
-    float: left;
-    border-radius: 16%;
+  background-color: red;
+  border: none;
+  font-weight: bold;
+  float: left;
+  border-radius: 5px;
+  margin-top: 10px;
 }
 
 .reject-btn:hover {
     transform: scale(110%);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-  }
-  :host {
-    display: block;
-    animation: fadeIn 0.8s ease-in; 
   }

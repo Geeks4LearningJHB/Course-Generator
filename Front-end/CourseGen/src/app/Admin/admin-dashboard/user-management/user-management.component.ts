@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener ,OnInit } from '@angular/core';
 import { UserManagementService } from '../../../Services/user-management.service';
 import { PendingDTO } from '../../dtos/pending-dto.model';
 
@@ -9,6 +9,8 @@ import { PendingDTO } from '../../dtos/pending-dto.model';
   styleUrl: './user-management.component.css'
 })
 export class UserManagementComponent implements OnInit {
+
+  isCollapsed = true;
   pendingTrainers: PendingDTO[] = [];
 
   constructor(private userManagementService: UserManagementService) {}
@@ -24,39 +26,40 @@ export class UserManagementComponent implements OnInit {
   }
 
   approveTrainer(userId: number): void {
+    console.log("Approving trainer with ID:", userId);
     this.userManagementService.approveTrainer(userId).subscribe({
       next: () => {
-        alert("Trainer approved successfully");
+        console.log("Trainer approved successfully");
         this.loadPendingTrainers(); // Refresh list after approval
       },
       error: (error) => {
-        // Log the error for debugging purposes
         console.error("Error approving trainer:", error);
-  
-        // Show a detailed alert with the error message (if available)
-        const errorMessage = error?.message || "An unknown error occurred while approving the trainer.";
-        alert(`Error approving trainer: ${errorMessage}`);
       }
     });
   }
   
   rejectTrainer(userId: number): void {
+    console.log("Rejecting trainer with ID:", userId);
     this.userManagementService.rejectTrainer(userId).subscribe({
       next: () => {
-        alert("Trainer rejected successfully");
+        console.log("Trainer rejected successfully");
         this.loadPendingTrainers(); // Refresh list after rejection
       },
       error: (error) => {
-        // Log the error for debugging purposes
         console.error("Error rejecting trainer:", error);
-  
-        // Show a detailed alert with the error message (if available)
-        const errorMessage = error?.message || "An unknown error occurred while rejecting the trainer.";
-        alert(`Error rejecting trainer: ${errorMessage}`);
       }
     });
   }
-  
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
   }
   
-
+}

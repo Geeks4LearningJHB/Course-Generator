@@ -10,7 +10,9 @@ import { LoginService } from '../../Services/adminLogin.service';
 export class AdminLoginComponent {
   email: string = '';
   password: string = '';
-  loginError: string = '';  
+  loginError: string = '';
+  isLoading: boolean = false;
+    successMessage: string = '';
 
   constructor(private router: Router, private loginService: LoginService) {}
 
@@ -30,11 +32,18 @@ export class AdminLoginComponent {
         console.log('Login Response:', response);
 
         if (response.response === "Success") {
-          alert('Sign in successfully');
+          // Show loading overlay with success message
+          this.isLoading = true;
+          this.successMessage = 'Sign in successfully';
+        
+        setTimeout(() => {
+          this.isLoading = false;
           this.router.navigate(['/admin-dashboard']);
-        } else {
-          this.loginError = 'Invalid credentials!';
-        }
+        }, 1000); // Adjust delay as needed
+      } else {
+        this.loginError = 'Invalid credentials!';
+      }
+
       },
       (error) => {
         console.error('Login Error:', error);
