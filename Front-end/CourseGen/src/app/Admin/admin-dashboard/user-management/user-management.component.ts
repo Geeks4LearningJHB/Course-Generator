@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener ,OnInit } from '@angular/core';
 import { UserManagementService } from '../../../Services/user-management.service';
 import { PendingDTO } from '../../dtos/pending-dto.model';
 
@@ -9,6 +9,8 @@ import { PendingDTO } from '../../dtos/pending-dto.model';
   styleUrl: './user-management.component.css'
 })
 export class UserManagementComponent implements OnInit {
+
+  isCollapsed = true;
   pendingTrainers: PendingDTO[] = [];
 
   constructor(private userManagementService: UserManagementService) {}
@@ -18,9 +20,9 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadPendingTrainers(): void {
-    // this.userManagementService.getPendingTrainers().subscribe((trainers) => {
-    //   this.pendingTrainers = trainers;
-    // });
+    this.userManagementService.getPendingTrainers().subscribe((trainers) => {
+      this.pendingTrainers = trainers;
+    });
   }
 
   approveTrainer(userId: number): void {
@@ -47,6 +49,17 @@ export class UserManagementComponent implements OnInit {
         console.error("Error rejecting trainer:", error);
       }
     });
+  }
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
   }
   
 }

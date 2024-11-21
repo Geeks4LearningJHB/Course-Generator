@@ -1,0 +1,45 @@
+<div class="admin-dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <img routerLink="/dashboard" src="assets/company_logo_login.png" alt="Logo" class="logo" />
+      <h1 class="dashboard-title">All Trainers</h1>
+      <img src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
+    </div>
+
+    <button class="back-button" routerLink="/admin-dashboard">
+        <span class="icon"></span> Back </button>
+    
+    <!-- Main Content -->
+    <div class="dash-container">
+      <div class="table-container">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Surname</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Placeholder Rows -->
+            <!-- <tr class="placeholder">
+              <td colspan="5">Fetching data from the backend...</td>
+            </tr> -->
+            <!-- Example Dynamic Rows -->
+            <tr *ngFor="let trainer of trainers">
+              <td>{{ trainer.name }}</td>
+              <td>{{ trainer.surname }}</td>
+              <td>{{ trainer.email }}</td>
+              <td>{{ trainer.status }}</td>
+              <td>
+                <button class="action-button" (click)="viewDetails(trainer)">View</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  

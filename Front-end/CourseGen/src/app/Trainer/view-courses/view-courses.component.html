@@ -1,27 +1,4 @@
-<div class="dashboard-container">
-  <div class="sidebar" [class.collapsed]="isCollapsed">
-    <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-    <ul>
-        <li>
-            <i class="icon fa fa-home"></i>
-            <span *ngIf="!isCollapsed">Dashboard</span>
-        </li>
-        <li>
-            <i class="icon fas fa-book"></i>
-            <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-            <i class="icon fas fa-users"></i>
-            <span *ngIf="!isCollapsed">User Acceptance</span>
-        </li>
-        <hr class="divider" />
-        <li>
-            <i class="icon fas fa-sign-out-alt"></i>
-            <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-        </li>
-    </ul>
-</div>
-  
+<div class="admin-dashboard-container"style="background-color:  #e4e9ef;">
   <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
@@ -32,8 +9,42 @@
       </button>
     </div>
   </div>
+  
+  <div class="body">
+    <div class="sidebar" [class.collapsed]="isCollapsed">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+    <ul>
+      <li>
+        <i class="icon fa fa-home"></i>
+        <span *ngIf="!isCollapsed">Dashboard</span>
+      </li>
+      <li>
+        <i class="icon fas fa-book"></i>
+        <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+      </li>
+      <li>
+        <i class="icon fas fa-users"></i>
+        <span *ngIf="!isCollapsed">User Management</span>
+      </li>
+      <li>
+        <i class="icon fas fa-users"></i>
+        <span *ngIf="!isCollapsed">View All Users</span>
+      </li>
+      <hr class="divider" />
+      <li>
+        <i class="icon fas fa-sign-out-alt"></i>
+        <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+      </li>
+    </ul>
+  </div>
 
-  <div class="VC-container">
+  <div class="sub-header" [class.shifted]="isCollapsed">
+    <h3 class="sub-heading">VIEW COURSES</h3>
+    <button class="back-button" routerLink="/admin-dashboard">
+      <span class="icon"></span> Back </button>
+  </div>
+
+  <div class="dash-container-1" [class.shifted]="isCollapsed">
   <div class="container-2">
     <div *ngFor="let course of courses" class="course-card">
       <h3>{{ course.title }}</h3>
