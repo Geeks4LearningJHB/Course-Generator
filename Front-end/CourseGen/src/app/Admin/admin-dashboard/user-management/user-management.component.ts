@@ -20,9 +20,9 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadPendingTrainers(): void {
-    // this.userManagementService.getPendingTrainers().subscribe((trainers) => {
-    //   this.pendingTrainers = trainers;
-    // });
+    this.userManagementService.getPendingTrainers().subscribe((trainers) => {
+      this.pendingTrainers = trainers;
+    });
   }
 
   approveTrainer(userId: number): void {

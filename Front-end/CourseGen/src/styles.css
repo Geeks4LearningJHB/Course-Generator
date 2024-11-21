@@ -109,6 +109,33 @@
     border-radius: 5px;
     border: 1px solid #ccc;
   }
+.header-1 {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+  
+.logo-1 {
+    height: 50px;
+}
+  
+.profile-icon1 {
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-right: 10px;
+}
+  
+.title-1 {
+    margin-top: 0px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    font-weight: bold;
+    background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
    .sidebar {
     width: 250px;

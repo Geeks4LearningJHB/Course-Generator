@@ -92,7 +92,7 @@ public class AdminController {
 public List<PendingDTO> getPendingTrainers() {
     List<TrainerEntity> trainers = trainerRepository.findByStatus("pending");
     return trainers.stream()
-                   .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname()))
+                   .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname(), trainer.getEmail()))
                    .collect(Collectors.toList());
 }
 

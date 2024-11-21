@@ -1,37 +1,49 @@
-.generate-content-container {
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.generate-btn, .save-btn, .preview-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #7f7f7f7e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.generate-btn:hover, .save-btn:hover, .preview-btn:hover {
+  background-color: #7f7f7f7e;
+}
+
+.save-btn, .preview-btn{
+  background-color: #7f7f7f7e;
+}
+
+.gen-content{
+  max-height: 450px
+}
+
+  :host {
+    display: block;
+    animation: fadeIn 0.8s ease-in; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 100vh;
     background-color: #12324d;
-  }
-
-  .dashboard-title {
-    font-size: 30px;
-    font-weight: bold;
-    margin: 20px 0;
-    color: #000;
-  }
-
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px 0;
-  }
-  
-  .logo {
-    height: 60px;
-    width: auto;
-  }
-  
-  .profile-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
   }
   
   h1 {
@@ -50,6 +62,7 @@
     max-height: 100%;
     overflow-y: visible;
     margin-bottom: 25px;
+    margin-top: 25px;
   }
   
   .form-group {
