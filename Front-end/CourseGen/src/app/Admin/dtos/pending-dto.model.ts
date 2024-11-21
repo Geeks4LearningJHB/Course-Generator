@@ -2,7 +2,9 @@
 export interface PendingDTO {
 email: any;
   userId: number;
-    name: string;
-    surname: string;
+  name: string;
+  surname: string;
+  email: string;
+  status: string
   }
   
