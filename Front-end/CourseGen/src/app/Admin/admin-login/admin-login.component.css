@@ -4,12 +4,12 @@
   align-items: center;
   height: 100vh;
   padding: 0;
-  background: linear-gradient(to right, #12324d 75%, #ffffff 75%);
+  background: linear-gradient(to right, #12324d 80%, #ffffff 20%);
 }
 
 
 .logo {
-  width: 100%;
+  width: 90%;
   float: right;
   max-width: 600px;  
   height: 100%;
