@@ -1,6 +1,5 @@
-import { Component,   HostListener } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { Component, HostListener } from '@angular/core';
+import { GenerateContentService } from '../../Services/generate-content.service';  // Adjust import path as needed
 
 @Component({
   selector: 'app-generate-content',
@@ -13,23 +12,28 @@ export class GenerateContentComponent {
   duration: number | null = null;
   isCollapsed = true;
 
+  isLoading = false;
+  isComplete = false;
+  countdown = 30; // Initial countdown in minutes
+  generatedData: string = ''; // Placeholder for backend data
+
+  constructor(private generateContentService: GenerateContentService) {}
+
   onGenerateCourse() {
     console.log('Course Title:', this.courseTitle);
     console.log('Difficulty:', this.difficulty);
     console.log('Duration:', this.duration);
     alert(`Course "${this.courseTitle}" generated successfully!`);
+
+    // Call backend API to generate course content
+    this.startGeneration();
   }
-  isLoading = false;
-  isComplete = false;
-  countdown = 30; // Initial countdown in minutes
-  generatedData: string = ''; // Placeholder for backend data
-  // isCollapsed = false;
 
   startGeneration() {
     this.isLoading = true;
     this.isComplete = false;
     this.countdown = 1;
-
+  
     // Start countdown timer
     const interval = setInterval(() => {
       this.countdown--;
@@ -37,12 +41,26 @@ export class GenerateContentComponent {
         clearInterval(interval);
         this.completeGeneration();
       }
-    }, 2000); // Updates every minute
-
-    // Simulate fetching data from the backend
-    setTimeout(() => {
-      this.generatedData = "Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...";
-    }, 18000); // Simulates a 30-minute backend process
+    }, 2000); // Updates every 2 seconds
+  
+    // Ensure that duration is always a number
+    const courseData = {
+      courseTitle: this.courseTitle,
+      difficulty: this.difficulty,
+      duration: this.duration ?? 0  // Convert null to 0 if duration is null
+    };
+  
+    this.generateContentService.generateCourse(courseData).subscribe(
+      (response: any) => {
+        this.generatedData = response;  // Update with the actual generated data
+      },
+      (error) => {
+        console.error('Error generating course content:', error);
+        this.isLoading = false;
+      }
+    );
+  
+  
   }
 
   completeGeneration() {
@@ -61,6 +79,7 @@ export class GenerateContentComponent {
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
   }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;

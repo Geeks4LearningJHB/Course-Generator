@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CourseNode {
-    
-     private String title;
-    private String content;  // Detailed content for Units
-    private List<CourseNode> children = new ArrayList<>();
+
+    private String title;
+    private String content; // Detailed content for Units
+    private List<CourseNode> children;
 
     // Constructor
     public CourseNode(String title) {
         this.title = title;
+        this.children = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -30,5 +31,4 @@ public class CourseNode {
     public void addChild(CourseNode child) {
         this.children.add(child);
     }
-    
 }
