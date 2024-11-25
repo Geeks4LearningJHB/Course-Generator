@@ -15,8 +15,8 @@ public class AdminEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Admin_id")
-    private long AdminId;
+    @Column(name = "UserId")
+    private long UserId;
 
     @Column(name = "Name")
     private String Name;

@@ -1,9 +1,13 @@
 package com.geeks4learning.CourseGen.config;
+<<<<<<< HEAD
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+=======
+ 
+>>>>>>> origin/LemoBranch
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -21,6 +25,7 @@ public class webConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
     }
+<<<<<<< HEAD
 
     @Configuration
     public class ModelMapperConfig  {
@@ -54,4 +59,10 @@ public class webConfig implements WebMvcConfigurer {
 
     }
     
+=======
+ 
+  
+   
+>>>>>>> origin/LemoBranch
 }
+ 
