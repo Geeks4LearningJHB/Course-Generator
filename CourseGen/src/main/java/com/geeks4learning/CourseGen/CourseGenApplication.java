@@ -23,6 +23,7 @@ public class CourseGenApplication {
             request.getHeaders().add("Authorization", "Bearer " + apiKey);
             return execution.execute(request, body);
         });
+        
         return restTemplate;
     }
 }
