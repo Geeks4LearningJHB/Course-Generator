@@ -1,13 +1,5 @@
 package com.geeks4learning.CourseGen.config;
-<<<<<<< HEAD
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-=======
  
->>>>>>> origin/LemoBranch
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -25,44 +17,8 @@ public class webConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
     }
-<<<<<<< HEAD
-
-    @Configuration
-    public class ModelMapperConfig  {
-    
-        // @Bean
-        // public ModelMapper modelMapper() {
-        //     ModelMapper modelMapper = new ModelMapper();
-        //     modelMapper.getConfiguration()
-        //             .setFieldMatchingEnabled(true)
-        //             .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
-        //     return modelMapper;
-        // }
-        
-        private ModelMapper overrideDefaultMappingConfig() {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration()
-                .setFieldMatchingEnabled(true)
-                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
-
-        return modelMapper;
-    }
-
-    public <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
-        ModelMapper modelMapper = overrideDefaultMappingConfig();
-
-        return source
-                .stream()
-                .map(element -> modelMapper.map(element, targetClass))
-                .collect(Collectors.toList());
-    }
-
-    }
-    
-=======
  
   
    
->>>>>>> origin/LemoBranch
 }
  
