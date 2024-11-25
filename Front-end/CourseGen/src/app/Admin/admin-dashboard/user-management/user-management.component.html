@@ -54,6 +54,14 @@
 
       <div class="dash-container-1" [class.shifted]="isCollapsed">
 
+        <div class="container-2">
+          <div class="overlay" *ngIf="isLoading">
+            <div class="overlay-content">
+              <p>{{ loadingMessage }}</p>
+              <div class="spinner"></div>
+            </div>
+          </div>
+          
     <div class="container-2">
       <div *ngFor="let trainer of pendingTrainers" class="u-card">
         <h3>{{ trainer.name }} {{ trainer.surname }}</h3>

@@ -3,8 +3,8 @@ package com.geeks4learning.CourseGen.Controller;
 import com.geeks4learning.CourseGen.Services.AdminService;
 import com.geeks4learning.CourseGen.Services.TrainerService;
 
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,32 +99,34 @@ public List<PendingDTO> getPendingTrainers() {
     
 
     @PostMapping("/approve-trainer/{UserId}")
-    public ResponseEntity<?> approveTrainer(@PathVariable Long UserId) {
-        Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
-        if (trainer.isPresent()) {
-            TrainerEntity t = trainer.get();
-            t.setStatus("active");
-            trainerRepository.save(t);
-            return ResponseEntity.ok("Trainer approved");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainer not found");
+public ResponseEntity<Map<String, String>> approveTrainer(@PathVariable Long UserId) {
+    Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
+    if (trainer.isPresent()) {
+        TrainerEntity t = trainer.get();
+        t.setStatus("active");
+        trainerRepository.save(t);
+        // Return JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trainer approved");
+        return ResponseEntity.ok(response);
     }
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", "Trainer not found");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+}
 
-    @PostMapping("/reject-trainer/{id}")
-    public ResponseEntity<?> rejectTrainer(@PathVariable Long id) {
+@PostMapping("/reject-trainer/{id}")
+public ResponseEntity<Map<String, String>> rejectTrainer(@PathVariable Long id) {
+    if (trainerRepository.existsById(id)) {
         trainerRepository.deleteById(id);
-        return ResponseEntity.ok("Trainer rejected");
+        // Return JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trainer rejected");
+        return ResponseEntity.ok(response);
     }
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", "Trainer not found");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+}
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
-        TrainerEntity user = trainerRepository.findByEmail(email);
-        if (user != null) {
-            user.setPassword(newPassword);  // In a real-world scenario, hash the password
-            trainerRepository.save(user);
-            return ResponseEntity.ok("Password reset successfully.");
-        } else {
-            return ResponseEntity.badRequest().body("User with the provided email does not exist.");
-        }
-    }
 }
