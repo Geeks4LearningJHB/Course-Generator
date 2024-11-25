@@ -1,7 +1,10 @@
 package com.geeks4learning.CourseGen.Entities;
 
+//import Trainer.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,7 +15,6 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Data
 @Entity
 @Table(name = "Trainer")
@@ -24,10 +26,10 @@ public class TrainerEntity {
     private long UserId;
 
     @Column(name = "Name")
-    private String Name;
+    private String name;
 
     @Column(name = "Surname")
-    private String Surname;
+    private String surname;
 
     @Column(name = "Email")
     private String email;
@@ -36,5 +38,34 @@ public class TrainerEntity {
     private String password;
 
     @Column(nullable = false)
-    private String status = "pending";
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PENDING;
+
+
+    public enum Status {
+        PENDING,
+        ACCEPTED,
+        REJECTED
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

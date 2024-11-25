@@ -1,6 +1,8 @@
 package com.geeks4learning.CourseGen.Services;
 
+import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,4 +57,35 @@ public class TrainerService {
         }
         return message;
     }
+
+    public List<TrainerEntity> getAllPendingTrainers() {
+        return trainerRepository.findByStatus(TrainerEntity.Status.PENDING);
+    }
+
+    //Get all accepted trainers
+    public List<TrainerEntity> getAcceptedTrainers() {
+        return trainerRepository.findByStatus(TrainerEntity.Status.ACCEPTED);
+    }
+
+    public TrainerEntity acceptTrainer(Long id) {
+        return trainerRepository.findById(id)
+        .map(trainer -> {
+            trainer.setStatus(TrainerEntity.Status.ACCEPTED);
+            return trainerRepository.save(trainer);
+        })
+        .orElseThrow(() -> new RuntimeException("Trainer not found"));
+    }
+
+    //if trainer rejected delete from database
+    public void rejectTrainer(Long id) {
+        trainerRepository.findById(id)
+        .map(trainer -> {
+            trainer.setStatus(TrainerEntity.Status.REJECTED);
+            trainerRepository.save(trainer);
+            trainerRepository.deleteById(id);
+            return trainer;
+        })
+        .orElseThrow(() -> new RuntimeException("Trainer not found"));
+    }
+
 }
