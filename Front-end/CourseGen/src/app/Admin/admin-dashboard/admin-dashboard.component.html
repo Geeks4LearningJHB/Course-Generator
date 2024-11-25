@@ -16,15 +16,15 @@
     <ul>
       <li>
         <i class="icon fa fa-home"></i>
-        <span *ngIf="!isCollapsed">Dashboard</span>
+        <span *ngIf="!isCollapsed" routerLink="/admin-dashboard">Dashboard</span>
       </li>
       <li>
         <i class="icon fas fa-book"></i>
-        <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+        <span *ngIf="!isCollapsed" routerLink="/admin-generate-content">Generate Course</span>
       </li>
       <li>
-        <i class="icon fas fa-users"></i>
-        <span *ngIf="!isCollapsed">User Management</span>
+        <i class="icon fas fa-user-check"></i>
+        <span *ngIf="!isCollapsed" routerLink="/user-management">User Management</span>
       </li>
       <li>
         <i class="icon fas fa-users"></i>
@@ -39,26 +39,34 @@
   </div>
 
   <div class="sub-header" [class.shifted]="isCollapsed">
-    <h3 class="sub-heading">DASHBOARD</h3>
-    <button class="back-button" routerLink="/admin-login">
-      <span class="icon"></span> Back </button>
+    <h3 class="sub-heading">COURSE CONTENT GENERATOR</h3>
+    <!-- <button class="back-button" routerLink="/admin-login">
+      <span class="icon fas fa-sign-out-alt"></span>  </button> -->
   </div>
 
   <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="button-container">
       <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <div class="chatgpt-spinner card-img-top">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT Logo" class="chatgpt-logo">
+        </div>
         <div class="card-body">
           <h5 class="card-title">Generate Course</h5>
           <p class="card-text">Create and customize courses with ease using our tools.</p>
-          <a class="btn btn-primary dashboard-button" routerLink="/generate-content">
+          <a class="btn btn-primary dashboard-button" routerLink="/admin-generate-content">
             <span class="icon">✏️</span> Generate Course
           </a>
         </div>
       </div>
 
       <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <div class="book-spinner card-img-top">
+          <div class="book">
+            <div class="page"></div>
+            <div class="page"></div>
+            <div class="page"></div>
+          </div>
+        </div>
         <div class="card-body">
           <h5 class="card-title">View Content</h5>
           <p class="card-text">Explore all generated courses and manage your content effortlessly.</p>
@@ -68,27 +76,28 @@
         </div>
       </div>
 
-      <!-- <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
-        <div class="card-body">
-          <h5 class="card-title">View History</h5>
-          <p class="card-text">Access the history of all generated and managed courses.</p>
-          <a class="btn btn-primary dashboard-button" routerLink="/view-history">
-            <span class="icon">📊</span> View History
-          </a>
-        </div>
-      </div> -->
-
       <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <img src="assets/accept.png" class="card-img-top" alt="Card image">
         <div class="card-body">
-          <h5 class="card-title">Accept Trainers</h5>
-          <p class="card-text">Manage and accept trainers efficiently.</p>
+          <h5 class="card-title">Accept Users</h5>
+          <p class="card-text">Manage and accept users efficiently.</p>
           <a class="btn btn-primary dashboard-button" routerLink="/user-management">
-            <span class="icon">✔️</span> Accept Trainers
+            <span class="icon">✔️</span> Accept Users
           </a>
         </div>
       </div>
+
+      <div class="card" style="width: 18rem;">
+        <img src="assets/user-card.png"  class="card-img-top" alt="Card image">
+        <div class="card-body">
+          <h5 class="card-title">View Users</h5>
+          <p class="card-text">Access and manage all system users.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/view-users">
+            <span class="icon">👤</span> View Users
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

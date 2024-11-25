@@ -17,15 +17,11 @@
       <ul>
         <li>
           <i class="icon fa fa-home"></i>
-          <span *ngIf="!isCollapsed" routerLink="/admin-dashboard">Dashboard</span>
+          <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
         </li>
         <li>
           <i class="icon fas fa-book"></i>
           <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-          <i class="icon fas fa-users"></i>
-          <span *ngIf="!isCollapsed" routerLink="/user-management">User Acceptance</span>
         </li>
         <hr class="divider"/>
         <li>
@@ -37,7 +33,7 @@
 
     <div class="sub-header" [class.shifted]="isCollapsed">
       <h3 class="sub-heading">GENERATE CONTENT</h3>
-      <button class="back-button" routerLink="/admin-dashboard">
+      <button class="back-button" routerLink="/dashboard">
       <span class="icon"></span> Back </button>
     </div>
 
@@ -75,32 +71,3 @@
     </div>
   </div>
 </div>
-    
-
-      <!-- Loading Modal -->
-      <!-- <div *ngIf="isLoading" class="loading-modal">
-        <div class="modal-content">
-          <h2>Generating Course...</h2>
-          <p>Estimated Time Remaining: {{ countdown }} minutes</p>
-          <div class="loader"></div>
-        </div>
-      </div> -->
-
-      <!-- Display Generated Data Modal When Loading is Complete -->
-      <!-- <div *ngIf="!isLoading && isComplete" class="generated-data-modal"> -->
-        <!-- <div class="modal-header"> -->
-
-        <!-- </div> -->
-
-        <!-- <div class="modal-body"> -->
-        <!-- Scrollable content area for large content -->
-        <!-- <div class="content-box">
-          <h2>Generated Course Content</h2> -->
-          <!-- <button class="close-btn" (click)="closeModal()">X</button> -->
-
-          <!-- <p>{{ generatedData }}</p> -->
-          <!-- </div> -->
-
-          <!-- <button class="save-btn" (click)="onSave()">Save</button>
-          <button class="preview-btn" routerLink="/view-content">Preview</button>
-        </div> -->

@@ -26,6 +26,8 @@ export class UserManagementService {
     return this.http.post(`${this.apiUrl}/reject-trainer/${userId}`, {});
   }
 
+
+  
   // Fetch accepted trainers
   getAcceptedTrainers(): Observable<PendingDTO[]> {
     return this.http.get<PendingDTO[]>(`${this.apiUrl}/accepted-trainers`);

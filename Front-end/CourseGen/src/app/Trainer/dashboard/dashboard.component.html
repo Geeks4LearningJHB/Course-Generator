@@ -22,14 +22,6 @@
         <i class="icon fas fa-book"></i>
         <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
       </li>
-      <li>
-        <i class="icon fas fa-users"></i>
-        <span *ngIf="!isCollapsed">User Management</span>
-      </li>
-      <li>
-        <i class="icon fas fa-users"></i>
-        <span *ngIf="!isCollapsed">View All Users</span>
-      </li>
       <hr class="divider" />
       <li>
         <i class="icon fas fa-sign-out-alt"></i>
@@ -47,10 +39,10 @@
   <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="button-container">
       <div class="card" style="width: 18rem;">
-        <!-- <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image"> -->
+        
         <img src="assets/Bluey-Pedro.png" class="card-img-top" alt="Card image">
         <div class="card-body">
-          <!-- <h5 class="card-title">Generate Course</h5> -->
+          <h5 class="card-title">Generate Course</h5>
           <p class="card-text">Create and customize courses with ease using our tools.</p>
           <a class="btn btn-primary dashboard-button" routerLink="/generate-content">
             <span class="icon">✏️</span> Generate Course

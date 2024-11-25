@@ -57,7 +57,7 @@ export class UserManagementComponent implements OnInit {
       if (refreshList) {
         this.loadPendingTrainers(); // Refresh the list after 2 seconds
       }
-    }, 1000);
+    }, 2000);
   }
 
   toggleSidebar(): void {

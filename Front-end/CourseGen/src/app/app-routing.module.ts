@@ -5,6 +5,7 @@ import { RegisterComponent } from './Trainer/register/register.component';
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
+import { AdminGenerateContentComponent } from './Admin/admin-dashboard/admin-generate-content/admin-generate-content.component';
 import { ViewContentComponent } from './Trainer/view-content/view-content.component';
 import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
@@ -21,6 +22,7 @@ const routes: Routes = [
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'generate-content', component: GenerateContentComponent },
+  { path: 'admin-generate-content', component: AdminGenerateContentComponent },
   { path: 'view-courses', component: ViewCoursesComponent },
   { path: 'view-content', component: ViewContentComponent },
   { path: 'admin-login', component: AdminLoginComponent },

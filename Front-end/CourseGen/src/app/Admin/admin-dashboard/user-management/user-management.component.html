@@ -24,19 +24,19 @@
         <ul>
           <li>
             <i class="icon fa fa-home"></i>
-            <span *ngIf="!isCollapsed">Dashboard</span>
+            <span *ngIf="!isCollapsed" routerLink="/admin-dashboard">Dashboard</span>
           </li>
           <li>
             <i class="icon fas fa-book"></i>
-            <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+            <span *ngIf="!isCollapsed" routerLink="/admin-generate-content">Generate Course</span>
+          </li>
+          <li>
+            <i class="icon fas fa-user-check"></i>
+            <span *ngIf="!isCollapsed" routerLink="/user-management">User Management</span>
           </li>
           <li>
             <i class="icon fas fa-users"></i>
-            <span *ngIf="!isCollapsed">User Management</span>
-          </li>
-          <li>
-            <i class="icon fas fa-users"></i>
-            <span *ngIf="!isCollapsed">View All Users</span>
+            <span *ngIf="!isCollapsed" routerLink="/view-users">View All Users</span>
           </li>
           <hr class="divider" />
           <li>
@@ -48,7 +48,7 @@
     
       <div class="sub-header" [class.shifted]="isCollapsed">
         <h3 class="sub-heading">USER ACCEPTANCE</h3>
-        <button class="back-button" routerLink="/admin-login">
+        <button class="back-button" routerLink="/admin-dashboard">
           <span class="icon"></span> Back </button>
       </div>
 
