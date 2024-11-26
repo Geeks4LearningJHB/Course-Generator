@@ -1,18 +1,16 @@
-import { Component, HostListener ,OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UserManagementService } from '../../../Services/user-management.service';
 import { PendingDTO } from '../../dtos/pending-dto.model';
-
 
 @Component({
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
-  styleUrl: './user-management.component.css'
+  styleUrls: ['./user-management.component.css'],
 })
 export class UserManagementComponent implements OnInit {
-
+  isCollapsed = true;
   isLoading: boolean = false;
   loadingMessage: string = '';
-  isCollapsed = true;
   pendingTrainers: PendingDTO[] = [];
 
   constructor(private userManagementService: UserManagementService) {}
@@ -80,13 +78,13 @@ export class UserManagementComponent implements OnInit {
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
   }
+
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
+  onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
 
     if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
       this.isCollapsed = true;
     }
   }
-  
 }

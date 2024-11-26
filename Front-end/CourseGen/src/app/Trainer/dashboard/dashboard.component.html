@@ -23,13 +23,9 @@
         <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
       </li>
       <li>
-        <i class="icon fas fa-users"></i>
-        <span *ngIf="!isCollapsed">User Management</span>
-      </li>
-      <li>
-        <i class="icon fas fa-users"></i>
-        <span *ngIf="!isCollapsed">View All Users</span>
-      </li>
+        <i class="icon fas fa-file-alt"></i>
+        <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
+    </li>
       <hr class="divider" />
       <li>
         <i class="icon fas fa-sign-out-alt"></i>
@@ -39,7 +35,7 @@
   </div>
 
   <div class="sub-header" [class.shifted]="isCollapsed">
-    <h3 class="sub-heading">DASHBOARD</h3>
+    <h3 class="sub-heading" style="font-size:40px;">COURSE GENERATOR</h3>
     <button class="back-button" routerLink="/admin-login">
       <span class="icon"></span> Back </button>
   </div>
@@ -47,7 +43,8 @@
   <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="button-container">
       <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        
+        <img src="assets/Bluey-Pedro.png" class="card-img-top" alt="Card image">
         <div class="card-body">
           <h5 class="card-title">Generate Course</h5>
           <p class="card-text">Create and customize courses with ease using our tools.</p>
@@ -58,7 +55,8 @@
       </div>
 
       <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
+        <!-- <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image"> -->
+        <img src="assets/Blued-Pedro.png" class="card-img-top" alt="Card image">
         <div class="card-body">
           <h5 class="card-title">View Content</h5>
           <p class="card-text">Explore all generated courses and manage your content effortlessly.</p>
@@ -67,27 +65,6 @@
           </a>
         </div>
       </div>
-
-      <!-- <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
-        <div class="card-body">
-          <h5 class="card-title">View History</h5>
-          <p class="card-text">Access the history of all generated and managed courses.</p>
-          <a class="btn btn-primary dashboard-button" routerLink="/view-history">
-            <span class="icon">📊</span> View History
-          </a>
-        </div>
-      </div> -->
-
-      <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
-        <div class="card-body">
-          <h5 class="card-title">Accept Trainers</h5>
-          <p class="card-text">Manage and accept trainers efficiently.</p>
-          <a class="btn btn-primary dashboard-button" routerLink="/user-management">
-            <span class="icon">✔️</span> Accept Trainers
-          </a>
-        </div>
       </div>
     </div>
   </div>

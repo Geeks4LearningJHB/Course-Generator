@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UserManagementService } from '../../Services/user-management.service';
 import { PendingDTO } from '../dtos/pending-dto.model';
 
@@ -10,6 +10,7 @@ import { PendingDTO } from '../dtos/pending-dto.model';
 export class ViewUsersComponent implements OnInit {
   trainers: PendingDTO[] = [];
   selectedTrainer: PendingDTO | null = null;
+  isCollapsed = true;
 
   constructor(private userManagementService: UserManagementService) {}
 
@@ -29,5 +30,16 @@ export class ViewUsersComponent implements OnInit {
 
   closeModal(): void {
     this.selectedTrainer = null;
+  }
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
   }
 }
