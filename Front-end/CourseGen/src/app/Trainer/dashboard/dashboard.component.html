@@ -35,16 +35,15 @@
   </div>
 
   <div class="sub-header" [class.shifted]="isCollapsed">
-    <h3 class="sub-heading" style="font-size:40px;">COURSE GENERATOR</h3>
-    <button class="back-button" routerLink="/admin-login">
-      <span class="icon"></span> Back </button>
+    <h3 class="sub-heading">COURSE CONTENT GENERATOR</h3>
   </div>
 
   <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="button-container">
       <div class="card" style="width: 18rem;">
-        
-        <img src="assets/Bluey-Pedro.png" class="card-img-top" alt="Card image">
+        <div class="chatgpt-spinner card-img-top">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT Logo" class="chatgpt-logo">
+        </div>
         <div class="card-body">
           <h5 class="card-title">Generate Course</h5>
           <p class="card-text">Create and customize courses with ease using our tools.</p>
@@ -55,8 +54,13 @@
       </div>
 
       <div class="card" style="width: 18rem;">
-        <!-- <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image"> -->
-        <img src="assets/Blued-Pedro.png" class="card-img-top" alt="Card image">
+        <div class="book-spinner card-img-top">
+          <div class="book">
+            <div class="page"></div>
+            <div class="page"></div>
+            <div class="page"></div>
+          </div>
+        </div>
         <div class="card-body">
           <h5 class="card-title">View Content</h5>
           <p class="card-text">Explore all generated courses and manage your content effortlessly.</p>

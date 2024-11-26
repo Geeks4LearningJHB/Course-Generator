@@ -32,7 +32,7 @@ export class AdminViewCoursesComponent {
 
   viewCourse(courseId: number) {
     // Navigate to view-content and pass the courseId via query parameters
-    this.router.navigate(['/view-content'], { queryParams: { id: courseId } });
+    this.router.navigate(['/admin-view-content'], { queryParams: { id: courseId } });
   }
 
   toggleSidebar() {
