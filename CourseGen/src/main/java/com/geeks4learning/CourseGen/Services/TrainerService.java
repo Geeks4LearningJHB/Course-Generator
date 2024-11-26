@@ -1,10 +1,13 @@
 package com.geeks4learning.CourseGen.Services;
 
+import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
+import com.geeks4learning.CourseGen.DTOs.TrainerViewDTO;
 import com.geeks4learning.CourseGen.Entities.TrainerEntity;
 import com.geeks4learning.CourseGen.Model.Message;
 import com.geeks4learning.CourseGen.Repositories.TrainerRepository;
@@ -55,4 +58,17 @@ public class TrainerService {
         }
         return message;
     }
+
+
+   public List<TrainerViewDTO> getTrainerDetails() {
+    return trainerRepository.findAllTrainerDetails();
+}
+    // //Get all accepted trainers
+    // public List<TrainerEntity> getAcceptedTrainers() {
+    //     return trainerRepository.findByStatus();
+    // }
+
+    
+
+
 }

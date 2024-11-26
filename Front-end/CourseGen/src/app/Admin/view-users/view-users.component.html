@@ -1,83 +1,44 @@
-<div class="admin-dashboard-container" style="background-color: #e4e9ef;">
-
-  <div class="top-nav">
-    <div class="logo">
-      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
-    </div>
-    <div class="nav-right">
-      <button class="profile-btn">
-        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
-      </button>
-    </div>
+<div class="admin-dashboard-container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <img routerLink="/dashboard" src="assets/company_logo_login.png" alt="Logo" class="logo" />
+    <h1 class="dashboard-title">All Trainers</h1>
+    <img src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
   </div>
 
-  <div class="body">
-    <div class="sidebar" [class.collapsed]="isCollapsed">
-      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-    <ul>
-      <li>
-        <i class="icon fa fa-home"></i>
-        <span *ngIf="!isCollapsed" routerLink="/admin-dashboard">Dashboard</span>
-      </li>
-      <li>
-        <i class="icon fas fa-book"></i>
-        <span *ngIf="!isCollapsed" routerLink="/admin-generate-content">Generate Course</span>
-      </li>
-      <li>
-          <i class="icon fas fa-file-alt"></i>
-          <span *ngIf="!isCollapsed" routerLink="/admin-view-content">View Content</span>
-      </li>
-      <li>
-        <i class="icon fas fa-user-check"></i>
-        <span *ngIf="!isCollapsed" routerLink="/user-management">User Management</span>
-      </li>
-      <li>
-        <i class="icon fas fa-users"></i>
-        <span *ngIf="!isCollapsed" routerLink="/view-users">View All Users</span>
-      </li>
-      <hr class="divider" />
-      <li>
-        <i class="icon fas fa-sign-out-alt"></i>
-        <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-      </li>
-    </ul>
-  </div>
-    <div class="sub-header" [class.shifted]="isCollapsed">
-      <h3 class="sub-heading">VIEW USERS</h3>
-      <button class="back-button" routerLink="/admin-dashboard">
-      <span class="icon"></span> Back </button>
-    </div>
-
-    <div class="dash-container-1"  [class.shifted]="isCollapsed">
-      <div class="table-container">
-        <table class="styled-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Surname</th>
-              <th>Email</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Placeholder Rows -->
-            <!-- <tr class="placeholder">
-              <td colspan="5">Fetching data from the backend...</td>
-            </tr> -->
-            <!-- Example Dynamic Rows -->
-            <tr *ngFor="let trainer of trainers">
-              <td>{{ trainer.name }}</td>
-              <td>{{ trainer.surname }}</td>
-              <td>{{ trainer.email }}</td>
-              <td>{{ trainer.status }}</td>
-              <td>
-                <button class="action-button" (click)="viewDetails(trainer)">View</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  <button class="back-button" routerLink="/admin-dashboard">
+      <span class="icon"></span> Back 
+  </button>
   
+  <!-- Main Content -->
+  <div class="dash-container">
+    <div class="table-container">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="!trainers || trainers.length === 0">
+            <td colspan="5">No trainers found.</td>
+          </tr>
+          <tr *ngFor="let trainer of trainers">
+            <td>{{ trainer.name }}</td>
+            <td>{{ trainer.surname }}</td>
+            <td>{{ trainer.email }}</td>
+            <td>{{ trainer.status }}</td>
+            <td>
+              <button class="action-button" (click)="viewDetails(trainer)">View</button>
+            </td>
+          </tr>
+        </tbody>
+        
+      </table>
+    </div>
+  </div>
+</div>
