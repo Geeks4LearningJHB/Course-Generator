@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+ 
 @Configuration
 public class OpenApiConfig {
-
+ 
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -28,11 +28,12 @@ public class OpenApiConfig {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:8080") // Update with your frontend URL
+                    .allowedOrigins("http://localhost:4200") // Update with your frontend URL
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*");
         }
     }
+ 
     // @Bean
     // public ModelMapper modelMapper() {
     //     ModelMapper modelMapper = new ModelMapper();
