@@ -1,21 +1,10 @@
 package com.geeks4learning.CourseGen.Controller;
 
-import com.geeks4learning.CourseGen.DTOs.CourseModuleDTO;
-import com.geeks4learning.CourseGen.DTOs.PromtDTO;
-import com.geeks4learning.CourseGen.Entities.Activity;
-import com.geeks4learning.CourseGen.Entities.Assessment;
-import com.geeks4learning.CourseGen.Entities.CourseModule;
-import com.geeks4learning.CourseGen.Entities.Promt;
-import com.geeks4learning.CourseGen.Entities.Unit;
+import com.geeks4learning.CourseGen.DTOs.CourseNode;
 import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
-import com.geeks4learning.CourseGen.Services.ActivityService;
-import com.geeks4learning.CourseGen.Services.AssessmentService;
-import com.geeks4learning.CourseGen.Services.ModuleService;
-import com.geeks4learning.CourseGen.Services.PromptService;
-import com.geeks4learning.CourseGen.Services.UnitService;
+import com.geeks4learning.CourseGen.Model.CourseRequest;
 
-import jakarta.transaction.Transactional;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -30,12 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import java.io.FileOutputStream;
@@ -48,21 +34,6 @@ public class AIController {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
-    private PromptService promptService;
-
-    @Autowired
-    private ModuleService moduleService;
-
-    @Autowired
-    private UnitService unitService;
-
-    @Autowired
-    private AssessmentService assessmentService;
-
-    @Autowired
-    private ActivityService activityService;
 
     @Value("${openai.completions}")
     private String completionsURL;
@@ -146,8 +117,8 @@ public class AIController {
         return strResponse;
     }
 
-    private String generateDetailedContentForOutline(String outline) {
-        StringBuilder detailedContentBuilder = new StringBuilder();
+        HttpEntity<ChatCompletionRequest> entity = new HttpEntity<>(request, headers);
+        ChatCompletionResponse response = restTemplate.postForObject(completionsURL, entity, ChatCompletionResponse.class);
 
         String[] sections = outline.split("\n");
         for (String section : sections) {
@@ -168,7 +139,7 @@ public class AIController {
             // detailedContentBuilder.append(sectionContent).append("\n\n");
         }
 
-        return detailedContentBuilder.toString();
+        return "";
     }
 
     @PostMapping("/saveGeneratedCourse")
