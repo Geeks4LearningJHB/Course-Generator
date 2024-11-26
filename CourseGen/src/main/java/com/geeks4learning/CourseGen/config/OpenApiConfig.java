@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+ 
 @Configuration
 public class OpenApiConfig {
-
+ 
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -33,6 +33,7 @@ public class OpenApiConfig {
                     .allowedHeaders("*");
         }
     }
+ 
     // @Bean
     // public ModelMapper modelMapper() {
     //     ModelMapper modelMapper = new ModelMapper();
