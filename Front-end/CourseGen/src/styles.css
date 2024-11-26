@@ -109,7 +109,7 @@
     border-radius: 5px;
     border: 1px solid #ccc;
   }
-.header-1 {
+/* .header-1 {
     display: flex;
     justify-content: space-between;
     padding: 20px;
@@ -135,7 +135,7 @@
     background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
+} */
 
    .sidebar {
     width: 250px;

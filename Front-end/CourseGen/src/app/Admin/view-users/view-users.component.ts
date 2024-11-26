@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UserManagementService } from '../../Services/user-management.service';
 import { TrainerDTO } from '../dtos/TrainerDTO';
 
@@ -38,5 +38,16 @@ export class ViewUsersComponent implements OnInit {
   // Close details modal
   closeModal(): void {
     this.selectedTrainer = null;
+  }
+  toggleSidebar() {
+    this.isCollapsed = !this.isCollapsed;
+  }
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
   }
 }

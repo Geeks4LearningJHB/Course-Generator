@@ -100,3 +100,7 @@ animation-delay: 0.5s;
     opacity: 1;
 }
 }
+:host {
+  display: block;
+  animation: fadeIn 0.8s ease-in; 
+}

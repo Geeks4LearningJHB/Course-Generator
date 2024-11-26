@@ -11,6 +11,7 @@ import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { ViewContentComponent } from './Trainer/view-content/view-content.component';
 import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
+import { AdminGenerateContentComponent } from './Admin/admin-dashboard/admin-generate-content/admin-generate-content.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
 import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-password.component';
 import { ProfileManagementComponent } from './profile-management/profile-management.component';
@@ -38,7 +39,7 @@ import { ViewUsersComponent } from './Admin/view-users/view-users.component';
     AdminDashboardComponent,
     UserManagementComponent,
     ViewUsersComponent,
-    
+    AdminGenerateContentComponent,
 
   ],
   imports: [
