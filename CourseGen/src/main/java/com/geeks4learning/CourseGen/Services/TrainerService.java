@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
+import com.geeks4learning.CourseGen.DTOs.TrainerViewDTO;
 import com.geeks4learning.CourseGen.Entities.TrainerEntity;
 import com.geeks4learning.CourseGen.Model.Message;
 import com.geeks4learning.CourseGen.Repositories.TrainerRepository;
@@ -58,34 +59,16 @@ public class TrainerService {
         return message;
     }
 
-    public List<TrainerEntity> getAllPendingTrainers() {
-        return trainerRepository.findByStatus(TrainerEntity.Status.PENDING);
-    }
 
-    //Get all accepted trainers
-    public List<TrainerEntity> getAcceptedTrainers() {
-        return trainerRepository.findByStatus(TrainerEntity.Status.ACCEPTED);
-    }
+   public List<TrainerViewDTO> getTrainerDetails() {
+    return trainerRepository.findAllTrainerDetails();
+}
+    // //Get all accepted trainers
+    // public List<TrainerEntity> getAcceptedTrainers() {
+    //     return trainerRepository.findByStatus();
+    // }
 
-    public TrainerEntity acceptTrainer(Long id) {
-        return trainerRepository.findById(id)
-        .map(trainer -> {
-            trainer.setStatus(TrainerEntity.Status.ACCEPTED);
-            return trainerRepository.save(trainer);
-        })
-        .orElseThrow(() -> new RuntimeException("Trainer not found"));
-    }
+    
 
-    //if trainer rejected delete from database
-    public void rejectTrainer(Long id) {
-        trainerRepository.findById(id)
-        .map(trainer -> {
-            trainer.setStatus(TrainerEntity.Status.REJECTED);
-            trainerRepository.save(trainer);
-            trainerRepository.deleteById(id);
-            return trainer;
-        })
-        .orElseThrow(() -> new RuntimeException("Trainer not found"));
-    }
 
 }

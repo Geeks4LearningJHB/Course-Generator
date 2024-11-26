@@ -1,32 +1,41 @@
 import { Component, OnInit } from '@angular/core';
 import { UserManagementService } from '../../Services/user-management.service';
-import { PendingDTO } from '../dtos/pending-dto.model';
+import { TrainerDTO } from '../dtos/TrainerDTO';
 
 @Component({
   selector: 'app-view-users',
   templateUrl: './view-users.component.html',
-  styleUrl: './view-users.component.css'
+  styleUrls: ['./view-users.component.css'] // Ensure 'styleUrls' is plural and matches the actual file
 })
 export class ViewUsersComponent implements OnInit {
-  trainers: PendingDTO[] = [];
-  selectedTrainer: PendingDTO | null = null;
+  trainers: TrainerDTO[] = []; // This is used in the HTML
+  selectedTrainer: TrainerDTO | null = null;
 
   constructor(private userManagementService: UserManagementService) {}
 
   ngOnInit(): void {
-    this.loadAllTrainers();
+    this.fetchTrainers();
   }
 
-  loadAllTrainers(): void {
-    this.userManagementService.getAllTrainers().subscribe((trainers) => {
-      this.trainers = trainers;
-    });
+  // Fetch trainers from the backend and assign to 'trainers'
+  fetchTrainers(): void {
+    this.userManagementService.getAllTrainers().subscribe(
+      (data) => {
+        console.log('Fetched trainers:', data); // Debugging log
+        this.trainers = data; // Use the same property referenced in the template
+      },
+      (error) => {
+        console.error('Error fetching trainers:', error);
+      }
+    );
   }
 
-  viewDetails(trainer: PendingDTO): void {
+  // Handle viewing trainer details
+  viewDetails(trainer: TrainerDTO): void {
     this.selectedTrainer = trainer;
   }
 
+  // Close details modal
   closeModal(): void {
     this.selectedTrainer = null;
   }

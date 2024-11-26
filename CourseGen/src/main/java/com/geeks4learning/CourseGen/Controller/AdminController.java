@@ -2,6 +2,7 @@ package com.geeks4learning.CourseGen.Controller;
  
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
+import com.geeks4learning.CourseGen.DTOs.PendingDTO;
 import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
+import com.geeks4learning.CourseGen.DTOs.TrainerViewDTO;
 import com.geeks4learning.CourseGen.Entities.AdminEntity;
 import com.geeks4learning.CourseGen.Entities.TrainerEntity;
 import com.geeks4learning.CourseGen.Model.Message;
@@ -42,6 +46,11 @@ public class AdminController {
     // public Message createTrainer(@RequestBody AdminDTO adminDTO) {
     // return adminService.createAdmin(adminDTO);
     // }
+
+    @GetMapping("/AllTrainers")
+   public List<TrainerViewDTO> getTrainerDetails() {
+    return trainerService.getTrainerDetails();
+}
  
     @PostMapping("/createTrainer")
     public Message createTrainer(@RequestBody TrainerDTO TrainerDTO) {
@@ -79,28 +88,49 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(authResponse.getMessage());
         }
     }
+
+ @GetMapping("/pending-trainers")
+public List<PendingDTO> getPendingTrainers() {
+    List<TrainerEntity> trainers = trainerRepository.findByStatus("pending");
+    return trainers.stream()
+                   .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname(), trainer.getEmail()))
+                   .collect(Collectors.toList());
+}
+
+     @PostMapping("/approve-trainer/{UserId}")
+    public ResponseEntity<?> approveTrainer(@PathVariable Long UserId) {
+        Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
+        if (trainer.isPresent()) {
+            TrainerEntity t = trainer.get();
+            t.setStatus("active");
+            trainerRepository.save(t);
+            return ResponseEntity.ok("Trainer approved");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainer not found");
+    }
  
+    @PostMapping("/reject-trainer/{id}")
+    public ResponseEntity<?> rejectTrainer(@PathVariable Long id) {
+        trainerRepository.deleteById(id);
+        return ResponseEntity.ok("Trainer rejected");
+    }
  
-    @GetMapping("/pending")
-    public List<TrainerEntity> getPendingTrainers() {
-        return trainerService.getAllPendingTrainers();
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
+        TrainerEntity user = trainerRepository.findByEmail(email);
+        if (user != null) {
+            user.setPassword(newPassword);  // In a real-world scenario, hash the password
+            trainerRepository.save(user);
+            return ResponseEntity.ok("Password reset successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("User with the provided email does not exist.");
+        }
     }
 
-    @PutMapping("/{id}/accept")
-    public TrainerEntity acceptTrainer(@PathVariable Long id) {
-        return trainerService.acceptTrainer(id);
-    }
-
-    @PutMapping("/{id}/reject")
-    public void rejectTrainer(@PathVariable Long id) {
-        trainerService.rejectTrainer(id);
-    }
-
-    @GetMapping("/trainers")
-    public List<TrainerEntity> getAcceptedTrainers() {
-       return trainerService.getAcceptedTrainers();
-    }
-
- 
-   
+    // @GetMapping("/allTrainers")
+    // public List<TrainerEntity> getTrainers() {
+    //     return trainerRepository.findByStatus("Active");
+    // }
+    
+    
 }

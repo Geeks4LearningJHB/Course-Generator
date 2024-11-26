@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { PendingDTO } from '../Admin/dtos/pending-dto.model';
+import { TrainerDTO } from '../Admin/dtos/TrainerDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +37,9 @@ export class UserManagementService {
     return this.http.get<PendingDTO[]>(`${this.apiUrl}/rejected-trainers`);
   }
 
-  // Fetch all trainers with their status
-  getAllTrainers(): Observable<PendingDTO[]> {
-    return this.http.get<PendingDTO[]>(`${this.apiUrl}/all-trainers`);
+  getAllTrainers(): Observable<TrainerDTO[]> {
+    return this.http.get<TrainerDTO[]>(`${this.apiUrl}/AllTrainers`);
   }
+
+  
 }
