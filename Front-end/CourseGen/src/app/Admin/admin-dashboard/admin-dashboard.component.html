@@ -37,7 +37,7 @@
       <hr class="divider" />
       <li>
         <i class="icon fas fa-sign-out-alt"></i>
-        <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+        <span class="logout-link" *ngIf="!isCollapsed" routerLink="/landing-page">Logout</span>
       </li>
     </ul>
   </div>
@@ -49,7 +49,6 @@
   </div>
 
   <div class="dash-container-1" [class.shifted]="isCollapsed">
-  <div class="dash-container-1">
     <div class="button-container">
       <div class="card" style="width: 18rem;">
         <div class="chatgpt-spinner card-img-top">
@@ -97,7 +96,7 @@
         <div class="card-body">
           <h5 class="card-title">View Users</h5>
           <p class="card-text">Access and manage all system users.</p>
-          <a class="btn btn-primary dashboard-button" routerLink="/view-users">
+          <a class="btn btn-primary dashboard-button" routerLink="/admin-view-users">
             <span class="icon">👤</span> View Users
           </a>
         </div>
@@ -106,4 +105,3 @@
     </div>
   </div>
 </div>
-

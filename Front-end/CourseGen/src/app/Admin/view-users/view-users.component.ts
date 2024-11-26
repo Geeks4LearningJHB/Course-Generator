@@ -10,6 +10,7 @@ import { TrainerDTO } from '../dtos/TrainerDTO';
 export class ViewUsersComponent implements OnInit {
   trainers: TrainerDTO[] = []; // This is used in the HTML
   selectedTrainer: TrainerDTO | null = null;
+  isCollapsed = true;
 
   constructor(private userManagementService: UserManagementService) {}
 

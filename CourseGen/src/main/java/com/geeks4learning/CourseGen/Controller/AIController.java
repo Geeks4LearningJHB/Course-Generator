@@ -50,94 +50,92 @@ import java.io.IOException;
 @CrossOrigin(origins = "http://localhost:4200")
 public class AIController {
  
-    @Autowired
-    private RestTemplate restTemplate;
+//     @Autowired
+//     private RestTemplate restTemplate;
  
-    @Autowired
-    private PromptService promptService;
+//     @Autowired
+//     private PromptService promptService;
  
-    @Autowired
-    private ModuleService moduleService;
+//     @Autowired
+//     private ModuleService moduleService;
  
-    @Autowired
-    private UnitService unitService;
+//     @Autowired
+//     private UnitService unitService;
  
-    @Autowired
-    private AssessmentService assessmentService;
+//     @Autowired
+//     private AssessmentService assessmentService;
  
-    @Autowired
-    private ActivityService activityService;
+//     @Autowired
+//     private ActivityService activityService;
  
-    @Value("${openai.completions}")
-    private String completionsURL;
+//     @Value("${openai.completions}")
+//     private String completionsURL;
 
-    @Value("${openai.api-key}")
-    private String apiKey;
+//     @Value("${openai.api-key}")
+//     private String apiKey;
 
     
-@PostMapping("/generateCourse")
-    public CourseNode promptHandler(@RequestBody CourseRequest courseRequest) {
-        return generateCourseTree(
-            courseRequest.getCourseTitle(),
-            courseRequest.getDifficulty(),
-            courseRequest.getDuration()
-        );
-    }
+// @PostMapping("/generateCourse")
+//     public CourseNode promptHandler(@RequestBody CourseRequest courseRequest) {
+//         return generateCourseTree(
+//             courseRequest.getCourseTitle(),
+//             courseRequest.getDifficulty(),
+//             courseRequest.getDuration()
+//         );
+//     }
 
-    private CourseNode generateCourseTree(String courseTitle, String difficulty, int duration) {
-        String courseOutlinePrompt = "Please generate a detailed course outline for a textbook teaching about: "
-                + courseTitle +
-                ". The course should be designed for a " + difficulty
-                + " level and is intended to be completed in " + duration + " months. " +
-                "The outline should be organized as Modules. Each Module should contain Units with topics, suggested activities, and assessments.";
+//     private CourseNode generateCourseTree(String courseTitle, String difficulty, int duration) {
+//         String courseOutlinePrompt = "Please generate a detailed course outline for a textbook teaching about: "
+//                 + courseTitle +
+//                 ". The course should be designed for a " + difficulty
+//                 + " level and is intended to be completed in " + duration + " months. " +
+//                 "The outline should be organized as Modules. Each Module should contain Units with topics, suggested activities, and assessments.";
 
-        String outline = respondToPrompt(courseOutlinePrompt);
-        CourseNode root = new CourseNode(courseTitle);
+//         String outline = respondToPrompt(courseOutlinePrompt);
+//         CourseNode root = new CourseNode(courseTitle);
 
-        String[] modules = outline.split("Module");
-        for (String module : modules) {
-            if (module.trim().isEmpty()) continue;
+//         String[] modules = outline.split("Module");
+//         for (String module : modules) {
+//             if (module.trim().isEmpty()) continue;
 
-            CourseNode moduleNode = new CourseNode("Module " + module.trim());
-            String moduleDetailsPrompt = "Provide detailed content for " + moduleNode.getTitle();
-            String moduleDetails = respondToPrompt(moduleDetailsPrompt);
-            moduleNode.setContent(moduleDetails);
+//             CourseNode moduleNode = new CourseNode("Module " + module.trim());
+//             String moduleDetailsPrompt = "Provide detailed content for " + moduleNode.getTitle();
+//             String moduleDetails = respondToPrompt(moduleDetailsPrompt);
+//             moduleNode.setContent(moduleDetails);
 
-            String[] units = moduleDetails.split("Unit");
-            for (String unit : units) {
-                if (unit.trim().isEmpty()) continue;
+//             String[] units = moduleDetails.split("Unit");
+//             for (String unit : units) {
+//                 if (unit.trim().isEmpty()) continue;
 
-                CourseNode unitNode = new CourseNode("Unit " + unit.trim());
-                String unitDetailsPrompt = "Provide detailed content for " + unitNode.getTitle();
-                String unitDetails = respondToPrompt(unitDetailsPrompt);
-                unitNode.setContent(unitDetails);
+//                 CourseNode unitNode = new CourseNode("Unit " + unit.trim());
+//                 String unitDetailsPrompt = "Provide detailed content for " + unitNode.getTitle();
+//                 String unitDetails = respondToPrompt(unitDetailsPrompt);
+//                 unitNode.setContent(unitDetails);
 
-                moduleNode.addChild(unitNode);
-            }
+//                 moduleNode.addChild(unitNode);
+//             }
 
-            root.addChild(moduleNode);
-        }
+//             root.addChild(moduleNode);
+//         }
 
-        return root;
-    }
+//         return root;
+//     }
 
-    private String respondToPrompt(String prompt) {
-        ChatCompletionRequest request = new ChatCompletionRequest("gpt-4-mini", prompt);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+//     private String respondToPrompt(String prompt) {
+//         ChatCompletionRequest request = new ChatCompletionRequest("gpt-4-mini", prompt);
+//         HttpHeaders headers = new HttpHeaders();
+//         headers.set("Authorization", "Bearer " + apiKey);
+//         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<ChatCompletionRequest> entity = new HttpEntity<>(request, headers);
-        ChatCompletionResponse response = restTemplate.postForObject(completionsURL, entity, ChatCompletionResponse.class);
+//         HttpEntity<ChatCompletionRequest> entity = new HttpEntity<>(request, headers);
+//         ChatCompletionResponse response = restTemplate.postForObject(completionsURL, entity, ChatCompletionResponse.class);
 
-        if (response != null && !response.getChoices().isEmpty()) {
-            return response.getChoices().get(0).getMessage().getContent();
-        }
+//         if (response != null && !response.getChoices().isEmpty()) {
+//             return response.getChoices().get(0).getMessage().getContent();
+//         }
 
-        return "";
-    }
-
-
+//         return "";
+//     }
 
 
 
@@ -153,20 +151,22 @@ public class AIController {
 
 
 
-    public void exportToWord(String detailedContent, String fileName) {
-        try (XWPFDocument document = new XWPFDocument()) {
-            // Create a paragraph in the document
-            XWPFParagraph paragraph = document.createParagraph();
-            XWPFRun run = paragraph.createRun();
-            run.setText(detailedContent);
 
-            // Write the document to the specified file
-            try (FileOutputStream out = new FileOutputStream(fileName)) {
-                document.write(out);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-}
+//     public void exportToWord(String detailedContent, String fileName) {
+//         try (XWPFDocument document = new XWPFDocument()) {
+//             // Create a paragraph in the document
+//             XWPFParagraph paragraph = document.createParagraph();
+//             XWPFRun run = paragraph.createRun();
+//             run.setText(detailedContent);
+
+//             // Write the document to the specified file
+//             try (FileOutputStream out = new FileOutputStream(fileName)) {
+//                 document.write(out);
+//             }
+//         } catch (IOException e) {
+//             e.printStackTrace();
+//         }
+//     }
+
+ }
