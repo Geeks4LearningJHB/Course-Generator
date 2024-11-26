@@ -14,6 +14,8 @@ import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-passwo
 import { ProfileManagementComponent } from './profile-management/profile-management.component';
 import { UserManagementComponent } from './Admin/admin-dashboard/user-management/user-management.component';
 import { ViewUsersComponent } from './Admin/view-users/view-users.component';
+import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
+import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view-content.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent }, // Default landing page
@@ -24,7 +26,9 @@ const routes: Routes = [
   { path: 'generate-content', component: GenerateContentComponent },
   { path: 'admin-generate-content', component: AdminGenerateContentComponent },
   { path: 'view-courses', component: ViewCoursesComponent },
+  { path: 'admin-view-courses', component: AdminViewCoursesComponent },
   { path: 'view-content', component: ViewContentComponent },
+  { path: 'admin-view-content', component: AdminViewContentComponent },
   { path: 'admin-login', component: AdminLoginComponent },
   { path: 'profile-management', component: ProfileManagementComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent },

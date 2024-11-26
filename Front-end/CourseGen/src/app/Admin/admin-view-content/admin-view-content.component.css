@@ -1,0 +1,122 @@
+.content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #12324d;
+  }
+  
+  .form-container {
+    background-color: white;
+    padding: 30px;
+    margin-top: 25px;
+    border-radius: 15px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    width: 600px;
+    text-align: center;
+    max-height: 80%;
+    overflow-y: auto;
+  }
+  
+  .form-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .course-content {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .re-generate-button, .download-button {
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 15px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .re-generate-button:hover, .download-button:hover {
+    background-color: #5a6268;
+  }
+  
+  .modify-container {
+    margin-top: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 1px;
+    text-align: left;
+  }
+  
+  label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .send-button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .send-button:hover {
+    background-color: #5a6268;
+  }
+  .module-container {
+    margin-bottom: 15px;
+  }
+  
+  .module-header {
+    cursor: pointer;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .module-header:hover {
+    background-color: #0056b3;
+  }
+  
+  .module-header.collapsed {
+    background-color: #5a6268;
+  }
+  
+  .topic {
+    margin-left: 20px;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  .topic:hover {
+    color: #007bff;
+  }
+  
+  .sub-topic {
+    margin-left: 40px;
+    list-style: square;
+  }
+  
+  
+  
