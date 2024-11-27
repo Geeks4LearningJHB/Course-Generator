@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { PendingDTO } from '../Admin/dtos/pending-dto.model';
 import { TrainerDTO } from '../Admin/dtos/TrainerDTO';
 
@@ -10,7 +10,17 @@ import { TrainerDTO } from '../Admin/dtos/TrainerDTO';
 export class UserManagementService {
   private apiUrl = 'http://localhost:8080/Admin';
 
+  private pendingTrainersSubject = new BehaviorSubject<PendingDTO[]>([]);
+  pendingTrainers$ = this.pendingTrainersSubject.asObservable();
+  
   constructor(private http: HttpClient) {}
+
+   // Fetch trainers and update BehaviorSubject
+   fetchPendingTrainers(): Observable<PendingDTO[]> {
+    return this.http.get<PendingDTO[]>(`${this.apiUrl}/pending-trainers`).pipe(
+      tap((trainers) => this.pendingTrainersSubject.next(trainers))
+    );
+  }
 
   // Fetch pending trainers
   getPendingTrainers(): Observable<PendingDTO[]> {
@@ -18,17 +28,27 @@ export class UserManagementService {
   }
 
   // Approve trainer by ID
+  // approveTrainer(userId: number): Observable<any> {
+  //   return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {});
+  // }
+
   approveTrainer(userId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {});
+    return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {}).pipe(
+      tap(() => this.fetchPendingTrainers().subscribe()) // Refresh trainers after approval
+    );
   }
 
-  // Reject trainer by ID
   rejectTrainer(userId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/reject-trainer/${userId}`, {});
+    return this.http.post(`${this.apiUrl}/reject-trainer/${userId}`, {}).pipe(
+      tap(() => this.fetchPendingTrainers().subscribe()) // Refresh trainers after rejection
+    );
   }
 
+  // // Reject trainer by ID
+  // rejectTrainer(userId: number): Observable<any> {
+  //   return this.http.post(`${this.apiUrl}/reject-trainer/${userId}`, {});
+  // }
 
-  
   // Fetch accepted trainers
   getAcceptedTrainers(): Observable<PendingDTO[]> {
     return this.http.get<PendingDTO[]>(`${this.apiUrl}/accepted-trainers`);

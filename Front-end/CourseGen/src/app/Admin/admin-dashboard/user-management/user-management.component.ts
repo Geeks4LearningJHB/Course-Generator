@@ -20,38 +20,52 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadPendingTrainers(): void {
-    this.userManagementService.getPendingTrainers().subscribe((trainers) => {
-      this.pendingTrainers = trainers;
+    this.userManagementService.getPendingTrainers().subscribe({
+      next: (trainers) => {
+        this.pendingTrainers = trainers; // Update the list in the component
+      },
+      error: (error) => {
+        console.error("Error fetching pending trainers:", error);
+        // Optionally, display an error message to the user
+      }
     });
   }
-
-  async approveTrainer(userId: number): Promise<void> {
-    this.showLoading('Approving trainer...');
   
-    try {
-      await this.userManagementService.approveTrainer(userId).toPromise();
-      this.showLoading('Trainer approved successfully!', true);
-    } catch (error) {
-      console.error('Error approving trainer:', error);
-      this.isLoading = false; // Ensure loading indicator is hidden
-      // Handle error, e.g., display an error message to the user
-    }
-  }
 
-  async rejectTrainer(userId: number): Promise<void> {
-    this.showLoading('Rejecting trainer...');
-    try {
-      await this.userManagementService.rejectTrainer(userId).toPromise();
-      this.showLoading('Trainer rejected successfully!', true);
-    } catch (error) {
-      console.error('Error rejecting trainer:', error);
-    }
+  approveTrainer(userId: number): void {
+    console.log("Approving trainer with ID:", userId);
+  
+    this.userManagementService.approveTrainer(userId).subscribe({
+      next: (response) => {
+        console.log("Trainer approved successfully:", response.message); // Handle the JSON response
+        this.loadPendingTrainers();
+        this.showLoading('Trainer approved successfully!', true);
+      },
+      error: (error) => {
+        console.error("Error approving trainer:", error.error.message); // Handle error message
+      }
+    });
+  }
+  
+  rejectTrainer(userId: number): void {
+    console.log("Rejecting trainer with ID:", userId);
+  
+    this.userManagementService.rejectTrainer(userId).subscribe({
+      next: (response) => {
+        console.log("Trainer rejected successfully:", response.message); // Handle the JSON response
+        this.loadPendingTrainers(); // Refresh the list
+        this.showLoading('Trainer rejected successfully!', true);
+      },
+      error: (error) => {
+        console.error("Error rejecting trainer:", error.error.message); // Handle error message
+      }
+    });
   }
 
   private showLoading(message: string, refreshList: boolean = false): void {
     this.isLoading = true;
     this.loadingMessage = message;
-
+ 
     setTimeout(() => {
       this.isLoading = false;
       if (refreshList) {
@@ -59,8 +73,9 @@ export class UserManagementComponent implements OnInit {
       }
     }, 2000);
   }
-
-  toggleSidebar(): void {
+  
+  
+  toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
   }
 

@@ -82,11 +82,11 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-  
+ 
     .overlay-content {
       text-align: center;
       color: white;
-  
+ 
       .spinner {
         margin-top: 10px;
         width: 40px;
@@ -98,7 +98,7 @@
       }
     }
   }
-  
+ 
   @keyframes spin {
     from {
       transform: rotate(0deg);

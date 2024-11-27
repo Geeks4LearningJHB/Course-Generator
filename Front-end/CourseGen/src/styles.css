@@ -272,7 +272,8 @@
 .back-button{
   position: fixed;
   right: 36px;
-  background-color: #007bff;
+  /* background-color: #007bff; */
+  background-color: #145570;
   color: white;
   border: none;
   border-radius: 5px;

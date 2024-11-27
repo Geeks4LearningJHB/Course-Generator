@@ -1,6 +1,6 @@
 package com.geeks4learning.CourseGen.Controller;
  
-import java.util.List;
+import java.util.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -97,40 +97,43 @@ public List<PendingDTO> getPendingTrainers() {
                    .collect(Collectors.toList());
 }
 
-     @PostMapping("/approve-trainer/{UserId}")
-    public ResponseEntity<?> approveTrainer(@PathVariable Long UserId) {
-        Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
-        if (trainer.isPresent()) {
-            TrainerEntity t = trainer.get();
-            t.setStatus("active");
-            trainerRepository.save(t);
-            return ResponseEntity.ok("Trainer approved");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainer not found");
-    }
- 
-    @PostMapping("/reject-trainer/{id}")
-    public ResponseEntity<?> rejectTrainer(@PathVariable Long id) {
-        trainerRepository.deleteById(id);
-        return ResponseEntity.ok("Trainer rejected");
-    }
- 
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
-        TrainerEntity user = trainerRepository.findByEmail(email);
-        if (user != null) {
-            user.setPassword(newPassword);  // In a real-world scenario, hash the password
-            trainerRepository.save(user);
-            return ResponseEntity.ok("Password reset successfully.");
-        } else {
-            return ResponseEntity.badRequest().body("User with the provided email does not exist.");
-        }
-    }
-
-    // @GetMapping("/allTrainers")
-    // public List<TrainerEntity> getTrainers() {
-    //     return trainerRepository.findByStatus("Active");
+    // @GetMapping("/pending-trainers")
+    // public List<PendingDTO> getPendingTrainers() {
+    //     List<TrainerEntity> trainers = trainerRepository.findByStatus("pending");
+    //     return trainers.stream()
+    //             .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname(), trainer.getEmail()))
+    //             .collect(Collectors.toList());
     // }
-    
-    
+
+    @PostMapping("/approve-trainer/{UserId}")
+public ResponseEntity<Map<String, String>> approveTrainer(@PathVariable Long UserId) {
+    Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
+    if (trainer.isPresent()) {
+        TrainerEntity t = trainer.get();
+        t.setStatus("active");
+        trainerRepository.save(t);
+        // Return JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trainer approved");
+        return ResponseEntity.ok(response);
+    }
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", "Trainer not found");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+}
+
+@PostMapping("/reject-trainer/{id}")
+public ResponseEntity<Map<String, String>> rejectTrainer(@PathVariable Long id) {
+    if (trainerRepository.existsById(id)) {
+        trainerRepository.deleteById(id);
+        // Return JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trainer rejected");
+        return ResponseEntity.ok(response);
+    }
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", "Trainer not found");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+}
+
 }

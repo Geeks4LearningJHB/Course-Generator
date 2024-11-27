@@ -1,11 +1,12 @@
 import { Component, HostListener } from '@angular/core';
 
 @Component({
-  selector: 'app-view-content',
-  templateUrl: './view-content.component.html',
-  styleUrl: './view-content.component.css'
+  selector: 'app-admin-view-content',
+  templateUrl: './admin-view-content.component.html',
+  styleUrl: './admin-view-content.component.css'
 })
-export class ViewContentComponent {
+export class AdminViewContentComponent {
+
   showModifyFields: boolean = false;
   module: string = '';
   topic: string = '';
