@@ -1,6 +1,6 @@
 package com.geeks4learning.CourseGen.Controller;
 
-import com.geeks4learning.CourseGen.DTOs.CourseModuleDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geeks4learning.CourseGen.DTOs.PromtDTO;
 import com.geeks4learning.CourseGen.Entities.Activity;
 import com.geeks4learning.CourseGen.Entities.Assessment;
@@ -15,31 +15,16 @@ import com.geeks4learning.CourseGen.Services.ModuleService;
 import com.geeks4learning.CourseGen.Services.PromptService;
 import com.geeks4learning.CourseGen.Services.UnitService;
 
-import jakarta.transaction.Transactional;
-
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/AI")
@@ -70,134 +55,138 @@ public class AIController {
     @PostMapping("/generateCourse")
     public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody String prompt, String difficulty,
             int duration) {
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
         Map<String, Object> response = new HashMap<>();
         try {
-            // Step 1: Generate the prompt and course outline
+            // Step 1: Save the prompt
             PromtDTO newPrompt = new PromtDTO(prompt, difficulty, duration);
-            Promt generatedPrompt = promptService.savePrompt(newPrompt); // Still save the prompt if needed
+            promptService.savePrompt(newPrompt);
 
-            // Generate module outline
-            String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: " + prompt
-                    + " that would take " + duration + " months with a difficulty level of " + difficulty;
+            // Step 2: Generate the course outline
+            String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: " + prompt +
+                    " that would take " + duration + " months with a difficulty level of " + difficulty;
             String moduleOutline = respondToPrompt(moduleOutlinePrompt);
-            CourseModule module = parseModuleOutline(moduleOutline); // Parse the generated module
+            CourseModule module = parseModuleOutline(moduleOutline);
 
             if (module.getUnits() == null) {
-                module.setUnits(Collections.synchronizedList(new ArrayList<>()));
+                module.setUnits(new ArrayList<>());
             }
 
-            // Step 2: Generate units content (but don't save yet)
-            String detailedContent = generateDetailedContentForOutline(moduleOutline);
-            List<Callable<Void>> unitTasks = new ArrayList<>();
-            for (String unitContent : detailedContent.split("\\n\\n")) {
-                unitTasks.add(() -> {
-                    Unit unit = new Unit();
-                    synchronized (module.getUnits()) {
-                        int chapterNumber = module.getUnits().size() + 1;
-                        String unitName = "Chapter " + chapterNumber + ": Introduction to " + module.getModuleName();
-                        unit.setUnitName(unitName);
-                        unit.setContent(unitContent);
-                        unit.setModule(module);
-                        // We don't save the unit yet, we return it as part of the response
-                        module.getUnits().add(unit);
-                    }
+            // Step 3: Generate detailed content for each unit
+            List<CompletableFuture<Void>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
+                    .filter(line -> !line.trim().isEmpty())
+                    .map(unitName -> CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, prompt)))
+                    .collect(Collectors.toList());
 
-                    // Generate activities related to the unit (but don't save yet)
-                    String activityPrompt = "Generate activities related to the module on " + prompt;
-                    String activityContent = respondToPrompt(activityPrompt);
-                    // Activity activity = new Activity(activityContent, unit);
-                    // Add activity to unit, but don't save it yet
-                    // unit.setActivityUnits(Collections.singletonList(activity)); // Assuming the Activity list is set
-                                                                                // here
-                    return null;
-                });
-            }
+            // Wait for all unit tasks to complete
+            CompletableFuture.allOf(unitTasks.toArray(new CompletableFuture[0])).join();
 
-            // Execute unit generation tasks in parallel
-            List<Future<Void>> unitFutures = executorService.invokeAll(unitTasks);
-            for (Future<Void> future : unitFutures) {
-                future.get(); // Ensure each unit task completes
-            }
-
-            // Step 3: Return the generated data (module, units, activities) to the user
+            // Step 4: Return the generated course data
             response.put("module", module);
             response.put("units", module.getUnits());
+            return ResponseEntity.ok(response);
 
-            return ResponseEntity.ok(response); // Return the generated content for review
-
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error during generation: " + e.getMessage()));
-        } finally {
-            executorService.shutdown();
         }
+    }
+
+    private void generateUnitContent(CourseModule module, String unitName, String prompt) {
+        Unit unit = new Unit();
+        unit.setUnitName(unitName);
+        unit.setModule(module);
+
+        // Generate content for the unit
+        String unitContentPrompt = "Provide detailed content for a textbook chapter titled: '" + unitName + "' " +
+                "as part of the course '" + prompt + "'. Focus on key concepts and explanations.";
+        String unitContent = respondToPrompt(unitContentPrompt);
+        unit.setContent(unitContent);
+
+        synchronized (module.getUnits()) {
+            module.getUnits().add(unit);
+        }
+
+        // Generate activities for the unit
+        String activityPrompt = "Generate 3 practical activities for the chapter: '" + unitName + "' " +
+                "in the course '" + prompt + "'.";
+        String activityContent = respondToPrompt(activityPrompt);
+
+        // Create and associate activities with the unit
+        Activity activity = new Activity(activityContent, unit);
+        unit.setActivityUnits(Collections.singletonList(activity));
     }
 
     private String respondToPrompt(String prompt) {
         ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest("gpt-4o-mini", prompt);
         ChatCompletionResponse chatCompletionResponse = restTemplate.postForObject(completionsURL,
-                chatCompletionRequest,
-                ChatCompletionResponse.class);
+                chatCompletionRequest, ChatCompletionResponse.class);
         assert chatCompletionResponse != null;
-
-        String strResponse = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
-        return strResponse;
+        return chatCompletionResponse.getChoices().get(0).getMessage().getContent();
     }
 
-    private String generateDetailedContentForOutline(String outline) {
-        StringBuilder detailedContentBuilder = new StringBuilder();
+    private CourseModule parseModuleOutline(String moduleOutline) {
+        CourseModule courseModule = new CourseModule();
+        String[] lines = moduleOutline.split("\n");
 
-        String[] sections = outline.split("\n");
-        for (String section : sections) {
-            // Skip empty lines or irrelevant sections
-            if (section.trim().isEmpty()) {
-                continue;
-            }
+        // Extract the module name
+        courseModule.setModuleName(lines[0].trim());
+        courseModule.setUnits(new ArrayList<>());
 
-            // Generate content for each section
-            String sectionPrompt = "Please provide detailed content for the Unit titled: " + section;
-            String sectionContent = respondToPrompt(sectionPrompt);
+        // Filter and process valid unit names
+        List<Unit> units = Arrays.stream(lines, 1, lines.length)
+                .filter(line -> !line.trim().isEmpty() && !line.trim().equals("---")) // Skip empty or invalid names
+                .map(line -> {
+                    Unit unit = new Unit();
+                    unit.setUnitName(line.trim());
+                    unit.setModule(courseModule);
+                    return unit;
+                })
+                .collect(Collectors.toList());
 
-            detailedContentBuilder.append("<h2>").append("Section: ").append(section).append("</h2>");
-            detailedContentBuilder.append("<p>").append(sectionContent).append("</p>");
-
-            // Append section and its content
-            // detailedContentBuilder.append("Section: ").append(section).append("\n");
-            // detailedContentBuilder.append(sectionContent).append("\n\n");
-        }
-
-        return detailedContentBuilder.toString();
+        courseModule.setUnits(units);
+        return courseModule;
     }
 
     @PostMapping("/saveGeneratedCourse")
     public ResponseEntity<String> saveGeneratedCourse(@RequestBody Map<String, Object> generatedCourseData) {
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            CourseModule module = (CourseModule) generatedCourseData.get("module");
-            List<Unit> units = (List<Unit>) generatedCourseData.get("units");
+            // Convert "module" to CourseModule
+            CourseModule module = objectMapper.convertValue(generatedCourseData.get("module"), CourseModule.class);
 
-            // Save the module
+            // Convert "units" to List<Unit>
+            List<Unit> units = ((List<?>) generatedCourseData.get("units"))
+                    .stream()
+                    .map(unitData -> objectMapper.convertValue(unitData, Unit.class))
+                    .collect(Collectors.toList());
+
+            // Save the module and units
             moduleService.saveModule(module);
-
-            // Save the units
-            for (Unit unit : units) {
+            units.forEach(unit -> {
+                unit.setModule(module); // Associate units with the module
                 unitService.saveUnit(unit);
-            }
 
-            // Optionally save activities and assessments if required
-            for (Unit unit : units) {
-                for (Activity activity : unit.getActivityUnits()) {
-                    activityService.saveActivity(activity);
+                // Save activities (null-safe)
+                if (unit.getActivityUnits() != null) {
+                    unit.getActivityUnits().forEach(activityService::saveActivity);
                 }
-                // Save assessment (simplified)
+
+                // Save assessments, check if duration is null or empty before parsing
                 Assessment assessment = new Assessment();
                 assessment.setAssessmentName("Assessment for " + module.getModuleName());
-                assessment.setDuration(Integer.parseInt(module.getDuration())); // If `module.getDuration()` is a String
-                assessment.setUnit(unit);
 
+                // Check if the duration is valid, if not, set it to a default value (e.g., 0 or
+                // another default)
+                String durationStr = module.getDuration();
+                if (durationStr != null && !durationStr.isEmpty()) {
+                    assessment.setDuration(Integer.parseInt(durationStr));
+                } else {
+                    assessment.setDuration(0); // or a default value if needed
+                }
+
+                assessment.setUnit(unit);
                 assessmentService.saveAssessment(assessment);
-            }
+            });
 
             return ResponseEntity.ok("Module, Units, Activities, and Assessments saved successfully.");
         } catch (Exception e) {
@@ -206,33 +195,4 @@ public class AIController {
         }
     }
 
-    private CourseModule parseModuleOutline(String moduleOutline) {
-        CourseModule courseModule = new CourseModule();
-        List<Unit> units = new ArrayList<>();
-    
-        // Split the module outline into sections by newline
-        String[] lines = moduleOutline.split("\n");
-    
-        // Assume the first line is the module name
-        if (lines.length > 0) {
-            courseModule.setModuleName(lines[0].trim());
-        }
-    
-        // Iterate through the remaining lines to create units
-        for (int i = 1; i < lines.length; i++) {
-            String line = lines[i].trim();
-            if (!line.isEmpty()) {
-                Unit unit = new Unit();
-                unit.setUnitName(line); // Assuming Unit has a `unitName` field
-                unit.setModule(courseModule); // Set the relationship
-                units.add(unit);
-            }
-        }
-    
-        // Associate the units with the course module
-        courseModule.setUnits(units);
-    
-        return courseModule;
-    }
-    
 }

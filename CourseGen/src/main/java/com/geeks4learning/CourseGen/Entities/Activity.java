@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -22,5 +24,11 @@ public class Activity {
     private String instructions;
 
     @DBRef
+    @JsonIgnore
     private Unit unit; // Reference to the Unit collection
+
+    public Activity(String activityName, Unit unit) {
+        this.activityName = activityName;
+        this.unit = unit;
+    }
 }
