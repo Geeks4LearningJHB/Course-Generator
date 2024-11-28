@@ -1,5 +1,4 @@
 <div class="admin-dashboard-container">
-  
   <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
@@ -14,89 +13,113 @@
   <div class="body">
     <div class="sidebar" [class.collapsed]="isCollapsed">
       <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-      <ul>
-        <li>
-          <i class="icon fa fa-home"></i>
-          <span *ngIf="!isCollapsed" routerLink="/admin-dashboard">Dashboard</span>
-        </li>
-        <li>
-          <i class="icon fas fa-book"></i>
-          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-          <i class="icon fas fa-users"></i>
-          <span *ngIf="!isCollapsed" routerLink="/user-management">User Acceptance</span>
-        </li>
-        <hr class="divider"/>
-        <li>
-          <i class="icon fas fa-sign-out-alt"></i>
-          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-        </li>
-      </ul>
-    </div>
+    <ul>
+      <li>
+        <i class="icon fa fa-home"></i>
+        <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
+      </li>
+      <li>
+        <i class="icon fas fa-book"></i>
+        <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+      </li>
+      <li>
+        <i class="icon fas fa-file-alt"></i>
+        <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
+    </li>
+      <hr class="divider" />
+      <li>
+        <i class="icon fas fa-sign-out-alt"></i>
+        <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+      </li>
+    </ul>
+  </div>
 
     <div class="sub-header" [class.shifted]="isCollapsed">
       <h3 class="sub-heading">GENERATE CONTENT</h3>
-      <button class="back-button" routerLink="/admin-dashboard">
-      <span class="icon"></span> Back </button>
+      <button class="back-button" style="background-color:  #133B50;" routerLink="/view-courses">
+        <span class="icon"></span> Back
+      </button>
     </div>
 
-    
-  <div class="dash-container-1" [class.shifted]="isCollapsed">
-    <div class="form-container">
-      <h2 class="form-title">Java Programming for Beginners</h2>
+    <div class="dash-container-1" [class.shifted]="isCollapsed">
+      <div class="form-container">
+        <h2 class="form-title">Java Programming for Beginners</h2>
 
-      <!-- Course Content (Placeholder to retrieve data from database) -->
-      <div class="course-content">
-        <p><strong>Module 1: Introduction to Java</strong></p>
-        <ul>
-          <li>1.1 Setting Up Java Environment</li>
-          <li>1.2 Java Basics: Syntax, Data Types</li>
-          <li>1.3 Classes and Objects</li>
-          <li>1.4 Methods and Constructors</li>
-        </ul>
-
-        <p><strong>Module 2: Object-Oriented Programming</strong></p>
-        <ul>
-          <li>2.1 Encapsulation, Inheritance, Polymorphism</li>
-          <li>2.2 Abstraction and Interfaces</li>
-          <li>2.3 Exception Handling</li>
-        </ul>
-      </div>
-
-      
-      <button class="download-button">
-        ⬇️ Download Content
-      </button>
-
-      <!-- Re-generate Button -->
-      <button class="re-generate-button" (click)="showModifyFields = !showModifyFields">
-        🔄 Re-Generate Content
-      </button>
-
-      <!-- Modify Fields (Visible on Button Click) -->
-      <div *ngIf="showModifyFields" class="modify-container">
-        <form (ngSubmit)="onModifyContent()">
-          <div class="form-group">
-            <label for="module">Module</label>
-            <input type="text" id="module" [(ngModel)]="module" name="module" placeholder="Enter module" required />
+        <div class="course-content">
+          <div *ngFor="let module of courseModules; let i = index" class="module-container">
+            <p
+              class="module-header"
+              [ngClass]="{ collapsed: !module.isExpanded }"
+              (click)="toggleModule(i)"
+            >
+              {{ module.title }}
+            </p>
+            <ul *ngIf="module.isExpanded">
+              <li
+                *ngFor="let topic of module.topics; let j = index"
+                (click)="toggleSubTopic(i, j)"
+                class="topic"
+              >
+                {{ topic.title }}
+                <ul *ngIf="topic.isExpanded" class="sub-topic">
+                  <li *ngFor="let detail of topic.details">
+                    {{ detail }}
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="topic">Topic</label>
-            <input type="text" id="topic" [(ngModel)]="topic" name="topic" placeholder="Enter topic" required />
-          </div>
+        <button class="download-button">⬇️ Download Content</button>
+        <button
+          class="re-generate-button"
+          (click)="showModifyFields = !showModifyFields"
+        >
+          🔄 Re-Generate Content
+        </button>
 
-          <div class="form-group">
-            <label for="details">Details</label>
-            <textarea id="details" [(ngModel)]="details" name="details" rows="4"
-              placeholder="Enter content details"></textarea>
-          </div>
+        <div *ngIf="showModifyFields" class="modify-container">
+          <form (ngSubmit)="onModifyContent()">
+            <div class="form-group">
+              <label for="module">Module</label>
+              <input
+                type="text"
+                id="module"
+                [(ngModel)]="module"
+                name="module"
+                placeholder="Enter module"
+                required
+              />
+            </div>
 
-          <button type="submit" class="send-button">Re-Generate</button>
-        </form>
+            <div class="form-group">
+              <label for="topic">Topic</label>
+              <input
+                type="text"
+                id="topic"
+                [(ngModel)]="topic"
+                name="topic"
+                placeholder="Enter topic"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="details">Details</label>
+              <textarea
+                id="details"
+                [(ngModel)]="details"
+                name="details"
+                rows="4"
+                placeholder="Enter content details"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="send-button">Re-Generate</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>

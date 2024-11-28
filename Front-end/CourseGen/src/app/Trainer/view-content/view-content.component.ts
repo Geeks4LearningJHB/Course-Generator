@@ -12,12 +12,58 @@ export class ViewContentComponent {
   details: string = '';
   isCollapsed = true;
 
+  // Course data
+  courseModules = [
+    {
+      title: 'Module 1: Introduction to Java',
+      isExpanded: false,
+      topics: [
+        {
+          title: '1.1 Setting Up Java Environment',
+          isExpanded: false,
+          details: ['Installing JDK', 'Configuring IDE']
+        },
+        {
+          title: '1.2 Java Basics: Syntax, Data Types',
+          isExpanded: false,
+          details: ['Primitive Data Types', 'Operators']
+        }
+      ]
+    },
+    {
+      title: 'Module 2: Object-Oriented Programming',
+      isExpanded: false,
+      topics: [
+        {
+          title: '2.1 Encapsulation, Inheritance, Polymorphism',
+          isExpanded: false,
+          details: ['Examples', 'Scenarios']
+        },
+        {
+          title: '2.2 Abstraction and Interfaces',
+          isExpanded: false,
+          details: ['Interface Design', 'Use Cases']
+        }
+      ]
+    }
+  ];
+
+  // Toggle module visibility
+  toggleModule(index: number) {
+    this.courseModules[index].isExpanded = !this.courseModules[index].isExpanded;
+  }
+
+  // Toggle topic visibility
+  toggleSubTopic(moduleIndex: number, topicIndex: number) {
+    this.courseModules[moduleIndex].topics[topicIndex].isExpanded =
+      !this.courseModules[moduleIndex].topics[topicIndex].isExpanded;
+  }
+
   onModifyContent() {
     console.log('Module:', this.module);
     console.log('Topic:', this.topic);
     console.log('Details:', this.details);
     alert('Content modified successfully!');
-    // Reset the fields after submission
     this.module = '';
     this.topic = '';
     this.details = '';
@@ -25,13 +71,5 @@ export class ViewContentComponent {
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
-  }
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-
-    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
-      this.isCollapsed = true;
-    }
   }
 }

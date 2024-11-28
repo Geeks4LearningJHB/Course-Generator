@@ -4,11 +4,21 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.geeks4learning.CourseGen.DTOs.TrainerDTO;
+import com.geeks4learning.CourseGen.DTOs.TrainerViewDTO;
 import com.geeks4learning.CourseGen.Entities.TrainerEntity;
 
-public interface TrainerRepository extends JpaRepository<TrainerEntity,Long> {
+public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
 
-    Optional<TrainerEntity> findByEmailAndPassword(String email,String Passsword);
+    Optional<TrainerEntity> findByEmailAndPassword(String email, String Passsword);
+
     List<TrainerEntity> findByStatus(String status);
+
     TrainerEntity findByEmail(String email);
+
+    @Query("SELECT new com.geeks4learning.CourseGen.DTOs.TrainerViewDTO(t.Name, t.Surname,t.email, t.status) FROM TrainerEntity t")
+    List<TrainerViewDTO> findAllTrainerDetails();
+
 }

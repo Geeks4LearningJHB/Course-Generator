@@ -1,63 +1,76 @@
-<div class="dashboard-container">
-  <div class="header">
-    <img src="assets/company_logo_login.png" alt="Logo" class="logo" />
-  <h1 class="title">COURSE GENERATOR</h1>
-    <img routerLink="/profile-management" src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
-  </div>
-
-  <div class="dashboard-container">
-    <div class="header">
-      <img src="assets/company_logo_login.png" alt="Logo" class="logo" />
-      <h1 class="title">COURSE GENERATOR</h1>
-      <img routerLink="/profile-management" src="assets/userIcon.png" alt="Profile Icon" class="profile-icon" />
+<div class="admin-dashboard-container"style="background-color:  #e4e9ef;">
+  <div class="top-nav">
+    <div class="logo">
+      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
     </div>
-  
-    
+    <div class="nav-right">
+      <button class="profile-btn">
+        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
+      </button>
+    </div>
   </div>
   
-</div>
-<div class="dash-container">
-  <div class="button-container">
-    <!-- Card for Generate Course -->
-    <div class="card" style="width: 18rem;">
-      <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
-      <div class="card-body">
-        <h5 class="card-title">Generate Course</h5>
-        <p class="card-text">
-          Create and customize courses with ease using our generation tools.
-        </p>
-        <a class="btn btn-primary dashboard-button" routerLink="/generate-content">
-          <span class="icon">✏️</span> Generate Course
-        </a>
-      </div>
-    </div>
+  <div class="body">
+    <div class="sidebar" [class.collapsed]="isCollapsed">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+    <ul>
+      <li>
+        <i class="icon fa fa-home"></i>
+        <span *ngIf="!isCollapsed">Dashboard</span>
+      </li>
+      <li>
+        <i class="icon fas fa-book"></i>
+        <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+      </li>
+      <li>
+        <i class="icon fas fa-file-alt"></i>
+        <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
+    </li>
+      <hr class="divider" />
+      <li>
+        <i class="icon fas fa-sign-out-alt"></i>
+        <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+      </li>
+    </ul>
+  </div>
 
-    <!-- Card for View Content -->
-    <div class="card" style="width: 18rem;">
-      <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
-      <div class="card-body">
-        <h5 class="card-title">View Content</h5>
-        <p class="card-text">
-          Explore all the generated courses and manage your content effortlessly.
-        </p>
-        <a class="btn btn-primary dashboard-button" routerLink="/view-courses">
-          <span class="icon">📄</span> View Content
-        </a>
-      </div>
-    </div>
+  <div class="sub-header" [class.shifted]="isCollapsed">
+    <h3 class="sub-heading">COURSE CONTENT GENERATOR</h3>
+  </div>
 
-    <!-- Card for View History -->
-    <div class="card" style="width: 18rem;">
-      <img src="https://via.placeholder.com/150" class="card-img-top" alt="Card image">
-      <div class="card-body">
-        <h5 class="card-title">View History</h5>
-        <p class="card-text">
-          Access the history of all generated and managed courses.
-        </p>
-        <a class="btn btn-primary dashboard-button">
-          <span class="icon">📊</span> View History
-        </a>
+  <div class="dash-container-1" [class.shifted]="isCollapsed">
+    <div class="button-container">
+      <div class="card" style="width: 18rem;">
+        <div class="chatgpt-spinner card-img-top">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT Logo" class="chatgpt-logo">
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Generate Course</h5>
+          <p class="card-text">Create and customize courses with ease using our tools.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/generate-content">
+            <span class="icon">✏️</span> Generate Course
+          </a>
+        </div>
+      </div>
+
+      <div class="card" style="width: 18rem;">
+        <div class="book-spinner card-img-top">
+          <div class="book">
+            <div class="page"></div>
+            <div class="page"></div>
+            <div class="page"></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">View Content</h5>
+          <p class="card-text">Explore all generated courses and manage your content effortlessly.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/view-courses">
+            <span class="icon">📄</span> View Content
+          </a>
+        </div>
+      </div>
       </div>
     </div>
   </div>
 </div>
+
