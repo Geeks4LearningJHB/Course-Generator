@@ -28,7 +28,6 @@ export class UserManagementService {
   }
 
 
-
   approveTrainer(userId: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {}).pipe(
       tap(() => this.fetchPendingTrainers().subscribe()) // Refresh trainers after approval

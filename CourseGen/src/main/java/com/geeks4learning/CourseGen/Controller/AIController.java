@@ -1,164 +1,202 @@
 package com.geeks4learning.CourseGen.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.geeks4learning.CourseGen.DTOs.CourseNode;
+import com.geeks4learning.CourseGen.DTOs.PromtDTO;
+import com.geeks4learning.CourseGen.Entities.Activity;
+import com.geeks4learning.CourseGen.Entities.Assessment;
+import com.geeks4learning.CourseGen.Entities.CourseModule;
+import com.geeks4learning.CourseGen.Entities.Promt;
+import com.geeks4learning.CourseGen.Entities.Unit;
 import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
 import com.geeks4learning.CourseGen.Model.CourseRequest;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
+import com.geeks4learning.CourseGen.Services.ActivityService;
+import com.geeks4learning.CourseGen.Services.AssessmentService;
+import com.geeks4learning.CourseGen.Services.ModuleService;
+import com.geeks4learning.CourseGen.Services.PromptService;
+import com.geeks4learning.CourseGen.Services.UnitService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/AI")
 @CrossOrigin(origins = "http://localhost:4200")
 public class AIController {
-
+ 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private PromptService promptService;
+
+    @Autowired
+    private ModuleService moduleService;
+
+    @Autowired
+    private UnitService unitService;
+
+    @Autowired
+    private AssessmentService assessmentService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @Value("${openai.completions}")
     private String completionsURL;
 
-    @Value("${openai.key}")
-    private String apiKey;
-
-    /**
-     * Handles the incoming course generation request and returns the generated course tree.
-     */
     @PostMapping("/generateCourse")
-    public CourseNode promptHandler(@RequestBody CourseRequest courseRequest) {
-        validateRequest(courseRequest);
-        return generateCourseTree(
-                courseRequest.getCourseTitle(),
-                courseRequest.getDifficulty(),
-                courseRequest.getDuration());
-    }
-
-    /**
-     * Validates the incoming request to ensure all fields are present.
-     */
-    private void validateRequest(CourseRequest courseRequest) {
-        if (courseRequest == null || courseRequest.getCourseTitle().isBlank()
-                || courseRequest.getDifficulty().isBlank() || courseRequest.getDuration() <= 0) {
-            throw new IllegalArgumentException("Invalid course request. Ensure all fields are correctly provided.");
-        }
-    }
-
-    /**
-     * Generates a hierarchical course tree based on the outline and details provided by the AI.
-     */
-    private CourseNode generateCourseTree(String courseTitle, String difficulty, int duration) {
-        String courseOutlinePrompt = generatePrompt(courseTitle, difficulty, duration, "Module");
-        String outline = respondToPrompt(courseOutlinePrompt);
-
-        if (!outline.contains("Module")) {
-            throw new RuntimeException("Response does not contain the expected 'Module' keyword.");
-        }
-
-        CourseNode root = new CourseNode(courseTitle);
-        processNodes(outline, "Module", root, "Unit");
-        return root;
-    }
-
-    /**
-     * Generates a prompt string for the AI based on provided parameters.
-     */
-    private String generatePrompt(String title, String level, int duration, String keyNode) {
-        String durationStr = duration + " months";
-        return "Generate a detailed course outline for a textbook teaching about: " + title + ". " +
-                "This course is tailored for a " + level + " difficulty level and spans " + durationStr + ". " +
-                "Ensure the response includes the keyword '" + keyNode + "' and provides detailed units, topics, suggested activities, and assessments.";
-    }
-
-    /**
-     * Processes content recursively to build a tree structure of course nodes.
-     */
-    private void processNodes(String content, String nodeType, CourseNode parentNode, String childNodeType) {
-        String[] nodes = content.split(nodeType);
-
-        for (String nodeContent : nodes) {
-            CourseNode node = createCourseNode(nodeContent.trim(), nodeType);
-            if (node != null) {
-                if (childNodeType != null) {
-                    String childDetailsPrompt = "Provide detailed content for " + node.getTitle() + ".";
-                    String childDetails = respondToPrompt(childDetailsPrompt);
-                    node.setContent(childDetails);
-                    processNodes(childDetails, childNodeType, node, null);
-                }
-                parentNode.addChild(node);
-            }
-        }
-    }
-
-    /**
-     * Creates a course node based on its type and content.
-     */
-    private CourseNode createCourseNode(String content, String type) {
-        if (content == null || content.isBlank()) {
-            return null;
-        }
-        return new CourseNode(type + " " + content);
-    }
-
-    /**
-     * Sends a prompt to the AI and retrieves the response.
-     */
-    private String respondToPrompt(String prompt) {
-        ChatCompletionRequest request = new ChatCompletionRequest("gpt-4o-mini", prompt);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<ChatCompletionRequest> entity = new HttpEntity<>(request, headers);
-
+    public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody String prompt, String difficulty,
+            int duration) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            System.out.println("Sending request: " + new ObjectMapper().writeValueAsString(request));
-            ChatCompletionResponse response = restTemplate.postForObject(completionsURL, entity, ChatCompletionResponse.class);
+            // Step 1: Save the prompt
+            PromtDTO newPrompt = new PromtDTO(prompt, difficulty, duration);
+            promptService.savePrompt(newPrompt);
 
-            if (response != null && !response.getChoices().isEmpty()) {
-                String content = response.getChoices().get(0).getMessage().getContent();
-                if (!content.contains("Module")) {
-                    throw new RuntimeException("Response does not contain the expected 'Module' keyword.");
-                }
-                return content;
-            } else {
-                throw new RuntimeException("No valid choices returned from OpenAI.");
+            // Step 2: Generate the course outline
+            String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: " + prompt +
+                    " that would take " + duration + " months with a difficulty level of " + difficulty;
+            String moduleOutline = respondToPrompt(moduleOutlinePrompt);
+            CourseModule module = parseModuleOutline(moduleOutline);
+
+            if (module.getUnits() == null) {
+                module.setUnits(new ArrayList<>());
             }
+
+            // Step 3: Generate detailed content for each unit
+            List<CompletableFuture<Void>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
+                    .filter(line -> !line.trim().isEmpty())
+                    .map(unitName -> CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, prompt)))
+                    .collect(Collectors.toList());
+
+            // Wait for all unit tasks to complete
+            CompletableFuture.allOf(unitTasks.toArray(new CompletableFuture[0])).join();
+
+            // Step 4: Return the generated course data
+            response.put("module", module);
+            response.put("units", module.getUnits());
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            System.err.println("Request failed: " + e.getMessage());
-            return "Error: Failed to get a valid response.";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error during generation: " + e.getMessage()));
         }
     }
 
-    /**
-     * Exports content to a Word document.
-     */
-    public void exportToWord(String detailedContent, String fileName) {
-        try (XWPFDocument document = new XWPFDocument()) {
-            XWPFParagraph paragraph = document.createParagraph();
-            XWPFRun run = paragraph.createRun();
-            run.setText(detailedContent);
+    private void generateUnitContent(CourseModule module, String unitName, String prompt) {
+        Unit unit = new Unit();
+        unit.setUnitName(unitName);
+        unit.setModule(module);
 
-            try (FileOutputStream out = new FileOutputStream(fileName)) {
-                document.write(out);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Generate content for the unit
+        String unitContentPrompt = "Provide detailed content for a textbook chapter titled: '" + unitName + "' " +
+                "as part of the course '" + prompt + "'. Focus on key concepts and explanations.";
+        String unitContent = respondToPrompt(unitContentPrompt);
+        unit.setContent(unitContent);
+
+        synchronized (module.getUnits()) {
+            module.getUnits().add(unit);
+        }
+
+        // Generate activities for the unit
+        String activityPrompt = "Generate 3 practical activities for the chapter: '" + unitName + "' " +
+                "in the course '" + prompt + "'.";
+        String activityContent = respondToPrompt(activityPrompt);
+
+        // Create and associate activities with the unit
+        Activity activity = new Activity(activityContent, unit);
+        unit.setActivityUnits(Collections.singletonList(activity));
+    }
+
+    private String respondToPrompt(String prompt) {
+        ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest("gpt-4o-mini", prompt);
+        ChatCompletionResponse chatCompletionResponse = restTemplate.postForObject(completionsURL,
+                chatCompletionRequest, ChatCompletionResponse.class);
+        assert chatCompletionResponse != null;
+        return chatCompletionResponse.getChoices().get(0).getMessage().getContent();
+    }
+
+    private CourseModule parseModuleOutline(String moduleOutline) {
+        CourseModule courseModule = new CourseModule();
+        String[] lines = moduleOutline.split("\n");
+
+        // Extract the module name
+        courseModule.setModuleName(lines[0].trim());
+        courseModule.setUnits(new ArrayList<>());
+
+        // Filter and process valid unit names
+        List<Unit> units = Arrays.stream(lines, 1, lines.length)
+                .filter(line -> !line.trim().isEmpty() && !line.trim().equals("---")) // Skip empty or invalid names
+                .map(line -> {
+                    Unit unit = new Unit();
+                    unit.setUnitName(line.trim());
+                    unit.setModule(courseModule);
+                    return unit;
+                })
+                .collect(Collectors.toList());
+
+        courseModule.setUnits(units);
+        return courseModule;
+    }
+
+    @PostMapping("/saveGeneratedCourse")
+    public ResponseEntity<String> saveGeneratedCourse(@RequestBody Map<String, Object> generatedCourseData) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Convert "module" to CourseModule
+            CourseModule module = objectMapper.convertValue(generatedCourseData.get("module"), CourseModule.class);
+
+            // Convert "units" to List<Unit>
+            List<Unit> units = ((List<?>) generatedCourseData.get("units"))
+                    .stream()
+                    .map(unitData -> objectMapper.convertValue(unitData, Unit.class))
+                    .collect(Collectors.toList());
+
+            // Save the module and units
+            moduleService.saveModule(module);
+            units.forEach(unit -> {
+                unit.setModule(module); // Associate units with the module
+                unitService.saveUnit(unit);
+
+                // Save activities (null-safe)
+                if (unit.getActivityUnits() != null) {
+                    unit.getActivityUnits().forEach(activityService::saveActivity);
+                }
+
+                // Save assessments, check if duration is null or empty before parsing
+                Assessment assessment = new Assessment();
+                assessment.setAssessmentName("Assessment for " + module.getModuleName());
+
+                // Check if the duration is valid, if not, set it to a default value (e.g., 0 or
+                // another default)
+                String durationStr = module.getDuration();
+                if (durationStr != null && !durationStr.isEmpty()) {
+                    assessment.setDuration(Integer.parseInt(durationStr));
+                } else {
+                    assessment.setDuration(0); // or a default value if needed
+                }
+
+                assessment.setUnit(unit);
+                assessmentService.saveAssessment(assessment);
+            });
+
+            return ResponseEntity.ok("Module, Units, Activities, and Assessments saved successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error while saving generated data: " + e.getMessage());
         }
     }
+
 }

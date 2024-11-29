@@ -1,6 +1,8 @@
 package com.geeks4learning.CourseGen.Controller;
  
 import java.util.*;
+import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +105,34 @@ public List<PendingDTO> getPendingTrainers() {
     //             .collect(Collectors.toList());
     // }
 
+    // @GetMapping("/pending-trainers")
+    // public List<PendingDTO> getPendingTrainers() {
+    //     List<TrainerEntity> trainers = trainerRepository.findByStatus("pending");
+    //     return trainers.stream()
+    //             .map(trainer -> new PendingDTO(trainer.getUserId(), trainer.getName(), trainer.getSurname(), trainer.getEmail()))
+    //             .collect(Collectors.toList());
+    // }
+
+    @PostMapping("/approve-trainer/{UserId}")
+public ResponseEntity<Map<String, String>> approveTrainer(@PathVariable Long UserId) {
+    Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
+    if (trainer.isPresent()) {
+        TrainerEntity t = trainer.get();
+        t.setStatus("active");
+        trainerRepository.save(t);
+        // Return JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trainer approved");
+        return ResponseEntity.ok(response);
+    }
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", "Trainer not found");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+}
+
+@PostMapping("/reject-trainer/{id}")
+public ResponseEntity<Map<String, String>> rejectTrainer(@PathVariable Long id) {
+    if (trainerRepository.existsById(id)) {
     @PostMapping("/approve-trainer/{UserId}")
 public ResponseEntity<Map<String, String>> approveTrainer(@PathVariable Long UserId) {
     Optional<TrainerEntity> trainer = trainerRepository.findById(UserId);
@@ -155,5 +185,15 @@ public ResponseEntity<Map<String, String>> updateTrainerStatus(@RequestBody Map<
     }
 }
 
+
+        // Return JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trainer rejected");
+        return ResponseEntity.ok(response);
+    }
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("message", "Trainer not found");
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+}
 
 }
