@@ -36,6 +36,21 @@ export class ViewUsersComponent implements OnInit {
     this.selectedTrainer = trainer;
   }
 
+  toggleTrainerStatus(trainer: TrainerDTO): void {
+    const newStatus = trainer.status === 'active' ? 'inactive' : 'active';
+    
+    this.userManagementService.updateTrainerStatus(trainer.email, newStatus).subscribe(
+      (response) => {
+        console.log(`Trainer status updated to ${newStatus}`, response);
+        trainer.status = newStatus; // Update the status in the UI
+      },
+      (error) => {
+        console.error('Error updating trainer status:', error);
+      }
+    );
+  }
+  
+
   // Close details modal
   closeModal(): void {
     this.selectedTrainer = null;

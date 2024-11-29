@@ -10,10 +10,12 @@ import { TrainerLoginService } from '../../Services/trainer-login.service';
 export class LoginComponent {
   email: string = '';
   password: string = '';
+  errorMessage: string = '';
 
   constructor(private router: Router, private loginService: TrainerLoginService) {}
 
   onLogin() {
+    this.errorMessage = ''; // Reset the error message
     this.loginService.login(this.email, this.password).subscribe(
       (response) => {
         console.log('Login successful:', response);
@@ -21,8 +23,9 @@ export class LoginComponent {
       },
       (error) => {
         console.error('Login failed:', error);
-        alert('Invalid credentials!');
+        this.errorMessage = 'Invalid email or password. Please try again.'; // Set the error message
       }
     );
   }
+  
 }
