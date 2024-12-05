@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.ElementCollection;
+
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.ArrayList;
@@ -29,6 +31,10 @@ public class Unit {
     private String content;
 
     private int duration;
+
+    @ElementCollection
+private List<String> highlightedSections; // Stores highlighted sections
+
 
     @DBRef
     @JsonIgnore

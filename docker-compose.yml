@@ -11,17 +11,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-#   mongodb:
-#     image: mongo:latest
-#     container_name: mongodb-container
-#     ports:
-#       - "27017:27017"
-#     environment:
-#       MONGO_INITDB_ROOT_USERNAME: g4l_dev
-#       MONGO_INITDB_ROOT_PASSWORD: P@ssword!
-#     volumes:
-#       - mongodb_data:/data/db
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: g4l_dev
+      MONGO_INITDB_ROOT_PASSWORD: P@ssword!
+    volumes:
+      - mongodb_data:/data/db
 
 volumes:
   postgres_data: 
-#   mongodb_data:  
+  mongodb_data:  
