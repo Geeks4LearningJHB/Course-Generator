@@ -66,7 +66,7 @@ transform: scale(0.95);
 .btn {
   width: 150px;
   padding: 15px 20px;
-  background-color: #424445; /* Blue-ish button color */
+  background-color: #424445; 
   border: none;
   border-radius: 5px;
   color: white;
@@ -76,15 +76,15 @@ transform: scale(0.95);
 }
 
 .btn:hover {
-background-color: #0f2e3d; /* Darker shade for hover */
+background-color: #0f2e3d; 
 }
 
 
 .logo {
-width: 100%;  /* Takes 80% of the right side */
-max-width: 600px;  /* Ensure it doesn’t stretch too large */
+width: 100%;
+max-width: 600px; 
 height: 100%;
-box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);  /* Subtle shadow */
+box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);  
 border-radius: 50%;
 animation: zoomOutLogo 1.5s ease-out forwards;
 animation-delay: 0.5s;

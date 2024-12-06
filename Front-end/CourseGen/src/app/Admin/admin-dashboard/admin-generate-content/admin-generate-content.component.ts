@@ -22,28 +22,25 @@ export class AdminGenerateContentComponent {
   }
   isLoading = false;
   isComplete = false;
-  countdown = 30; // Initial countdown in minutes
-  generatedData: string = ''; // Placeholder for backend data
-  // isCollapsed = false;
+  countdown = 30;
+  generatedData: string = ''; 
 
   startGeneration() {
     this.isLoading = true;
     this.isComplete = false;
     this.countdown = 1;
 
-    // Start countdown timer
     const interval = setInterval(() => {
       this.countdown--;
       if (this.countdown <= 0) {
         clearInterval(interval);
         this.completeGeneration();
       }
-    }, 2000); // Updates every minute
-
-    // Simulate fetching data from the backend
+    }, 2000); 
+   
     setTimeout(() => {
       this.generatedData = "Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...Generated course content from backend with extensive information...";
-    }, 18000); // Simulates a 30-minute backend process
+    }, 18000); 
   }
 
   completeGeneration() {
