@@ -37,6 +37,12 @@ public class ModuleService {
         return moduleRepository.findByModuleName(search);
     }
 
+    public List<CourseModule> getAllCourseModules(){
+        return moduleRepository.findAll();
+    }
+
+    
+
 // public List<CourseModuleDTO> convertModulesToDTO(List<CourseModule> modules) {
 //     return modules.stream()
 //                   .map(this::convertToDTO)

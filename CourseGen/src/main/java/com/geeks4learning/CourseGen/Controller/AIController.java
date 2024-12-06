@@ -30,6 +30,9 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+
+
+
 @RestController
 @RequestMapping("/AI")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -97,59 +100,78 @@ public class AIController {
 
     private void generateUnitContent(CourseModule module, String unitName, String prompt) {
         Unit unit = new Unit();
-        unit.setUnitName(unitName);
+        unit.setUnitName(sanitizeText(unitName));
         unit.setModule(module);
-
-        // Generate content for the unit
-        String unitContentPrompt = "Provide detailed content for a textbook chapter titled: '" + unitName + "' " +
-                "as part of the course '" + prompt + "'. Focus on key concepts and explanations.";
-        String unitContent = respondToPrompt(unitContentPrompt);
+    
+        String unitContentPrompt = "Provide detailed content for a textbook chapter titled: '" 
+                + sanitizeText(unitName) + "' as part of the course '" + prompt + "'.";
+        String unitContent = sanitizeText(respondToPrompt(unitContentPrompt));
         unit.setContent(unitContent);
-
+    
         synchronized (module.getUnits()) {
             module.getUnits().add(unit);
         }
-
-        // Generate activities for the unit
-        String activityPrompt = "Generate 3 practical activities for the chapter: '" + unitName + "' " +
-                "in the course '" + prompt + "'.";
-        String activityContent = respondToPrompt(activityPrompt);
-
-        // Create and associate activities with the unit
+    
+        String activityPrompt = "Generate 3 practical activities for the chapter: '" 
+                + sanitizeText(unitName) + "' in the course '" + prompt + "'.";
+        String activityContent = sanitizeText(respondToPrompt(activityPrompt));
+    
         Activity activity = new Activity(activityContent, unit);
         unit.setActivityUnits(Collections.singletonList(activity));
     }
+    
 
     private String respondToPrompt(String prompt) {
         ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest("gpt-4o-mini", prompt);
         ChatCompletionResponse chatCompletionResponse = restTemplate.postForObject(completionsURL,
                 chatCompletionRequest, ChatCompletionResponse.class);
         assert chatCompletionResponse != null;
-        return chatCompletionResponse.getChoices().get(0).getMessage().getContent();
+        String rawContent = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
+        return sanitizeText(rawContent);
     }
+    
 
     private CourseModule parseModuleOutline(String moduleOutline) {
         CourseModule courseModule = new CourseModule();
         String[] lines = moduleOutline.split("\n");
-
-        // Extract the module name
-        courseModule.setModuleName(lines[0].trim());
-        courseModule.setUnits(new ArrayList<>());
-
-        // Filter and process valid unit names
+    
+        // Extract the module name and sanitize it
+        courseModule.setModuleName(sanitizeText(lines[0]));
+    
         List<Unit> units = Arrays.stream(lines, 1, lines.length)
-                .filter(line -> !line.trim().isEmpty() && !line.trim().equals("---")) // Skip empty or invalid names
+                .map(String::trim)
+                .filter(line -> !line.isEmpty() && !line.equals("---")) // Skip invalid lines
+                .map(this::sanitizeText) // Sanitize each unit name
                 .map(line -> {
                     Unit unit = new Unit();
-                    unit.setUnitName(line.trim());
+                    unit.setUnitName(line);
                     unit.setModule(courseModule);
                     return unit;
                 })
                 .collect(Collectors.toList());
-
+    
         courseModule.setUnits(units);
         return courseModule;
     }
+    
+
+    private String sanitizeText(String text) {
+    return text
+        // Remove Markdown headers
+        .replaceAll("(?m)^#+\\s*", "") // Remove ###, ##, #
+        // Remove horizontal rules
+        .replaceAll("(?m)^---+$", "") // Remove lines with only dashes
+        // Remove Markdown lists
+        .replaceAll("(?m)^[-*]\\s+", "") // Remove leading - or *
+        // Remove tables (basic cleanup for Markdown tables)
+        .replaceAll("(?m)^\\|.*\\|$", "") // Remove table rows starting and ending with |
+        .replaceAll("(?m)^\\|-+\\|$", "") // Remove table separators like |-----|
+        // .replaceAll("(?m)^\\*\\s*(.+)", "$1") // Replace `* item` with `item`
+        // .replaceAll("\\s{2,}", " ") // Replace multiple spaces with a single space
+        // Trim whitespace
+        .trim();
+}
+
 
     @PostMapping("/saveGeneratedCourse")
     public ResponseEntity<String> saveGeneratedCourse(@RequestBody Map<String, Object> generatedCourseData) {
@@ -198,5 +220,22 @@ public class AIController {
                     .body("Error while saving generated data: " + e.getMessage());
         }
     }
+
+    @GetMapping("/getAllModules")
+    public List<CourseModule> getAllCourseModules() {
+        return moduleService.getAllCourseModules();
+    }
+
+    @GetMapping("/getAllUnits")
+    public List<Unit> getAllUnits() {
+        return unitService.getAllUnits();
+    }
+
+    @GetMapping("/getUnitsByModules")
+public ResponseEntity<List<Unit>> getUnitsByModules(@RequestParam String moduleId) {
+    System.out.println("Received moduleId: " + moduleId); // Log moduleId
+    List<Unit> units = unitService.findUnitsByModuleId(moduleId);
+    return ResponseEntity.ok(units);
+}
 
 }

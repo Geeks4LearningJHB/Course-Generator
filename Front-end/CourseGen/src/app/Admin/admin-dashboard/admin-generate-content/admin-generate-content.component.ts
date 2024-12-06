@@ -23,7 +23,7 @@ export class AdminGenerateContentComponent {
   isLoading = false;
   isComplete = false;
   countdown = 30; // Initial countdown in minutes
-  generatedData: string = ''; // Placeholder for backend data
+  generatedData: string = '';
   // isCollapsed = false;
 
   startGeneration() {
