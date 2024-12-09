@@ -39,11 +39,6 @@ public class AdminController {
  
     @Autowired
     private TrainerRepository trainerRepository;
- 
-    // @PostMapping("/createAdmin")
-    // public Message createTrainer(@RequestBody AdminDTO adminDTO) {
-    // return adminService.createAdmin(adminDTO);
-    // }
 
     @GetMapping("/AllTrainers")
    public List<TrainerViewDTO> getTrainerDetails() {
