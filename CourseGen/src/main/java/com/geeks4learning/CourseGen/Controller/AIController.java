@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,6 +38,12 @@ public class AIController {
 
     @Autowired
     private PromptService promptService;
+
+    @Autowired
+    private ModuleRepository moduleRepository;
+
+    @Autowired
+    private unitRepository unitRepository;
 
     @Autowired
     private ModuleService moduleService;
@@ -88,8 +95,16 @@ public class AIController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Error during generation: " + e.getMessage()));
+                    .body(Map.of("error", "Error generating course content: " + e.getMessage()));
         }
+    }
+
+    @Async
+    public CompletableFuture<Void> generateUnitContentAsync(CourseModule module, String unitName, String prompt) {
+        // Log before running async task
+        System.out.println("Generating content for unit: " + unitName);
+        return CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, prompt))
+                .thenRun(() -> System.out.println("Completed content for unit: " + unitName));
     }
 
     private void generateUnitContent(CourseModule module, String unitName, String prompt) {
@@ -211,11 +226,6 @@ public class AIController {
         }
     }
 
-    @Autowired
-    private ModuleRepository moduleRepository;
-
-    @Autowired
-    private unitRepository unitRepository;
 
     @PostMapping("/regenerateText")
     public ResponseEntity<Map<String, String>> regenerateText(
