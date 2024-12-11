@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Unit, ViewContentService } from '../../Services/view-content.service';
 import { Course, ViewCoursesService,  } from '../../Services/view-courses.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-content',
@@ -16,8 +17,12 @@ export class ViewContentComponent implements OnInit{
   units: Unit[] = [];
   courses: Course[] = [];
   selectedCourse: Course | null = null;
+  generatedData: any;
 
-  constructor(private viewContentService: ViewContentService, private viewCoursesService: ViewCoursesService) {}
+  constructor(private router: Router, private viewContentService: ViewContentService, private viewCoursesService: ViewCoursesService) {
+    const nav = this.router.getCurrentNavigation();
+    this.generatedData = nav?.extras.state?.['data'];
+  }
 
   ngOnInit(): void {
     this.viewContentService.getAllUnits().subscribe({
@@ -37,6 +42,10 @@ export class ViewContentComponent implements OnInit{
       },
       error: (err) => console.error('Error fetching courses', err),
     });
+
+    if (!this.generatedData) {
+      console.error('No generated data found');
+    }
   }
 
   toggleUnit(unit: any): void {

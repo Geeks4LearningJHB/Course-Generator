@@ -8,6 +8,7 @@ import com.geeks4learning.CourseGen.Entities.CourseModule;
 import com.geeks4learning.CourseGen.Entities.Unit;
 import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
+import com.geeks4learning.CourseGen.Model.CourseRequest;
 import com.geeks4learning.CourseGen.Repositories.ModuleRepository;
 import com.geeks4learning.CourseGen.Repositories.unitRepository;
 import com.geeks4learning.CourseGen.Services.ActivityService;
@@ -61,43 +62,54 @@ public class AIController {
     private String completionsURL;
 
     @PostMapping("/generateCourse")
-    public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody String prompt, String difficulty,
-            int duration) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            // Step 1: Save the prompt
-            PromtDTO newPrompt = new PromtDTO(prompt, difficulty, duration);
-            promptService.savePrompt(newPrompt);
+public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody CourseRequest courseRequest) {
+    Map<String, Object> response = new HashMap<>();
+    try {
+        // Step 1: Save the prompt
+        PromtDTO newPrompt = new PromtDTO();
+        newPrompt.setPromt(courseRequest.getCourseTitle());
+        newPrompt.setDifficulty(courseRequest.getDifficulty());
+        newPrompt.setDuration(courseRequest.getDuration());
+        promptService.savePrompt(newPrompt);
 
-            // Step 2: Generate the course outline
-            String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: " + prompt +
-                    " that would take " + duration + " months with a difficulty level of " + difficulty;
-            String moduleOutline = respondToPrompt(moduleOutlinePrompt);
-            CourseModule module = parseModuleOutline(moduleOutline);
+        // Step 2: Generate the course outline
+        String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: " 
+                + courseRequest.getCourseTitle()
+                + " that would take " 
+                + courseRequest.getDuration() 
+                + " months with a difficulty level of " 
+                + courseRequest.getDifficulty();
+        String moduleOutline = respondToPrompt(moduleOutlinePrompt);
+        CourseModule module = parseModuleOutline(moduleOutline);
 
-            if (module.getUnits() == null) {
-                module.setUnits(new ArrayList<>());
-            }
-
-            // Step 3: Generate detailed content for each unit
-            List<CompletableFuture<Void>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
-                    .filter(line -> !line.trim().isEmpty())
-                    .map(unitName -> CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, prompt)))
-                    .collect(Collectors.toList());
-
-            // Wait for all unit tasks to complete
-            CompletableFuture.allOf(unitTasks.toArray(new CompletableFuture[0])).join();
-
-            // Step 4: Return the generated course data
-            response.put("module", module);
-            response.put("units", module.getUnits());
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error generating course content: " + e.getMessage()));
+        if (module.getUnits() == null) {
+            module.setUnits(new ArrayList<>());
         }
+
+        // Step 3: Generate detailed content for each unit
+        List<CompletableFuture<Void>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
+                .filter(line -> !line.trim().isEmpty())
+                .map(unitName -> CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, courseRequest.getCourseTitle())))
+                .collect(Collectors.toList());
+
+        // Wait for all unit tasks to complete
+        CompletableFuture.allOf(unitTasks.toArray(new CompletableFuture[0])).join();
+
+        // Save the module to the database
+        CourseModule savedModule = moduleService.saveModule(module);
+
+        // Step 4: Return the generated course data
+        response.put("module", module);
+        response.put("units", module.getUnits());
+        response.put("moduleId", savedModule.getModuleId()); // Include moduleId for navigation
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error generating course content: " + e.getMessage()));
     }
+}
+
 
     @Async
     public CompletableFuture<Void> generateUnitContentAsync(CourseModule module, String unitName, String prompt) {
