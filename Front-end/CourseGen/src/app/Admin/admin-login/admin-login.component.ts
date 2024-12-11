@@ -11,7 +11,7 @@ export class AdminLoginComponent {
   email: string = '';
   password: string = '';
   loginError: string = '';
-  isLoading: boolean = false;
+  LoggingIn: boolean = false;
     successMessage: string = '';
 
   constructor(private router: Router, private loginService: LoginService) {}
@@ -33,11 +33,11 @@ export class AdminLoginComponent {
 
         if (response.response === "Success") {
           // Show loading overlay with success message
-          this.isLoading = true;
+          this.LoggingIn = true;
           this.successMessage = 'Sign in successfully';
         
         setTimeout(() => {
-          this.isLoading = false;
+          this.LoggingIn = false;
           this.router.navigate(['/admin-dashboard']);
         }, 1000); // Adjust delay as needed
       } else {
