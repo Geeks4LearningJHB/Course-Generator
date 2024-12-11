@@ -28,6 +28,10 @@ public class CourseModule {
 
     @DBRef
     @JsonIgnore
+    private Outline outline;
+
+    @DBRef
+    @JsonIgnore
     private List<Unit> units = new ArrayList<>();
 
     

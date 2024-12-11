@@ -9,8 +9,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.geeks4learning.CourseGen.Entities.*;
 
 public interface unitRepository extends MongoRepository<Unit, String> {
-    List<Unit> findByModule_ModuleId(Long moduleId);  
-    Optional<Unit> findById(String unitId);
-
-    
+    List<Unit> findByModule_ModuleId(String moduleId);
 }

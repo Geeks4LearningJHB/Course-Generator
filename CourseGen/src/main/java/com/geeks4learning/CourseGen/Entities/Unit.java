@@ -48,6 +48,10 @@ private List<String> highlightedSections; // Stores highlighted sections
     @JsonIgnore
     private List<Activity> activityUnits = new ArrayList<>(); // Initialize to avoid null issues
 
+    @DBRef
+    @JsonIgnore
+    private Outline outline;
+
     public Unit(CourseModule module) {
         this.module = module;
         this.assessmentUnits = new ArrayList<>();

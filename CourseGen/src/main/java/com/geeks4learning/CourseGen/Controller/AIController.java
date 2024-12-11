@@ -8,6 +8,7 @@ import com.geeks4learning.CourseGen.Entities.CourseModule;
 import com.geeks4learning.CourseGen.Entities.Unit;
 import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
+import com.geeks4learning.CourseGen.Model.CourseRequest;
 import com.geeks4learning.CourseGen.Repositories.ModuleRepository;
 import com.geeks4learning.CourseGen.Repositories.unitRepository;
 import com.geeks4learning.CourseGen.Services.ActivityService;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,6 +41,12 @@ public class AIController {
     private PromptService promptService;
 
     @Autowired
+    private ModuleRepository moduleRepository;
+
+    @Autowired
+    private unitRepository unitRepository;
+
+    @Autowired
     private ModuleService moduleService;
 
     @Autowired
@@ -54,65 +62,81 @@ public class AIController {
     private String completionsURL;
 
     @PostMapping("/generateCourse")
-    public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody String prompt, String difficulty,
-            int duration) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            // Step 1: Save the prompt
-            PromtDTO newPrompt = new PromtDTO(prompt, difficulty, duration);
-            promptService.savePrompt(newPrompt);
+public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody CourseRequest courseRequest) {
+    Map<String, Object> response = new HashMap<>();
+    try {
+        // Step 1: Save the prompt
+        PromtDTO newPrompt = new PromtDTO();
+        newPrompt.setPromt(courseRequest.getCourseTitle());
+        newPrompt.setDifficulty(courseRequest.getDifficulty());
+        newPrompt.setDuration(courseRequest.getDuration());
+        promptService.savePrompt(newPrompt);
 
-            // Step 2: Generate the course outline
-            String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: " + prompt +
-                    " that would take " + duration + " months with a difficulty level of " + difficulty;
-            String moduleOutline = respondToPrompt(moduleOutlinePrompt);
-            CourseModule module = parseModuleOutline(moduleOutline);
+        // Step 2: Generate the course outline
+        String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: " 
+                + courseRequest.getCourseTitle()
+                + " that would take " 
+                + courseRequest.getDuration() 
+                + " months with a difficulty level of " 
+                + courseRequest.getDifficulty();
+        String moduleOutline = respondToPrompt(moduleOutlinePrompt);
+        CourseModule module = parseModuleOutline(moduleOutline);
 
-            if (module.getUnits() == null) {
-                module.setUnits(new ArrayList<>());
-            }
-
-            // Step 3: Generate detailed content for each unit
-            List<CompletableFuture<Void>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
-                    .filter(line -> !line.trim().isEmpty())
-                    .map(unitName -> CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, prompt)))
-                    .collect(Collectors.toList());
-
-            // Wait for all unit tasks to complete
-            CompletableFuture.allOf(unitTasks.toArray(new CompletableFuture[0])).join();
-
-            // Step 4: Return the generated course data
-            response.put("module", module);
-            response.put("units", module.getUnits());
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Error during generation: " + e.getMessage()));
+        if (module.getUnits() == null) {
+            module.setUnits(new ArrayList<>());
         }
+
+        // Step 3: Generate detailed content for each unit
+        List<CompletableFuture<Void>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
+                .filter(line -> !line.trim().isEmpty())
+                .map(unitName -> CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, courseRequest.getCourseTitle())))
+                .collect(Collectors.toList());
+
+        // Wait for all unit tasks to complete
+        CompletableFuture.allOf(unitTasks.toArray(new CompletableFuture[0])).join();
+
+        // Save the module to the database
+        CourseModule savedModule = moduleService.saveModule(module);
+
+        // Step 4: Return the generated course data
+        response.put("module", module);
+        response.put("units", module.getUnits());
+        response.put("moduleId", savedModule.getModuleId()); // Include moduleId for navigation
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Error generating course content: " + e.getMessage()));
+    }
+}
+
+
+    @Async
+    public CompletableFuture<Void> generateUnitContentAsync(CourseModule module, String unitName, String prompt) {
+        // Log before running async task
+        System.out.println("Generating content for unit: " + unitName);
+        return CompletableFuture.runAsync(() -> generateUnitContent(module, unitName, prompt))
+                .thenRun(() -> System.out.println("Completed content for unit: " + unitName));
     }
 
     private void generateUnitContent(CourseModule module, String unitName, String prompt) {
         Unit unit = new Unit();
-        unit.setUnitName(unitName);
+        unit.setUnitName(sanitizeText(unitName));
         unit.setModule(module);
 
-        // Generate content for the unit
-        String unitContentPrompt = "Provide detailed content for a textbook chapter titled: '" + unitName + "' " +
-                "as part of the course '" + prompt + "'. Focus on key concepts and explanations.";
-        String unitContent = respondToPrompt(unitContentPrompt);
+        String unitContentPrompt = "Provide detailed content for a textbook chapter titled: '"
+                + sanitizeText(unitName) + "' as part of the course '" + prompt + "'.";
+        String unitContent = sanitizeText(respondToPrompt(unitContentPrompt));
         unit.setContent(unitContent);
 
         synchronized (module.getUnits()) {
             module.getUnits().add(unit);
         }
 
-        // Generate activities for the unit
-        String activityPrompt = "Generate 3 practical activities for the chapter: '" + unitName + "' " +
-                "in the course '" + prompt + "'.";
-        String activityContent = respondToPrompt(activityPrompt);
+        String activityPrompt = "Generate 3 practical activities for the chapter: '"
+                + sanitizeText(unitName) + "' in the course '" + prompt + "'.";
+        String activityContent = sanitizeText(respondToPrompt(activityPrompt));
 
-        // Create and associate activities with the unit
         Activity activity = new Activity(activityContent, unit);
         unit.setActivityUnits(Collections.singletonList(activity));
     }
@@ -122,23 +146,24 @@ public class AIController {
         ChatCompletionResponse chatCompletionResponse = restTemplate.postForObject(completionsURL,
                 chatCompletionRequest, ChatCompletionResponse.class);
         assert chatCompletionResponse != null;
-        return chatCompletionResponse.getChoices().get(0).getMessage().getContent();
+        String rawContent = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
+        return sanitizeText(rawContent);
     }
 
     private CourseModule parseModuleOutline(String moduleOutline) {
         CourseModule courseModule = new CourseModule();
         String[] lines = moduleOutline.split("\n");
 
-        // Extract the module name
-        courseModule.setModuleName(lines[0].trim());
-        courseModule.setUnits(new ArrayList<>());
+        // Extract the module name and sanitize it
+        courseModule.setModuleName(sanitizeText(lines[0]));
 
-        // Filter and process valid unit names
         List<Unit> units = Arrays.stream(lines, 1, lines.length)
-                .filter(line -> !line.trim().isEmpty() && !line.trim().equals("---")) // Skip empty or invalid names
+                .map(String::trim)
+                .filter(line -> !line.isEmpty() && !line.equals("---")) // Skip invalid lines
+                .map(this::sanitizeText) // Sanitize each unit name
                 .map(line -> {
                     Unit unit = new Unit();
-                    unit.setUnitName(line.trim());
+                    unit.setUnitName(line);
                     unit.setModule(courseModule);
                     return unit;
                 })
@@ -146,6 +171,23 @@ public class AIController {
 
         courseModule.setUnits(units);
         return courseModule;
+    }
+
+    private String sanitizeText(String text) {
+        return text
+                // Remove Markdown headers
+                .replaceAll("(?m)^#+\\s*", "") // Remove ###, ##, #
+                // Remove horizontal rules
+                .replaceAll("(?m)^---+$", "") // Remove lines with only dashes
+                // Remove Markdown lists
+                .replaceAll("(?m)^[-*]\\s+", "") // Remove leading - or *
+                // Remove tables (basic cleanup for Markdown tables)
+                .replaceAll("(?m)^\\|.*\\|$", "") // Remove table rows starting and ending with |
+                .replaceAll("(?m)^\\|-+\\|$", "") // Remove table separators like |-----|
+                // .replaceAll("(?m)^\\*\\s*(.+)", "$1") // Replace `* item` with `item`
+                // .replaceAll("\\s{2,}", " ") // Replace multiple spaces with a single space
+                // Trim whitespace
+                .trim();
     }
 
     @PostMapping("/saveGeneratedCourse")
@@ -196,16 +238,11 @@ public class AIController {
         }
     }
 
-    @Autowired
-    private ModuleRepository moduleRepository;
-
-    @Autowired
-    private unitRepository unitRepository;
 
     @PostMapping("/regenerateText")
     public ResponseEntity<Map<String, String>> regenerateText(
-            @RequestParam String unitId, 
-            @RequestParam String moduleId, 
+            @RequestParam String unitId,
+            @RequestParam String moduleId,
             @RequestBody String highlightedText) {
         try {
             // Fetch the existing module using the repository
@@ -237,28 +274,46 @@ public class AIController {
     }
 
     @PostMapping("/confirmUpdate")
-public ResponseEntity<String> confirmUpdate(
-        @RequestParam String unitId,
-        @RequestBody String regeneratedText) {
-    try {
-        // Fetch the existing unit
-        Optional<Unit> optionalUnit = unitRepository.findById(unitId);
-        if (optionalUnit.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Unit not found with ID: " + unitId);
+    public ResponseEntity<String> confirmUpdate(
+            @RequestParam String unitId,
+            @RequestBody String regeneratedText) {
+        try {
+            // Fetch the existing unit
+            Optional<Unit> optionalUnit = unitRepository.findById(unitId);
+            if (optionalUnit.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Unit not found with ID: " + unitId);
+            }
+
+            Unit unit = optionalUnit.get();
+
+            // Update the unit content
+            unit.setContent(regeneratedText);
+            unitService.saveUnit(unit);
+
+            return ResponseEntity.ok("Unit updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating unit: " + e.getMessage());
         }
 
-        Unit unit = optionalUnit.get();
-
-        // Update the unit content
-        unit.setContent(regeneratedText);
-        unitService.saveUnit(unit);
-
-        return ResponseEntity.ok("Unit updated successfully.");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error updating unit: " + e.getMessage());
     }
-}
+
+    @GetMapping("/getAllModules")
+    public List<CourseModule> getAllCourseModules() {
+        return moduleService.getAllCourseModules();
+    }
+
+    @GetMapping("/getAllUnits")
+    public List<Unit> getAllUnits() {
+        return unitService.getAllUnits();
+    }
+
+    @GetMapping("/getUnitsByModules")
+    public ResponseEntity<List<Unit>> getUnitsByModules(@RequestParam String moduleId) {
+        System.out.println("Received moduleId: " + moduleId); // Log moduleId
+        List<Unit> units = unitService.findUnitsByModuleId(moduleId);
+        return ResponseEntity.ok(units);
+    }
 
 }

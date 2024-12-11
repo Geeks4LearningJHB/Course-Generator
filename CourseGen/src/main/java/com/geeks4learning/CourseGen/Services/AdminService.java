@@ -53,7 +53,7 @@ public class AdminService {
             message.setMessage("Invalid email or password.");
         }
     
-        return message; // Ensure this object is consistent and matches what the frontend expects
+        return message;
     }
     
 }

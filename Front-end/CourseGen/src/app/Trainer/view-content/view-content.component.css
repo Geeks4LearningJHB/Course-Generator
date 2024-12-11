@@ -103,9 +103,14 @@ input, textarea {
   background-color: #5a6268;
 }
 
-.topic {
+.unit-content {
   margin-left: 20px;
+  list-style: disc;
+}
+
+.topic {
   cursor: pointer;
+  margin-left: 10px;
   color: #333;
 }
 
