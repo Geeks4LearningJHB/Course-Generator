@@ -71,7 +71,7 @@ export class ViewContentComponent implements OnInit{
     console.log('Course selected:', course); // Check selected course
     this.selectedCourse = course; // Update the selected course
   
-    this.viewContentService.getUnitsByModules(this.selectedCourse.id).subscribe({
+    this.viewContentService.getUnitsByModules(this.selectedCourse.moduleId).subscribe({
       next: (data) => {
         console.log('Fetched units for selected course:', data); // Debugging units response
         this.units = data.map((unit) => ({ ...unit, isExpanded: false })); // Set units

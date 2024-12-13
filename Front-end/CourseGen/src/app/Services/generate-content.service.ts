@@ -22,5 +22,10 @@ export class GenerateContentService {
   getOutline(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}`, data); // Update with your backend endpoint
   }
+  // http://localhost:8080/AI/saveGeneratedCourse
+
+  saveGeneratedCourse(courseData: any): Observable<any> {
+    return this.http.post('http://localhost:8080/AI/saveGeneratedCourse', courseData);
+  }
   
 }

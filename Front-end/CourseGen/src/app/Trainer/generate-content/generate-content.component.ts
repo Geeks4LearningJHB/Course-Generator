@@ -15,7 +15,6 @@ export class GenerateContentComponent {
   isCollapsed = true;
   progress = 0;
   isLoading = false;
-  showOutlineModal = false; // Show/hide outline modal
   courseOutline: string = ''; // Store course outline
 
   constructor(
@@ -30,33 +29,32 @@ export class GenerateContentComponent {
       return;
     }
 
-    // Fetch and display course outline first
-    this.onGenerateOutline();
+    this.confirmCourseGeneration();
   }
 
   // Fetch course outline and display in modal
-  onGenerateOutline() {
-    const outlineData = {
-      prompt: this.courseTitle,
-      difficulty: this.difficulty,
-      duration: this.duration ?? 0
-    };
+  // onGenerateOutline() {
+  //   const outlineData = {
+  //     prompt: this.courseTitle,
+  //     difficulty: this.difficulty,
+  //     duration: this.duration ?? 0
+  //   };
 
-    this.generateContentService.getOutline(outlineData).subscribe(
-      (response: any) => {
-        this.courseOutline = response.outline; // Assuming `outline` is part of the response
-        this.showOutlineModal = true; // Open modal
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error fetching course outline:', error);
-        alert('Failed to fetch course outline.');
-      }
-    );
-  }
+  //   this.generateContentService.getOutline(outlineData).subscribe(
+  //     (response: any) => {
+  //       this.courseOutline = response.outline; // Assuming `outline` is part of the response
+        
+  //     },
+  //     (error: HttpErrorResponse) => {
+  //       console.error('Error fetching course outline:', error);
+  //       alert('Failed to fetch course outline.');
+  //     }
+  //   );
+  // }
 
   // Confirm course generation after viewing the outline
   confirmCourseGeneration() {
-    this.showOutlineModal = false; // Close modal
+    
     this.isLoading = true; // Start loading process
     this.progress = 0;
 
@@ -72,7 +70,7 @@ export class GenerateContentComponent {
         this.progress = 100;
 
         // Navigate to view content
-        this.router.navigate(['/view-content']);
+        this.router.navigate(['/course-save-component']);
       },
       (error: HttpErrorResponse) => {
         console.error('Error generating course:', error);

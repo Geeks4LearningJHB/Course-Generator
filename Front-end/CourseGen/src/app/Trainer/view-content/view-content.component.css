@@ -45,11 +45,11 @@
 .re-generate-button:hover, .download-button:hover {
   background-color: #5a6268;
 }
-
+ 
 .modify-container {
   margin-top: 20px;
 }
-
+ 
 .form-group {
   margin-bottom: 1px;
   text-align: left;
@@ -59,7 +59,7 @@ label {
   margin-bottom: 5px;
   font-weight: bold;
 }
-
+ 
 input, textarea {
   width: 100%;
   padding: 10px;
@@ -84,7 +84,7 @@ input, textarea {
 .module-container {
   margin-bottom: 15px;
 }
-
+ 
 .module-header {
   cursor: pointer;
   padding: 10px;
@@ -98,26 +98,26 @@ input, textarea {
 .module-header:hover {
   background-color: #0056b3;
 }
-
+ 
 .module-header.collapsed {
   background-color: #5a6268;
 }
 
-.unit-content {
+/* .unit-content {
   margin-left: 20px;
   list-style: disc;
-}
+} */
 
 .topic {
+  margin-left: 20px;
   cursor: pointer;
-  margin-left: 10px;
   color: #333;
 }
-
+ 
 .topic:hover {
   color: #007bff;
 }
-
+ 
 .sub-topic {
   margin-left: 40px;
   list-style: square;

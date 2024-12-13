@@ -16,6 +16,7 @@ import { UserManagementComponent } from './Admin/admin-dashboard/user-management
 import { ViewUsersComponent } from './Admin/view-users/view-users.component';
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
 import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view-content.component';
+import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent }, // Default landing page
@@ -34,6 +35,7 @@ const routes: Routes = [
   { path: 'admin-dashboard', component: AdminDashboardComponent },
   { path: 'view-users', component: ViewUsersComponent },
   { path: 'user-management', component: UserManagementComponent },
+  { path: 'course-save-component', component: CourseSaveComponent },
   { path: '**', redirectTo: '' }  // Redirect unknown routes to the landing page
 ];
 

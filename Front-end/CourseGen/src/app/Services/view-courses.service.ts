@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface Course {
-  id: string;
+  moduleId: string;
   moduleName: string;
   description: string;
 }
@@ -19,4 +19,6 @@ export class ViewCoursesService {
   getCourses(): Observable<Course[]> {
     return this.http.get<Course[]>(this.apiUrl + '/getAllModules');
   }
+
+  
 }
