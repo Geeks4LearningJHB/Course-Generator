@@ -11,8 +11,21 @@ export class GenerateContentService {
 
   constructor(private http: HttpClient) {}
 
-  generateCourse(courseData: { courseTitle: string, difficulty: string, duration: number }): Observable<any> {
-    
-    return this.http.post(this.apiUrl, courseData);
+  generateCourse(data: { prompt: string; difficulty: string; duration: number }): Observable<any> {
+    // Access difficulty and duration from the data object to construct the URL
+    const { difficulty, duration } = data;
+
+    // Use query parameters in the URL and send 'data' as the request body
+    return this.http.post(`${this.apiUrl}?difficulty=${difficulty}&duration=${duration}`, data);
   }
+
+  getOutline(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}`, data); // Update with your backend endpoint
+  }
+  // http://localhost:8080/AI/saveGeneratedCourse
+
+  saveGeneratedCourse(courseData: any): Observable<any> {
+    return this.http.post('http://localhost:8080/AI/saveGeneratedCourse', courseData);
+  }
+  
 }

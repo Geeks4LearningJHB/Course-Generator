@@ -27,6 +27,11 @@ public class CourseModule {
     private String duration;
 
     @DBRef
+    @JsonIgnore
+    private Outline outline;
+
+    @DBRef
+    @JsonIgnore
     private List<Unit> units = new ArrayList<>();
 
     

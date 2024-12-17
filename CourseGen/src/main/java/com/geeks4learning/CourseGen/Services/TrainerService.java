@@ -19,17 +19,21 @@ public class TrainerService {
     private TrainerRepository trainerRepository;
 
     public Message authenticateTrainer(String email, String password) {
-
         Optional<TrainerEntity> trainer = trainerRepository.findByEmailAndPassword(email, password);
 
         Message message = new Message();
 
         if (trainer.isPresent()) {
+            TrainerEntity foundTrainer = trainer.get();
 
-            message.setResponse("Success");
-            message.setMessage("Authentication successful!");
+            if ("active".equalsIgnoreCase(foundTrainer.getStatus())) {
+                message.setResponse("Success");
+                message.setMessage("Authentication successful!");
+            } else {
+                message.setResponse("Failure");
+                message.setMessage("Your account has not been approved by the admin.");
+            }
         } else {
-
             message.setResponse("Failure");
             message.setMessage("Invalid email or password.");
         }
@@ -59,16 +63,12 @@ public class TrainerService {
         return message;
     }
 
-
-   public List<TrainerViewDTO> getTrainerDetails() {
-    return trainerRepository.findAllTrainerDetails();
-}
+    public List<TrainerViewDTO> getTrainerDetails() {
+        return trainerRepository.findAllTrainerDetails();
+    }
     // //Get all accepted trainers
     // public List<TrainerEntity> getAcceptedTrainers() {
-    //     return trainerRepository.findByStatus();
+    // return trainerRepository.findByStatus();
     // }
-
-    
-
 
 }

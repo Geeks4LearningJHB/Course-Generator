@@ -72,8 +72,15 @@
               <td>{{ trainer.email }}</td>
               <td>{{ trainer.status }}</td>
               <td>
-                <button class="action-button" (click)="viewDetails(trainer)">View</button>
+                <button
+                  class="action-button"
+                  (click)="toggleTrainerStatus(trainer)"
+                  [ngClass]="trainer.status === 'active' ? 'active-button' : 'inactive-button'"
+                >
+                  {{ trainer.status === 'active' ? 'Make Inactive' : 'Make Active' }}
+                </button>
               </td>
+              
             </tr>
           </tbody>
         </table>

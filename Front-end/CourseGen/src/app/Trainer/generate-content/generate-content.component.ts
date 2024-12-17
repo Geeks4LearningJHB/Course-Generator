@@ -1,5 +1,7 @@
 import { Component, HostListener } from '@angular/core';
-import { GenerateContentService } from '../../Services/generate-content.service';  // Adjust import path as needed
+import { GenerateContentService } from '../../Services/generate-content.service'; // Adjust import path as needed
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-generate-content',
@@ -11,69 +13,71 @@ export class GenerateContentComponent {
   difficulty: string = 'Beginner';
   duration: number | null = null;
   isCollapsed = true;
-
+  progress = 0;
   isLoading = false;
-  isComplete = false;
-  countdown = 30; // Initial countdown in minutes
-  generatedData: string = ''; // Placeholder for backend data
+  courseOutline: string = ''; // Store course outline
 
-  constructor(private generateContentService: GenerateContentService) {}
+  constructor(
+    private router: Router,
+    private generateContentService: GenerateContentService
+  ) {}
 
+  // Triggered when the form is submitted
   onGenerateCourse() {
-    console.log('Course Title:', this.courseTitle);
-    console.log('Difficulty:', this.difficulty);
-    console.log('Duration:', this.duration);
-    alert(`Course "${this.courseTitle}" generated successfully!`);
+    if (!this.courseTitle || !this.difficulty || this.duration == null) {
+      alert('Please fill in all fields.');
+      return;
+    }
 
-    // Call backend API to generate course content
-    this.startGeneration();
+    this.confirmCourseGeneration();
   }
 
-  startGeneration() {
-    this.isLoading = true;
-    this.isComplete = false;
-    this.countdown = 1;
-  
-    // Start countdown timer
-    const interval = setInterval(() => {
-      this.countdown--;
-      if (this.countdown <= 0) {
-        clearInterval(interval);
-        this.completeGeneration();
-      }
-    }, 2000); // Updates every 2 seconds
-  
-    // Ensure that duration is always a number
+  // Fetch course outline and display in modal
+  // onGenerateOutline() {
+  //   const outlineData = {
+  //     prompt: this.courseTitle,
+  //     difficulty: this.difficulty,
+  //     duration: this.duration ?? 0
+  //   };
+
+  //   this.generateContentService.getOutline(outlineData).subscribe(
+  //     (response: any) => {
+  //       this.courseOutline = response.outline; // Assuming `outline` is part of the response
+        
+  //     },
+  //     (error: HttpErrorResponse) => {
+  //       console.error('Error fetching course outline:', error);
+  //       alert('Failed to fetch course outline.');
+  //     }
+  //   );
+  // }
+
+  // Confirm course generation after viewing the outline
+  confirmCourseGeneration() {
+    
+    this.isLoading = true; // Start loading process
+    this.progress = 0;
+
     const courseData = {
-      courseTitle: this.courseTitle,
+      prompt: this.courseTitle,
       difficulty: this.difficulty,
-      duration: this.duration ?? 0  // Convert null to 0 if duration is null
+      duration: this.duration ?? 0
     };
-  
+
     this.generateContentService.generateCourse(courseData).subscribe(
       (response: any) => {
-        this.generatedData = response;  // Update with the actual generated data
-      },
-      (error) => {
-        console.error('Error generating course content:', error);
         this.isLoading = false;
+        this.progress = 100;
+
+        // Navigate to view content
+        this.router.navigate(['/course-save-component']);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error generating course:', error);
+        this.isLoading = false;
+        alert('Failed to generate course.');
       }
     );
-  
-  
-  }
-
-  completeGeneration() {
-    this.isLoading = false;
-    this.isComplete = true;
-  }
-
-  closeModal() {
-    this.isComplete = false;
-  }
-
-  onSave() {
-    alert('Course content saved successfully!');
   }
 
   toggleSidebar() {

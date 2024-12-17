@@ -21,7 +21,7 @@
   }
   
   .styled-table th {
-    background-color: #007bff;
+    background-color:#145570;
     color: white;
     font-weight: bold;
   }
@@ -43,11 +43,13 @@
   /* Action Button Styling */
   .action-button {
     padding: 8px 16px;
-    background-color: #007bff;
+    background-color: #145570;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s ease;
+    font-weight: bold;
+    
   }

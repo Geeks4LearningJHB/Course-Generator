@@ -4,16 +4,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document(collection = "activities") // Consistent naming (lowercase, plural)
+@Document(collection = "activities")
 public class Activity {
 
     @Id
-    private String activityId; // MongoDB ObjectId as String
+    private String activityId;
 
     private String activityName;
 
@@ -22,5 +24,11 @@ public class Activity {
     private String instructions;
 
     @DBRef
-    private Unit unit; // Reference to the Unit collection
+    @JsonIgnore
+    private Unit unit;
+
+    public Activity(String activityName, Unit unit) {
+        this.activityName = activityName;
+        this.unit = unit;
+    }
 }

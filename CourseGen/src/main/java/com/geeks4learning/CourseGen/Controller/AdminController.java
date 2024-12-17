@@ -1,7 +1,6 @@
 package com.geeks4learning.CourseGen.Controller;
  
 import java.util.*;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.geeks4learning.CourseGen.DTOs.AdminDTO;
@@ -41,11 +39,6 @@ public class AdminController {
  
     @Autowired
     private TrainerRepository trainerRepository;
- 
-    // @PostMapping("/createAdmin")
-    // public Message createTrainer(@RequestBody AdminDTO adminDTO) {
-    // return adminService.createAdmin(adminDTO);
-    // }
 
     @GetMapping("/AllTrainers")
    public List<TrainerViewDTO> getTrainerDetails() {
@@ -135,5 +128,27 @@ public ResponseEntity<Map<String, String>> rejectTrainer(@PathVariable Long id) 
     errorResponse.put("message", "Trainer not found");
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 }
+
+@PutMapping("/update-status")
+public ResponseEntity<Map<String, String>> updateTrainerStatus(@RequestBody Map<String, String> request) {
+    String email = request.get("email");
+    String status = request.get("status");
+
+    Optional<TrainerEntity> trainerOptional = trainerRepository.findByEmail(email);
+    if (trainerOptional.isPresent()) {
+        TrainerEntity trainer = trainerOptional.get();
+        trainer.setStatus(status);
+        trainerRepository.save(trainer);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Trainer status updated successfully.");
+        return ResponseEntity.ok(response);
+    } else {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", "Trainer not found.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+}
+
 
 }

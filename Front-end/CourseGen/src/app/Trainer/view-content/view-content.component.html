@@ -13,69 +13,71 @@
   <div class="body">
     <div class="sidebar" [class.collapsed]="isCollapsed">
       <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-    <ul>
-      <li>
-        <i class="icon fa fa-home"></i>
-        <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
-      </li>
-      <li>
-        <i class="icon fas fa-book"></i>
-        <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-      </li>
-      <li>
-        <i class="icon fas fa-file-alt"></i>
-        <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
-    </li>
-      <hr class="divider" />
-      <li>
-        <i class="icon fas fa-sign-out-alt"></i>
-        <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-      </li>
-    </ul>
-  </div>
+      <ul>
+        <li>
+          <i class="icon fa fa-home"></i>
+          <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
+        </li>
+        <li>
+          <i class="icon fas fa-book"></i>
+          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+        </li>
+        <li>
+          <i class="icon fas fa-file-alt"></i>
+          <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
+        </li>
+        <hr class="divider" />
+        <li>
+          <i class="icon fas fa-sign-out-alt"></i>
+          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+        </li>
+      </ul>
+    </div>
 
     <div class="sub-header" [class.shifted]="isCollapsed">
-      <h3 class="sub-heading">GENERATE CONTENT</h3>
-      <button class="back-button" style="background-color:  #133B50;" routerLink="/view-courses">
+      <h3 class="sub-heading">VIEW CONTENT</h3>
+      <button class="back-button" style="background-color: #133B50;" routerLink="/view-courses">
         <span class="icon"></span> Back
       </button>
     </div> -->
 
     <div class="dash-container-1" [class.shifted]="isCollapsed">
       <div class="form-container">
-        <h2 class="form-title">Java Programming for Beginners</h2>
+        <h3 class="form-title">View Modules by Course</h3>
 
-        <div class="course-content">
-          <div *ngFor="let module of courseModules; let i = index" class="module-container">
-            <p
-              class="module-header"
-              [ngClass]="{ collapsed: !module.isExpanded }"
-              (click)="toggleModule(i)"
-            >
-              {{ module.title }}
+        <!-- Dropdown for selecting a course -->
+        <div class="form-group">
+          <label for="course-select">Select a Course:</label>
+          <select id="course-select" [(ngModel)]="selectedCourse" (change)="selectedCourse && onCourseSelect(selectedCourse)">
+
+            <option *ngFor="let course of courses" [ngValue]="course">{{ course.moduleName }}</option>
+          </select>
+        </div>
+
+        <!-- Displaying units -->
+        <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
+          <div *ngFor="let unit of units; let i = index" class="module-container">
+            <!-- Unit Header -->
+            <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
+              {{ unit.unitName }}
             </p>
-            <ul *ngIf="module.isExpanded">
-              <li
-                *ngFor="let topic of module.topics; let j = index"
-                (click)="toggleSubTopic(i, j)"
-                class="topic"
-              >
-                {{ topic.title }}
-                <ul *ngIf="topic.isExpanded" class="sub-topic">
-                  <li *ngFor="let detail of topic.details">
-                    {{ detail }}
-                  </li>
-                </ul>
+
+            <!-- Unit Content -->
+            <ul *ngIf="unit.isExpanded" class="unit-content">
+              <li class="topic">
+                <p>{{ unit.content }}</p>
               </li>
             </ul>
           </div>
         </div>
 
+        <!-- No Units Template -->
+        <ng-template #noUnits>
+          <p>No units available for the selected course.</p>
+        </ng-template>
+
         <button class="download-button">⬇️ Download Content</button>
-        <button
-          class="re-generate-button"
-          (click)="showModifyFields = !showModifyFields"
-        >
+        <button class="re-generate-button" (click)="showModifyFields = !showModifyFields">
           🔄 Re-Generate Content
         </button>
 
@@ -83,37 +85,17 @@
           <form (ngSubmit)="onModifyContent()">
             <div class="form-group">
               <label for="module">Module</label>
-              <input
-                type="text"
-                id="module"
-                [(ngModel)]="module"
-                name="module"
-                placeholder="Enter module"
-                required
-              />
+              <input type="text" id="module" [(ngModel)]="module" name="module" placeholder="Enter module" required />
             </div>
 
             <div class="form-group">
               <label for="topic">Topic</label>
-              <input
-                type="text"
-                id="topic"
-                [(ngModel)]="topic"
-                name="topic"
-                placeholder="Enter topic"
-                required
-              />
+              <input type="text" id="topic" [(ngModel)]="topic" name="topic" placeholder="Enter topic" required />
             </div>
 
             <div class="form-group">
               <label for="details">Details</label>
-              <textarea
-                id="details"
-                [(ngModel)]="details"
-                name="details"
-                rows="4"
-                placeholder="Enter content details"
-              ></textarea>
+              <textarea id="details" [(ngModel)]="details" name="details" rows="4" placeholder="Enter content details"></textarea>
             </div>
 
             <button type="submit" class="send-button">Re-Generate</button>

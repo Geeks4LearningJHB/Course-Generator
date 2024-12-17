@@ -39,7 +39,7 @@ export class AdminLoginComponent {
         setTimeout(() => {
           this.LoggingIn = false;
           this.router.navigate(['/admin-dashboard']);
-        }, 1000); // Adjust delay as needed
+        }, 1000); 
       } else {
         this.loginError = 'Invalid credentials!';
       }

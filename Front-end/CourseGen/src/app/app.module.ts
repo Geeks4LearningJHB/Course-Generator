@@ -24,6 +24,7 @@ import { ViewUsersComponent } from './Admin/view-users/view-users.component';
 
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
 import { NavComponent } from './nav/nav.component';
+import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 
 @NgModule({
   declarations: [
@@ -45,8 +46,8 @@ import { NavComponent } from './nav/nav.component';
     AdminGenerateContentComponent,
     AdminViewContentComponent,
     AdminViewCoursesComponent,
-    NavComponent
-
+    NavComponent,
+    CourseSaveComponent
   ],
   imports: [
     HttpClientModule,

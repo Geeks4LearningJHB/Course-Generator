@@ -27,10 +27,6 @@ export class UserManagementService {
     return this.http.get<PendingDTO[]>(`${this.apiUrl}/pending-trainers`);
   }
 
-  // Approve trainer by ID
-  // approveTrainer(userId: number): Observable<any> {
-  //   return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {});
-  // }
 
   approveTrainer(userId: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/approve-trainer/${userId}`, {}).pipe(
@@ -44,20 +40,12 @@ export class UserManagementService {
     );
   }
 
-  // // Reject trainer by ID
-  // rejectTrainer(userId: number): Observable<any> {
-  //   return this.http.post(`${this.apiUrl}/reject-trainer/${userId}`, {});
-  // }
+  updateTrainerStatus(email: string, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update-status`, { email, status });
+}
 
-  // Fetch accepted trainers
-  getAcceptedTrainers(): Observable<PendingDTO[]> {
-    return this.http.get<PendingDTO[]>(`${this.apiUrl}/accepted-trainers`);
-  }
-
-  // Fetch rejected trainers
-  getRejectedTrainers(): Observable<PendingDTO[]> {
-    return this.http.get<PendingDTO[]>(`${this.apiUrl}/rejected-trainers`);
-  }
+  
+  
 
   getAllTrainers(): Observable<TrainerDTO[]> {
     return this.http.get<TrainerDTO[]>(`${this.apiUrl}/AllTrainers`);

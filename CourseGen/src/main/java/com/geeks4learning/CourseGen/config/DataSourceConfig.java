@@ -25,7 +25,7 @@ public class DataSourceConfig {
             Connection connection = dataSource.getConnection();
             connection.setAutoCommit(false);
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exception accordingly
+            e.printStackTrace();
         }
 
         return dataSource;
