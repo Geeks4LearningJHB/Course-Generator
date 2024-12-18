@@ -78,61 +78,67 @@ public class AIController {
             PromtDTO newPrompt = new PromtDTO(courseRequest);
             promptService.savePrompt(newPrompt);
     
-            // Step 2: Generate the course outline
+            // Step 2: Generate course outline
             String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: "
-                    + courseRequest.getCourseTitle()
-                    + " that would take "
-                    + courseRequest.getDuration()
-                    + " months with a difficulty level of "
+                    + courseRequest.getCourseTitle() + " that would take "
+                    + courseRequest.getDuration() + " months with a difficulty level of "
                     + courseRequest.getDifficulty();
             String moduleOutline = respondToPrompt(moduleOutlinePrompt);
     
-            String[] outlineLines = moduleOutline.split("\n");
-            String outlineName = sanitizeText(outlineLines[0]); // Use the first line as the outline name
+            // Parse module outline
+            CourseModule module = parseModuleOutline(moduleOutline);
     
-            // Parse actual units from the remaining lines
-            List<String> unitLines = Arrays.stream(outlineLines)
-                    .skip(1) // Skip the first line as it is the outline name
-                    .map(String::trim)
-                    .filter(line -> !line.isEmpty())
+            if (module.getUnits() == null) {
+                module.setUnits(new ArrayList<>());
+            }
+    
+            // Step 3: Generate content for each unit
+            List<CompletableFuture<Unit>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
+                    .filter(line -> !line.trim().isEmpty())
+                    .map(unitName -> CompletableFuture.supplyAsync(() -> createUnitContent(module, unitName, courseRequest.getCourseTitle())))
                     .collect(Collectors.toList());
     
-            // Create the Outline object
-            Outline outline = new Outline(); // Declare once
-            outline.setOutlineName(outlineName);
+            // Collect results
+            List<Unit> units = unitTasks.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+            module.setUnits(units);
     
-            // Create the CourseModule object
-            CourseModule module = new CourseModule(); // Declare once
-            module.setModuleName("Module: " + courseRequest.getCourseTitle());
-            module.setUnits(new ArrayList<>());
+            // Save course outline to cache
+            String courseId = UUID.randomUUID().toString();
+            courseCache.put(courseId, Map.of("module", module, "units", units));
     
-            unitLines.forEach(unitName -> {
-                Unit unit = new Unit();
-                unit.setUnitName(sanitizeText(unitName));
-                unit.setModule(module);
-                module.getUnits().add(unit);
-            });
-    
-            // Attach module to the outline
-            outline.setModule(module);
-            outline.setUnits(module.getUnits());
-    
-            // Store the generated course data in memory for the user to decide later
-            String courseId = UUID.randomUUID().toString();  // Unique ID for the generated course
-            courseCache.put(courseId, Map.of("outline", outline, "module", module, "units", module.getUnits()));
-    
-            // Step 3: Return the generated course data
-            response.put("courseId", courseId); // Include course ID to identify the generated course
-            response.put("outline", outline); // Include outline in response
+            // Prepare response
+            response.put("courseId", courseId);
             response.put("module", module);
-            response.put("units", module.getUnits());
+            response.put("units", units);
             return ResponseEntity.ok(response);
-    
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error generating course content: " + e.getMessage()));
+                    .body(Map.of("error", "Error generating course: " + e.getMessage()));
         }
     }
+    
+    private Unit createUnitContent(CourseModule module, String unitName, String courseTitle) {
+        try {
+            Unit unit = new Unit();
+            unit.setUnitName(sanitizeText(unitName));
+            unit.setModule(module);
+    
+            String contentPrompt = "Provide detailed content for the unit: '" + unitName + "' in the course '" + courseTitle + "'.";
+            unit.setContent(sanitizeText(respondToPrompt(contentPrompt)));
+    
+            String activityPrompt = "Generate activities for the unit: '" + unitName + "' in the course '" + courseTitle + "'.";
+            String activityContent = sanitizeText(respondToPrompt(activityPrompt));
+            Activity activity = new Activity(activityContent, unit);
+            unit.setActivityUnits(Collections.singletonList(activity));
+    
+            return unit;
+        } catch (Exception e) {
+            throw new RuntimeException("Error creating content for unit: " + unitName, e);
+        }
+    }
+    
     
 
     @Async
@@ -173,6 +179,8 @@ public class AIController {
         String rawContent = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
         return sanitizeText(rawContent);
     }
+
+    
 
     private CourseModule parseModuleOutline(String moduleOutline) {
         CourseModule courseModule = new CourseModule();
