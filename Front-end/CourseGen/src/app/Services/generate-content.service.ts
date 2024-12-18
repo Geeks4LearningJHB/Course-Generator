@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 export class GenerateContentService {
 
   private apiUrl = 'http://localhost:8080/AI/generateCourse';
+  private generatedCourse: any = null; // Temporary storage for the generated course
 
   constructor(private http: HttpClient) {}
 
@@ -28,4 +29,18 @@ export class GenerateContentService {
     return this.http.post('http://localhost:8080/AI/saveGeneratedCourse', courseData);
   }
   
+  // Set the generated course
+  setGeneratedCourse(course: any): void {
+    this.generatedCourse = course;
+  }
+
+  // Get the generated course
+  getGeneratedCourse(): any {
+    return this.generatedCourse;
+  }
+
+  // Clear the stored course
+  clearGeneratedCourse(): void {
+    this.generatedCourse = null;
+  }
 }

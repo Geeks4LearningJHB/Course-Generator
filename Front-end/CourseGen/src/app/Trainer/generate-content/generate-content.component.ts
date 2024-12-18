@@ -29,8 +29,40 @@ export class GenerateContentComponent {
       return;
     }
 
-    this.confirmCourseGeneration();
+    // this.confirmCourseGeneration();
+    this.isLoading = true;
+
+    const courseData = {
+      prompt: this.courseTitle,
+      difficulty: this.difficulty,
+      duration: this.duration ?? 0
+    };
+
+    // Simulate API response
+    setTimeout(() => {
+      const generatedCourse = {
+        title: this.courseTitle,
+        difficulty: this.difficulty,
+        duration: this.duration,
+        outline: [
+          'Introduction to the Course',
+          'Core Concepts',
+          'Advanced Topics',
+          'Conclusion and Summary'
+        ]
+      };
+
+      // Store the generated course in the service
+      this.generateContentService.setGeneratedCourse(generatedCourse);
+
+      this.isLoading = false;
+
+      // Navigate to the view page
+      this.router.navigate(['/view-generated-course']);
+    }, 2000); // Simulate a delay
+
   }
+
 
   // Fetch course outline and display in modal
   // onGenerateOutline() {
