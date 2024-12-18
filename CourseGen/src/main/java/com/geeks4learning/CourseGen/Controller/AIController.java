@@ -67,6 +67,9 @@ public class AIController {
     @Value("${openai.completions}")
     private String completionsURL;
 
+    private Map<String, Map<String, Object>> courseCache = new ConcurrentHashMap<>();
+
+
     @PostMapping("/generateCourse")
     public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody CourseRequest courseRequest) {
         Map<String, Object> response = new HashMap<>();
@@ -114,17 +117,12 @@ public class AIController {
             outline.setModule(module);
             outline.setUnits(module.getUnits());
     
-            // Step 3: Generate detailed content for each unit
-            List<CompletableFuture<Void>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
-                    .filter(line -> !line.trim().isEmpty())
-                    .map(unitName -> CompletableFuture
-                            .runAsync(() -> generateUnitContent(module, unitName, newPrompt.getPromt())))
-                    .collect(Collectors.toList());
+            // Store the generated course data in memory for the user to decide later
+            String courseId = UUID.randomUUID().toString();  // Unique ID for the generated course
+            courseCache.put(courseId, Map.of("outline", outline, "module", module, "units", module.getUnits()));
     
-            // Wait for all unit tasks to complete
-            CompletableFuture.allOf(unitTasks.toArray(new CompletableFuture[0])).join();
-    
-            // Step 4: Return the generated course data
+            // Step 3: Return the generated course data
+            response.put("courseId", courseId); // Include course ID to identify the generated course
             response.put("outline", outline); // Include outline in response
             response.put("module", module);
             response.put("units", module.getUnits());
@@ -244,9 +242,14 @@ public class AIController {
     }
 
     @PostMapping("/saveGeneratedCourse")
-    public ResponseEntity<String> generateCoursegenerateCourse(@RequestBody Map<String, Object> generatedCourseData) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public ResponseEntity<String> saveGeneratedCourse(@RequestParam String courseId) {
+        Map<String, Object> generatedCourseData = courseCache.get(courseId);
+        if (generatedCourseData == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found in memory.");
+        }
+
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             // Convert "module" to CourseModule
             CourseModule module = objectMapper.convertValue(generatedCourseData.get("module"), CourseModule.class);
 
@@ -284,10 +287,23 @@ public class AIController {
                 assessmentService.saveAssessment(assessment);
             });
 
+            // Optionally, remove the course from the cache after saving it
+            courseCache.remove(courseId);
+
             return ResponseEntity.ok("Module, Units, Activities, and Assessments saved successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error while saving generated data: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/discardGeneratedCourse")
+    public ResponseEntity<String> discardGeneratedCourse(@RequestParam String courseId) {
+        // Simply remove the course from memory if the user decides to discard it
+        if (courseCache.remove(courseId) != null) {
+            return ResponseEntity.ok("Course discarded successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found in memory.");
         }
     }
 

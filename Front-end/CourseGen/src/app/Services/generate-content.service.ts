@@ -6,9 +6,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class GenerateContentService {
+  saveCourse(generatedCourse: any) {
+    throw new Error('Method not implemented.');
+  }
 
   private apiUrl = 'http://localhost:8080/AI/generateCourse';
-  private generatedCourse: any = null; // Temporary storage for the generated course
+  private generatedCourse: any; // Temporary storage for the generated course
 
   constructor(private http: HttpClient) {}
 
@@ -17,8 +20,10 @@ export class GenerateContentService {
     const { difficulty, duration } = data;
 
     // Use query parameters in the URL and send 'data' as the request body
-    return this.http.post(`${this.apiUrl}?difficulty=${difficulty}&duration=${duration}`, data);
+    return this.http.post(`http://localhost:8080/AI/generateCourse`, data);
   }
+
+
 
   getOutline(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}`, data); // Update with your backend endpoint

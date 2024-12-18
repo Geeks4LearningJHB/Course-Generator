@@ -29,7 +29,6 @@ export class GenerateContentComponent {
       return;
     }
 
-    // this.confirmCourseGeneration();
     this.isLoading = true;
 
     const courseData = {
@@ -38,51 +37,24 @@ export class GenerateContentComponent {
       duration: this.duration ?? 0
     };
 
-    // Simulate API response
-    setTimeout(() => {
-      const generatedCourse = {
-        title: this.courseTitle,
-        difficulty: this.difficulty,
-        duration: this.duration,
-        outline: [
-          'Introduction to the Course',
-          'Core Concepts',
-          'Advanced Topics',
-          'Conclusion and Summary'
-        ]
-      };
+    // Call the backend API to generate the course dynamically
+    this.generateContentService.generateCourse(courseData).subscribe(
+      (response: any) => {
+        // Store the generated course data in the service
+        this.generateContentService.setGeneratedCourse(response);
 
-      // Store the generated course in the service
-      this.generateContentService.setGeneratedCourse(generatedCourse);
+        this.isLoading = false;
 
-      this.isLoading = false;
-
-      // Navigate to the view page
-      this.router.navigate(['/view-generated-course']);
-    }, 2000); // Simulate a delay
-
+        // Navigate to the view page to show the generated course
+        this.router.navigate(['/view-generated-course']);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error generating course:', error);
+        this.isLoading = false;
+        alert('Failed to generate course.');
+      }
+    );
   }
-
-
-  // Fetch course outline and display in modal
-  // onGenerateOutline() {
-  //   const outlineData = {
-  //     prompt: this.courseTitle,
-  //     difficulty: this.difficulty,
-  //     duration: this.duration ?? 0
-  //   };
-
-  //   this.generateContentService.getOutline(outlineData).subscribe(
-  //     (response: any) => {
-  //       this.courseOutline = response.outline; // Assuming `outline` is part of the response
-        
-  //     },
-  //     (error: HttpErrorResponse) => {
-  //       console.error('Error fetching course outline:', error);
-  //       alert('Failed to fetch course outline.');
-  //     }
-  //   );
-  // }
 
   // Confirm course generation after viewing the outline
   confirmCourseGeneration() {

@@ -1,24 +1,22 @@
-<div class="view-content-container">
-    <h1>Generated Course</h1>
+<div class="generated-course-container">
+    <h2>{{ generatedCourse?.courseTitle }}</h2>
+    <p><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</p>
+    <p><strong>Duration:</strong> {{ generatedCourse?.duration }} hours</p>
   
-    <div *ngIf="generatedCourse">
-      <h2>{{ generatedCourse.title }}</h2>
-      <p><strong>Difficulty:</strong> {{ generatedCourse.difficulty }}</p>
-      <p><strong>Duration:</strong> {{ generatedCourse.duration }} hours</p>
-      <h3>Outline</h3>
-      <ul>
-        <li *ngFor="let item of generatedCourse.outline">{{ item }}</li>
-      </ul>
+    <h3>Course Outline:</h3>
+    <ul>
+      <li *ngFor="let item of generatedCourse?.outline">{{ item }}</li>
+    </ul>
   
-      <div class="action-buttons">
-        <button class="edit-btn" (click)="onEditCourse()">✏️ Edit Course</button>
-        <button class="save-btn" (click)="onSaveCourse()">💾 Save Course</button>
-      </div>
+    <h3>Units:</h3>
+    <div *ngFor="let unit of generatedCourse?.units">
+      <h4>{{ unit.unitName }}</h4>
+      <p>{{ unit.content }}</p>
     </div>
   
-    <div *ngIf="!generatedCourse">
-      <p>No course generated. Please go back and generate a course.</p>
-      <button routerLink="/generate-content" class="generate-btn">Generate Course</button>
+    <div class="button-container">
+      <button (click)="goBack()">Back</button>
+      <button (click)="saveCourse()">Save Course</button>
     </div>
   </div>
   

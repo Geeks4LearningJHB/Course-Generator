@@ -30,11 +30,22 @@ export class ViewGeneratedCourseComponent {
     this.router.navigate(['/generate-content']);
   }
 
+  goBack() {
+    window.history.back();
+  }
+  
   // Save course (can be extended to send data to the backend)
-  onSaveCourse() {
-    alert('Course saved successfully!');
-    this.generateContentService.clearGeneratedCourse();
-    this.router.navigate(['/dashboard']); // Redirect to dashboard or another page
+  saveCourse() {
+    // Call API to save the course to the database
+    this.generateContentService.saveGeneratedCourse(this.generatedCourse).subscribe(
+      (response) => {
+        alert('Course saved successfully!');
+        this.router.navigate(['/dashboard']);
+      },
+      (error) => {
+        alert('Failed to save course.');
+      }
+    );
   }
 
 }
