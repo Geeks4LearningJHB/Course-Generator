@@ -32,7 +32,7 @@ export class GenerateContentComponent {
     this.isLoading = true;
 
     const courseData = {
-      prompt: this.courseTitle,
+      courseTitle: this.courseTitle,
       difficulty: this.difficulty,
       duration: this.duration ?? 0
     };
@@ -63,14 +63,14 @@ export class GenerateContentComponent {
     this.progress = 0;
 
     const courseData = {
-      prompt: this.courseTitle,
+      courseTitle: this.courseTitle,
       difficulty: this.difficulty,
       duration: this.duration ?? 0
     };
 
     this.generateContentService.generateCourse(courseData).subscribe(
       (response: any) => {
-        this.isLoading = false;
+        this.isLoading = true;
         this.progress = 100;
 
         // Navigate to view content

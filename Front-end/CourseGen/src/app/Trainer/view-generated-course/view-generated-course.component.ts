@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { GenerateContentService } from '../../Services/generate-content.service';
 import { Router } from '@angular/router';
 
@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 })
 export class ViewGeneratedCourseComponent {
   generatedCourse: any = null;
+  isCollapsed = true;
 
   constructor(
     private router: Router,
@@ -19,10 +20,10 @@ export class ViewGeneratedCourseComponent {
     // Retrieve the generated course from the service
     this.generatedCourse = this.generateContentService.getGeneratedCourse();
 
-    if (!this.generatedCourse) {
-      alert('No course has been generated.');
-      this.router.navigate(['/generate-content']); // Redirect if no course is found
-    }
+    // if (!this.generatedCourse) {
+    //   alert('No course has been generated.');
+    //   this.router.navigate(['/generate-content']); // Redirect if no course is found
+    // }
   }
 
   // Navigate back to generate content
@@ -47,5 +48,18 @@ export class ViewGeneratedCourseComponent {
       }
     );
   }
+
+    toggleSidebar() {
+      this.isCollapsed = !this.isCollapsed;
+    }
+  
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+  
+      if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+        this.isCollapsed = true;
+      }
+    }
 
 }

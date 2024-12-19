@@ -15,7 +15,7 @@ export class GenerateContentService {
 
   constructor(private http: HttpClient) {}
 
-  generateCourse(data: { prompt: string; difficulty: string; duration: number }): Observable<any> {
+  generateCourse(data: { courseTitle: string; difficulty: string; duration: number }): Observable<any> {
     // Access difficulty and duration from the data object to construct the URL
     const { difficulty, duration } = data;
 

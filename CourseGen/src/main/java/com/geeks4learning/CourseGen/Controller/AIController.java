@@ -69,7 +69,6 @@ public class AIController {
 
     private Map<String, Map<String, Object>> courseCache = new ConcurrentHashMap<>();
 
-
     @PostMapping("/generateCourse")
     public ResponseEntity<Map<String, Object>> generateCourse(@RequestBody CourseRequest courseRequest) {
         Map<String, Object> response = new HashMap<>();
@@ -77,69 +76,92 @@ public class AIController {
             // Step 1: Save the prompt
             PromtDTO newPrompt = new PromtDTO(courseRequest);
             promptService.savePrompt(newPrompt);
-    
-            // Step 2: Generate course outline
+
+            // Step 2: Generate the course outline
             String moduleOutlinePrompt = "Please generate a course outline for a book teaching about: "
-                    + courseRequest.getCourseTitle() + " that would take "
-                    + courseRequest.getDuration() + " months with a difficulty level of "
+                    + courseRequest.getCourseTitle()
+                    + " that would take "
+                    + courseRequest.getDuration()
+                    + " months with a difficulty level of "
                     + courseRequest.getDifficulty();
             String moduleOutline = respondToPrompt(moduleOutlinePrompt);
-    
-            // Parse module outline
-            CourseModule module = parseModuleOutline(moduleOutline);
-    
-            if (module.getUnits() == null) {
-                module.setUnits(new ArrayList<>());
-            }
-    
-            // Step 3: Generate content for each unit
-            List<CompletableFuture<Unit>> unitTasks = Arrays.stream(moduleOutline.split("\n"))
-                    .filter(line -> !line.trim().isEmpty())
-                    .map(unitName -> CompletableFuture.supplyAsync(() -> createUnitContent(module, unitName, courseRequest.getCourseTitle())))
+
+            // Parse the outline into lines
+            String[] outlineLines = moduleOutline.split("\n");
+            String outlineName = sanitizeText(outlineLines[0]); // First line is the outline name
+
+            // Parse actual units from the remaining lines
+            List<String> unitLines = Arrays.stream(outlineLines)
+                    .skip(1) // Skip the first line as it is the outline name
+                    .map(String::trim)
+                    .filter(line -> !line.isEmpty())
                     .collect(Collectors.toList());
-    
+
+            // Create the Outline object
+            Outline outline = new Outline();
+            outline.setOutlineName(outlineName);
+
+            // Create the CourseModule object
+            CourseModule module = new CourseModule();
+            module.setModuleName("Module: " + courseRequest.getCourseTitle());
+            module.setUnits(new ArrayList<>());
+
+            // Step 3: Generate content for each unit
+            List<CompletableFuture<Unit>> unitTasks = unitLines.stream()
+                    .map(unitName -> CompletableFuture
+                            .supplyAsync(() -> createUnitContent(module, unitName, courseRequest.getCourseTitle())))
+                    .collect(Collectors.toList());
+
             // Collect results
             List<Unit> units = unitTasks.stream()
                     .map(CompletableFuture::join)
                     .collect(Collectors.toList());
             module.setUnits(units);
-    
-            // Save course outline to cache
+
+            // Attach module and units to the outline
+            outline.setModule(module);
+            outline.setUnits(module.getUnits());
+
+            // Store the generated course data in memory for the user to decide later
             String courseId = UUID.randomUUID().toString();
-            courseCache.put(courseId, Map.of("module", module, "units", units));
-    
-            // Prepare response
-            response.put("courseId", courseId);
+            courseCache.put(courseId, Map.of("outline", outline, "module", module, "units", units));
+
+            // Step 4: Return the generated course data
+            response.put("courseId", courseId); // Include course ID to identify the generated course
+            response.put("outline", outline); // Include outline in response
             response.put("module", module);
             response.put("units", units);
             return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error generating course: " + e.getMessage()));
+                    .body(Map.of("error", "Error generating course content: " + e.getMessage()));
         }
     }
-    
+
     private Unit createUnitContent(CourseModule module, String unitName, String courseTitle) {
         try {
             Unit unit = new Unit();
             unit.setUnitName(sanitizeText(unitName));
             unit.setModule(module);
-    
-            String contentPrompt = "Provide detailed content for the unit: '" + unitName + "' in the course '" + courseTitle + "'.";
+
+            // Generate unit content
+            String contentPrompt = "Provide detailed content for the unit: '" + unitName + "' in the course '"
+                    + courseTitle + "'.";
             unit.setContent(sanitizeText(respondToPrompt(contentPrompt)));
-    
-            String activityPrompt = "Generate activities for the unit: '" + unitName + "' in the course '" + courseTitle + "'.";
+
+            // Generate activities for the unit
+            String activityPrompt = "Generate activities for the unit: '" + unitName + "' in the course '" + courseTitle
+                    + "'.";
             String activityContent = sanitizeText(respondToPrompt(activityPrompt));
             Activity activity = new Activity(activityContent, unit);
             unit.setActivityUnits(Collections.singletonList(activity));
-    
+
             return unit;
         } catch (Exception e) {
             throw new RuntimeException("Error creating content for unit: " + unitName, e);
         }
     }
-    
-    
 
     @Async
     public CompletableFuture<Void> generateUnitContentAsync(CourseModule module, String unitName, String prompt) {
@@ -180,8 +202,6 @@ public class AIController {
         return sanitizeText(rawContent);
     }
 
-    
-
     private CourseModule parseModuleOutline(String moduleOutline) {
         CourseModule courseModule = new CourseModule();
         String[] lines = moduleOutline.split("\n");
@@ -206,31 +226,34 @@ public class AIController {
     }
 
     // private CourseModule parseModuleOutline(String moduleOutline) {
-    //     CourseModule courseModule = new CourseModule();
-    //     String[] lines = moduleOutline.split("\n");
-    
-    //     // Separate metadata and units
-    //     for (String line : lines) {
-    //         String sanitizedLine = sanitizeText(line);
-    
-    //         if (sanitizedLine.startsWith("Course Duration:")) {
-    //             courseModule.setDuration(sanitizedLine.replace("Course Duration:", "").trim());
-    //         } else if (sanitizedLine.startsWith("Difficulty Level:")) {
-    //             courseModule.setModuleDescription(sanitizedLine.replace("Difficulty Level:", "").trim());
-    //         } else if (sanitizedLine.startsWith("Target Audience:")) {
-    //             courseModule.setModuleDescription(
-    //                 (courseModule.getModuleDescription() != null ? courseModule.getModuleDescription() + "; " : "")
-    //                 + sanitizedLine.replace("Target Audience:", "").trim()
-    //             );
-    //         } else if (!sanitizedLine.isEmpty() && !sanitizedLine.equals("---")) {
-    //             Unit unit = new Unit();
-    //             unit.setUnitName(sanitizedLine);
-    //             unit.setModule(courseModule);
-    //             courseModule.getUnits().add(unit);
-    //         }
-    //     }
-    
-    //     return courseModule;
+    // CourseModule courseModule = new CourseModule();
+    // String[] lines = moduleOutline.split("\n");
+
+    // // Separate metadata and units
+    // for (String line : lines) {
+    // String sanitizedLine = sanitizeText(line);
+
+    // if (sanitizedLine.startsWith("Course Duration:")) {
+    // courseModule.setDuration(sanitizedLine.replace("Course Duration:",
+    // "").trim());
+    // } else if (sanitizedLine.startsWith("Difficulty Level:")) {
+    // courseModule.setModuleDescription(sanitizedLine.replace("Difficulty Level:",
+    // "").trim());
+    // } else if (sanitizedLine.startsWith("Target Audience:")) {
+    // courseModule.setModuleDescription(
+    // (courseModule.getModuleDescription() != null ?
+    // courseModule.getModuleDescription() + "; " : "")
+    // + sanitizedLine.replace("Target Audience:", "").trim()
+    // );
+    // } else if (!sanitizedLine.isEmpty() && !sanitizedLine.equals("---")) {
+    // Unit unit = new Unit();
+    // unit.setUnitName(sanitizedLine);
+    // unit.setModule(courseModule);
+    // courseModule.getUnits().add(unit);
+    // }
+    // }
+
+    // return courseModule;
     // }
     private String sanitizeText(String text) {
         return text

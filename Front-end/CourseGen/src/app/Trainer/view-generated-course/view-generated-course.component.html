@@ -1,22 +1,67 @@
-<div class="generated-course-container">
-    <h2>{{ generatedCourse?.courseTitle }}</h2>
-    <p><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</p>
-    <p><strong>Duration:</strong> {{ generatedCourse?.duration }} hours</p>
-  
-    <h3>Course Outline:</h3>
-    <ul>
-      <li *ngFor="let item of generatedCourse?.outline">{{ item }}</li>
-    </ul>
-  
-    <h3>Units:</h3>
-    <div *ngFor="let unit of generatedCourse?.units">
-      <h4>{{ unit.unitName }}</h4>
-      <p>{{ unit.content }}</p>
+<div class="admin-dashboard-container" style="background-color: #e4e9ef;">
+
+  <div class="top-nav">
+    <div class="logo">
+      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
     </div>
-  
-    <div class="button-container">
-      <button (click)="goBack()">Back</button>
-      <button (click)="saveCourse()">Save Course</button>
+    <div class="nav-right">
+      <button class="profile-btn">
+        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
+      </button>
     </div>
   </div>
-  
+
+  <div class="body">
+    <div class="sidebar" [class.collapsed]="isCollapsed">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+      <ul>
+        <li>
+          <i class="icon fa fa-home"></i>
+          <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
+        </li>
+        <li>
+          <i class="icon fas fa-book"></i>
+          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+        </li>
+        <li>
+          <i class="icon fas fa-file-alt"></i>
+          <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
+        </li>
+        <hr class="divider" />
+        <li>
+          <i class="icon fas fa-sign-out-alt"></i>
+          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="sub-header" [class.shifted]="isCollapsed">
+      <h3 class="sub-heading">GENERATE CONTENT</h3>
+      <button class="back-button" routerLink="/dashboard">
+        <span class="icon"></span> Back
+      </button>
+    </div>
+
+    <div class="generated-course-container">
+      <h2>{{ generatedCourse?.courseTitle }}</h2>
+      <p><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</p>
+      <p><strong>Duration:</strong> {{ generatedCourse?.duration }} hours</p>
+
+      <h3>Course Outline:</h3>
+      <ul>
+        <li *ngFor="let item of generatedCourse?.outline">{{ item }}</li>
+      </ul>
+
+      <h3>Units:</h3>
+      <div *ngFor="let unit of generatedCourse?.units">
+        <h4>{{ unit.unitName }}</h4>
+        <p>{{ unit.content }}</p>
+      </div>
+
+      <div class="button-container">
+        <button class="back-btn" (click)="goBack()">Back</button>
+        <button class="save-btn" (click)="saveCourse()">Save Course</button>
+      </div>
+    </div>
+  </div>
+</div>
