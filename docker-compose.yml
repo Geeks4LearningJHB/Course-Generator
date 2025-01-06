@@ -18,7 +18,7 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: g4l_dev
-      MONGO_INITDB_ROOT_PASSWORD: P@ssword!
+      MONGO_INITDB_ROOT_PASSWORD: P%40ssword!
     volumes:
       - mongodb_data:/data/db
 

@@ -1,6 +1,7 @@
 package com.geeks4learning.CourseGen.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.geeks4learning.CourseGen.DTOs.HighlightRequestDTO;
 import com.geeks4learning.CourseGen.DTOs.PromtDTO;
 import com.geeks4learning.CourseGen.Entities.Activity;
 import com.geeks4learning.CourseGen.Entities.Assessment;
@@ -204,20 +205,18 @@ public class AIController {
 
     @PostMapping("/regenerateText")
     public ResponseEntity<Map<String, String>> regenerateText(
-            @RequestParam String unitId, 
-            @RequestParam String moduleId, 
-            @RequestBody String highlightedText) {
+            @RequestBody HighlightRequestDTO requestDTO) {
         try {
             // Fetch the existing module using the repository
-            Optional<CourseModule> optionalModule = moduleRepository.findById(moduleId);
+            Optional<CourseModule> optionalModule = moduleRepository.findById(requestDTO.getModuleId());
             if (optionalModule.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Module not found."));
             }
             CourseModule module = optionalModule.get();
 
-            // Fetch the unit (update unitService if needed)
-            Optional<Unit> optionalUnit = unitRepository.findById(unitId); // Ensure unitService supports findById
+            // Fetch the unit using the repository
+            Optional<Unit> optionalUnit = unitRepository.findById(requestDTO.getUnitId());
             if (optionalUnit.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("error", "Unit not found."));
@@ -225,7 +224,7 @@ public class AIController {
             Unit unit = optionalUnit.get();
 
             // Generate new content based on the highlighted text
-            String prompt = "Rewrite or expand the following content: " + highlightedText;
+            String prompt = "Rewrite or expand the following content: " + requestDTO.getHighlightedText();
             String regeneratedText = respondToPrompt(prompt);
 
             // Return the regenerated text to the frontend
@@ -237,28 +236,28 @@ public class AIController {
     }
 
     @PostMapping("/confirmUpdate")
-public ResponseEntity<String> confirmUpdate(
-        @RequestParam String unitId,
-        @RequestBody String regeneratedText) {
-    try {
-        // Fetch the existing unit
-        Optional<Unit> optionalUnit = unitRepository.findById(unitId);
-        if (optionalUnit.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Unit not found with ID: " + unitId);
+    public ResponseEntity<String> confirmUpdate(
+            @RequestParam String unitId,
+            @RequestBody String regeneratedText) {
+        try {
+            // Fetch the existing unit
+            Optional<Unit> optionalUnit = unitRepository.findById(unitId);
+            if (optionalUnit.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Unit not found with ID: " + unitId);
+            }
+
+            Unit unit = optionalUnit.get();
+
+            // Update the unit content
+            unit.setContent(regeneratedText);
+            unitService.saveUnit(unit);
+
+            return ResponseEntity.ok("Unit updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating unit: " + e.getMessage());
         }
-
-        Unit unit = optionalUnit.get();
-
-        // Update the unit content
-        unit.setContent(regeneratedText);
-        unitService.saveUnit(unit);
-
-        return ResponseEntity.ok("Unit updated successfully.");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error updating unit: " + e.getMessage());
     }
-}
 
 }
