@@ -20,10 +20,10 @@ export class ViewGeneratedCourseComponent {
     // Retrieve the generated course from the service
     this.generatedCourse = this.generateContentService.getGeneratedCourse();
 
-    // if (!this.generatedCourse) {
-    //   alert('No course has been generated.');
-    //   this.router.navigate(['/generate-content']); // Redirect if no course is found
-    // }
+    if (!this.generatedCourse) {
+      alert('No course has been generated.');
+      this.router.navigate(['/generate-content']); // Redirect if no course is found
+    }
   }
 
   // Navigate back to generate content
