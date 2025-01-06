@@ -12,7 +12,6 @@ import com.geeks4learning.CourseGen.Model.ChatCompletionRequest;
 import com.geeks4learning.CourseGen.Model.ChatCompletionResponse;
 import com.geeks4learning.CourseGen.Model.CourseRequest;
 import com.geeks4learning.CourseGen.Repositories.ModuleRepository;
-import com.geeks4learning.CourseGen.Repositories.OutlineRepository;
 import com.geeks4learning.CourseGen.Repositories.unitRepository;
 import com.geeks4learning.CourseGen.Services.ActivityService;
 import com.geeks4learning.CourseGen.Services.AssessmentService;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -352,13 +350,9 @@ public class AIController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error updating unit: " + e.getMessage());
         }
+    
     }
-            return ResponseEntity.ok("Unit updated successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating unit: " + e.getMessage());
-        }
-    }
+    
 
     @GetMapping("/getAllModules")
     public List<CourseModule> getAllCourseModules() {
