@@ -4,7 +4,7 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_USER: g4l_dev
-      POSTGRES_PASSWORD: P@ssword!
+      POSTGRES_PASSWORD: P%40ssword!
       POSTGRES_DB: courseGenDB
     ports:
       - "5433:5432"

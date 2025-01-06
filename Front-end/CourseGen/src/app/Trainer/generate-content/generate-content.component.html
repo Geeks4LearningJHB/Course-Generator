@@ -26,8 +26,8 @@
         <li>
           <i class="icon fas fa-file-alt"></i>
           <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
-      </li>
-        <hr class="divider"/>
+        </li>
+        <hr class="divider" />
         <li>
           <i class="icon fas fa-sign-out-alt"></i>
           <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
@@ -38,16 +38,17 @@
     <div class="sub-header" [class.shifted]="isCollapsed">
       <h3 class="sub-heading">GENERATE CONTENT</h3>
       <button class="back-button" routerLink="/dashboard">
-      <span class="icon"></span> Back </button>
+        <span class="icon"></span> Back
+      </button>
     </div>
 
     <div class="dash-container-1" [class.shifted]="isCollapsed">
-      <div class="form-box">
+      <div class="form-box" *ngIf="!isLoading">
         <form (ngSubmit)="onGenerateCourse()">
           <div class="form-group">
             <label for="title">Title</label>
             <input type="text" id="title" [(ngModel)]="courseTitle" name="title" placeholder="Enter course title"
-            required />
+              required />
           </div>
 
           <div class="form-group">
@@ -61,7 +62,8 @@
 
           <div class="form-group">
             <label for="duration">Duration</label>
-            <input type="number" id="duration" [(ngModel)]="duration" name="duration" placeholder="Enter duration" required />
+            <input type="number" id="duration" [(ngModel)]="duration" name="duration" placeholder="Enter duration"
+              required />
           </div>
 
           <div class="gen-content">
@@ -71,6 +73,15 @@
           </div>
         </form>
       </div>
+
+      <!-- Loading State -->
+      <div class="loading-box" *ngIf="isLoading">
+        <p>Generating course... Please wait.</p>
+        <div class="progress-bar">
+          <div class="progress" [style.width]="progress + '%'"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

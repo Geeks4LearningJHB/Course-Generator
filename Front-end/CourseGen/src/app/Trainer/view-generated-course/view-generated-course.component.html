@@ -1,4 +1,5 @@
 <div class="admin-dashboard-container" style="background-color: #e4e9ef;">
+
   <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
@@ -35,19 +36,31 @@
     </div>
 
     <div class="sub-header" [class.shifted]="isCollapsed">
-      <h3 class="sub-heading">VIEW COURSES</h3>
+      <h3 class="sub-heading">GENERATE CONTENT</h3>
       <button class="back-button" routerLink="/dashboard">
         <span class="icon"></span> Back
       </button>
     </div>
 
-    <div class="dash-container-1" [class.shifted]="isCollapsed">
-      <div class="container-2">
-        <div *ngFor="let course of courses" class="course-card">
-          <h3>{{ course.moduleName }}</h3>
-          <p>{{ course.description }}</p>
-          <button class="view-button" (click)="viewCourse(course.id)">View</button>
-        </div>
+    <div class="generated-course-container">
+      <h2>{{ generatedCourse?.courseTitle }}</h2>
+      <p><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</p>
+      <p><strong>Duration:</strong> {{ generatedCourse?.duration }} hours</p>
+
+      <h3>Course Outline:</h3>
+      <ul>
+        <li *ngFor="let item of generatedCourse?.outline">{{ item }}</li>
+      </ul>
+
+      <h3>Units:</h3>
+      <div *ngFor="let unit of generatedCourse?.units">
+        <h4>{{ unit.unitName }}</h4>
+        <p>{{ unit.content }}</p>
+      </div>
+
+      <div class="button-container">
+        <button class="back-btn" (click)="goBack()">Back</button>
+        <button class="save-btn" (click)="saveCourse()">Save Course</button>
       </div>
     </div>
   </div>

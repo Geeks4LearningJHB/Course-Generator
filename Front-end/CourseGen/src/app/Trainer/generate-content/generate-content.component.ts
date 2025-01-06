@@ -1,5 +1,7 @@
 import { Component, HostListener } from '@angular/core';
-import { GenerateContentService } from '../../Services/generate-content.service';  // Adjust import path as needed
+import { GenerateContentService } from '../../Services/generate-content.service'; // Adjust import path as needed
+import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-generate-content',
@@ -11,69 +13,75 @@ export class GenerateContentComponent {
   difficulty: string = 'Beginner';
   duration: number | null = null;
   isCollapsed = true;
-
+  progress = 0;
   isLoading = false;
-  isComplete = false;
-  countdown = 30; // Initial countdown in minutes
-  generatedData: string = ''; // Placeholder for backend data
+  courseOutline: string = ''; // Store course outline
 
-  constructor(private generateContentService: GenerateContentService) {}
+  constructor(
+    private router: Router,
+    private generateContentService: GenerateContentService
+  ) {}
 
+  // Triggered when the form is submitted
   onGenerateCourse() {
-    console.log('Course Title:', this.courseTitle);
-    console.log('Difficulty:', this.difficulty);
-    console.log('Duration:', this.duration);
-    alert(`Course "${this.courseTitle}" generated successfully!`);
+    if (!this.courseTitle || !this.difficulty || this.duration == null) {
+      alert('Please fill in all fields.');
+      return;
+    }
 
-    // Call backend API to generate course content
-    this.startGeneration();
-  }
-
-  startGeneration() {
     this.isLoading = true;
-    this.isComplete = false;
-    this.countdown = 1;
-  
-    // Start countdown timer
-    const interval = setInterval(() => {
-      this.countdown--;
-      if (this.countdown <= 0) {
-        clearInterval(interval);
-        this.completeGeneration();
-      }
-    }, 2000); // Updates every 2 seconds
-  
-    // Ensure that duration is always a number
+
     const courseData = {
       courseTitle: this.courseTitle,
       difficulty: this.difficulty,
-      duration: this.duration ?? 0  // Convert null to 0 if duration is null
+      duration: this.duration ?? 0
     };
-  
+
+    // Call the backend API to generate the course dynamically
     this.generateContentService.generateCourse(courseData).subscribe(
       (response: any) => {
-        this.generatedData = response;  // Update with the actual generated data
-      },
-      (error) => {
-        console.error('Error generating course content:', error);
+        // Store the generated course data in the service
+        this.generateContentService.setGeneratedCourse(response);
+
         this.isLoading = false;
+
+        // Navigate to the view page to show the generated course
+        this.router.navigate(['/view-generated-course']);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error generating course:', error);
+        this.isLoading = false;
+        alert('Failed to generate course.');
       }
     );
-  
-  
   }
 
-  completeGeneration() {
-    this.isLoading = false;
-    this.isComplete = true;
-  }
+  // Confirm course generation after viewing the outline
+  confirmCourseGeneration() {
+    
+    this.isLoading = true; // Start loading process
+    this.progress = 0;
 
-  closeModal() {
-    this.isComplete = false;
-  }
+    const courseData = {
+      courseTitle: this.courseTitle,
+      difficulty: this.difficulty,
+      duration: this.duration ?? 0
+    };
 
-  onSave() {
-    alert('Course content saved successfully!');
+    this.generateContentService.generateCourse(courseData).subscribe(
+      (response: any) => {
+        this.isLoading = true;
+        this.progress = 100;
+
+        // Navigate to view content
+        this.router.navigate(['/course-save-component']);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error generating course:', error);
+        this.isLoading = false;
+        alert('Failed to generate course.');
+      }
+    );
   }
 
   toggleSidebar() {

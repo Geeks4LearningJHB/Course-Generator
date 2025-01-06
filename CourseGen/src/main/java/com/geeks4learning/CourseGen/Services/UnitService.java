@@ -20,7 +20,7 @@ public class UnitService {
         return unitRepository.save(unit);
     }
 
-    public List<Unit> findUnitsByModuleId(Long moduleId) {
+    public List<Unit> findUnitsByModuleId(String moduleId) {
         return unitRepository.findByModule_ModuleId(moduleId);
     }
 

@@ -11,6 +11,5 @@ import com.geeks4learning.CourseGen.Entities.CourseModule;
 public interface ModuleRepository extends MongoRepository<CourseModule, String> {
     List<CourseModule> findByModuleName(String moduleName);
     Optional<CourseModule> findById(String moduleId);
-    
 
 }

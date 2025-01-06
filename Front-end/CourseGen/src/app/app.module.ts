@@ -23,6 +23,8 @@ import { UserManagementComponent } from './Admin/admin-dashboard/user-management
 import { ViewUsersComponent } from './Admin/view-users/view-users.component';
 import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view-content.component';
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
+import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
+import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,8 @@ import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view
     AdminGenerateContentComponent,
     AdminViewContentComponent,
     AdminViewCoursesComponent,
-
+    CourseSaveComponent,
+    ViewGeneratedCourseComponent
   ],
   imports: [
     HttpClientModule,
