@@ -25,6 +25,7 @@ import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
+import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/vi
     AdminViewContentComponent,
     AdminViewCoursesComponent,
     CourseSaveComponent,
-    ViewGeneratedCourseComponent
+    ViewGeneratedCourseComponent,
+    TextRegenerationComponent
   ],
   imports: [
     HttpClientModule,

@@ -49,7 +49,6 @@
         <div class="form-group">
           <label for="course-select">Select a Course:</label>
           <select id="course-select" [(ngModel)]="selectedCourse" (change)="selectedCourse && onCourseSelect(selectedCourse)">
-
             <option *ngFor="let course of courses" [ngValue]="course">{{ course.moduleName }}</option>
           </select>
         </div>
@@ -57,12 +56,9 @@
         <!-- Displaying units -->
         <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
           <div *ngFor="let unit of units; let i = index" class="module-container">
-            <!-- Unit Header -->
             <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
               {{ unit.unitName }}
             </p>
-
-            <!-- Unit Content -->
             <ul *ngIf="unit.isExpanded" class="unit-content">
               <li class="topic">
                 <p>{{ unit.content }}</p>
@@ -71,7 +67,17 @@
           </div>
         </div>
 
-        <!-- No Units Template -->
+        <div *ngFor="let unit of units; let i = index" class="module-container">
+          <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
+            {{ unit.unitName }}
+          </p>
+          <ul *ngIf="unit.isExpanded" class="unit-content">
+            <li class="topic" [attr.data-unit-id]="unit.unitId">
+              <p>{{ unit.content }}</p>
+            </li>
+          </ul>
+        </div>
+
         <ng-template #noUnits>
           <p>No units available for the selected course.</p>
         </ng-template>
@@ -81,26 +87,44 @@
           🔄 Re-Generate Content
         </button>
 
-        <div *ngIf="showModifyFields" class="modify-container">
-          <form (ngSubmit)="onModifyContent()">
-            <div class="form-group">
-              <label for="module">Module</label>
-              <input type="text" id="module" [(ngModel)]="module" name="module" placeholder="Enter module" required />
-            </div>
+        <!-- Floating button to regenerate content -->
+       <button *ngIf="showFloatingButton" class="floating-button" (click)="regenerateSelection()">🔄</button>
 
-            <div class="form-group">
-              <label for="topic">Topic</label>
-              <input type="text" id="topic" [(ngModel)]="topic" name="topic" placeholder="Enter topic" required />
-            </div>
-
-            <div class="form-group">
-              <label for="details">Details</label>
-              <textarea id="details" [(ngModel)]="details" name="details" rows="4" placeholder="Enter content details"></textarea>
-            </div>
-
-            <button type="submit" class="send-button">Re-Generate</button>
-          </form>
-        </div>
+        <div class="floating-button"
+        *ngIf="showFloatingButton"
+        [style.top]="buttonPosition.top"
+        [style.left]="buttonPosition.left">
+     <button class="regenerate-button" (click)="regenerateSelection()">
+       <i class="fas fa-sync-alt"></i>
+       Regenerate
+     </button>
+   </div>
+   
+   <div class="modal-overlay" *ngIf="isModalVisible">
+     <div class="modal-content">
+       <h3 class="modal-title">Review Generated Text</h3>
+   
+       <div class="text-section">
+         <div class="text-label">Original Text:</div>
+         <div class="text-content">
+           {{ highlightedText }}
+         </div>
+       </div>
+   
+       <div class="text-section">
+         <div class="text-label">Regenerated Text:</div>
+         <div class="text-content">
+           {{ regeneratedText }}
+         </div>
+       </div>
+   
+       <div class="modal-actions">
+         <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
+         <button class="confirm-button" (click)="confirmUpdate()">Confirm Update</button>
+       </div>
+     </div>
+   </div>
+   
       </div>
     </div>
   </div>

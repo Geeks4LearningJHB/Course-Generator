@@ -6,6 +6,8 @@ export interface Course {
   moduleId: string;
   moduleName: string;
   description: string;
+  unitId : string;
+
 }
 
 @Injectable({

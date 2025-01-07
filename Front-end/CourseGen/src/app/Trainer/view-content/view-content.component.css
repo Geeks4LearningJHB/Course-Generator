@@ -122,5 +122,8 @@ input, textarea {
   margin-left: 40px;
   list-style: square;
 }
+.floating-button{
+  margin-bottom: 50%;
+}
 
 

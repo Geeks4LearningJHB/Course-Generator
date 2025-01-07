@@ -1,0 +1,72 @@
+<!-- text-regeneration.component.html -->
+<div class="container mx-auto p-4">
+    <div class="content-area border p-4 rounded relative"
+         [innerHTML]="content"
+         (mouseup)="onTextSelection($event)">
+    </div>
+    
+    <!-- Floating Regenerate Button -->
+    <div #floatingButton
+         *ngIf="showFloatingButton"
+         class="fixed z-50 shadow-lg rounded-lg bg-white border"
+         [style.top]="buttonPosition.top"
+         [style.left]="buttonPosition.left">
+      <button class="px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50"
+              (click)="regenerateSelection()">
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="h-4 w-4" 
+             fill="none" 
+             viewBox="0 0 24 24" 
+             stroke="currentColor">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Regenerate
+      </button>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+         *ngIf="isModalVisible">
+      <div class="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
+        <h3 class="text-lg font-bold mb-4">Review Generated Text</h3>
+        
+        <div class="mb-4">
+          <div class="font-semibold mb-2">Original Text:</div>
+          <div class="border p-2 rounded bg-gray-50">
+            {{ content.substring(selectionStart, selectionEnd) }}
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <div class="font-semibold mb-2">Regenerated Text:</div>
+          <div class="border p-2 rounded bg-gray-50">
+            {{ regeneratedText }}
+          </div>
+        </div>
+        
+        <div class="flex justify-end gap-4">
+          <button class="px-4 py-2 border rounded"
+                  (click)="isModalVisible = false">
+            Cancel
+          </button>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded"
+                  (click)="confirmUpdate()">
+            Confirm Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add these styles to your CSS file -->
+  <style>
+  .content-area {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+  }
+  </style>

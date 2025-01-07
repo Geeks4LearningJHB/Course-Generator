@@ -12,26 +12,44 @@ export interface Unit {
   isExpanded?: boolean;
 }
 
+export interface RegenerateRequest {
+  moduleId: string;
+  unitId: string;
+  highlightedText: string;
+  startIndex: number;
+  endIndex: number;
+}
+
+export interface UpdateRequest {
+  unitId: string;
+  regeneratedText: string;
+  startIndex: number;
+  endIndex: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ViewContentService {
-
   private apiUrl = 'http://localhost:8080/AI';
 
   constructor(private http: HttpClient) { }
 
   getAllUnits(): Observable<Unit[]> {
-    return this.http.get<Unit[]>(this.apiUrl + '/getAllUnits');
+    return this.http.get<Unit[]>(`${this.apiUrl}/getAllUnits`);
   }
 
   getUnitsByModules(moduleId: string): Observable<Unit[]> {
     console.log('Fetching units for moduleId:', moduleId);
     return this.http.get<Unit[]>(`${this.apiUrl}/getUnitsByModules?moduleId=${moduleId}`);
   }
-  
+
+  regenerateText(payload: { highlightedText: string; moduleId: string; unitId: string }) {
+    return this.http.post('http://localhost:8080/AI/regenerateText', payload);
+  }
   
 
-  // http://localhost:8080/AI/getUnitsByModules?moduleId=67515f581f4a723ec0b0dfc5
+  confirmUpdate(request: UpdateRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/confirmUpdate`, request);
+  }
 }
