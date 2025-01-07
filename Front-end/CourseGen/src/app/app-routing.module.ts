@@ -17,6 +17,7 @@ import { ViewUsersComponent } from './Admin/view-users/view-users.component';
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
 import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view-content.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
+import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -36,6 +37,7 @@ const routes: Routes = [
   { path: 'view-users', component: ViewUsersComponent },
   { path: 'user-management', component: UserManagementComponent },
   { path: 'course-save-component', component: CourseSaveComponent },
+  { path: 'view-generated-course', component: ViewGeneratedCourseComponent },
   { path: '**', redirectTo: '' }  // Redirect unknown routes to the landing page
 ];
 

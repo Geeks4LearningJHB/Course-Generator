@@ -4,29 +4,35 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Data
 @Entity
 @Table(name = "Admin")
-public class AdminEntity {
+public class AdminEntity extends BaseUser {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "UserId")
-    private long UserId;
+    @Column(name = "Name", nullable = false)
+    private String name;
 
-    @Column(name = "Name")
-    private String Name;
+    @Column(name = "Surname", nullable = false)
+    private String surname;
 
-    @Column(name = "Surname")
-    private String Surname;
+    @Column(nullable = false, updatable = false)
+    private String userType = "Administrator"; 
 
-    @Column(name = "Email")
-    private String email;
+    @Override
+    public String getUserType() {
+        return this.userType;
+    }
 
-    @Column(name = "Password")
-    private String password;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "admin_roles",
+        joinColumns = @JoinColumn(name = "userId"),
+        inverseJoinColumns = @JoinColumn(name = "roleId")
+    )
+    private Set<Role> roles = new HashSet<>();
 }

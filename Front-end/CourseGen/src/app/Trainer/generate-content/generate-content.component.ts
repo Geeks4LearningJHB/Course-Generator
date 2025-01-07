@@ -29,28 +29,32 @@ export class GenerateContentComponent {
       return;
     }
 
-    this.confirmCourseGeneration();
+    this.isLoading = true;
+
+    const courseData = {
+      courseTitle: this.courseTitle,
+      difficulty: this.difficulty,
+      duration: this.duration ?? 0
+    };
+
+    // Call the backend API to generate the course dynamically
+    this.generateContentService.generateCourse(courseData).subscribe(
+      (response: any) => {
+        // Store the generated course data in the service
+        this.generateContentService.setGeneratedCourse(response);
+
+        this.isLoading = false;
+
+        // Navigate to the view page to show the generated course
+        this.router.navigate(['/view-generated-course']);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error generating course:', error);
+        this.isLoading = false;
+        alert('Failed to generate course.');
+      }
+    );
   }
-
-  // Fetch course outline and display in modal
-  // onGenerateOutline() {
-  //   const outlineData = {
-  //     prompt: this.courseTitle,
-  //     difficulty: this.difficulty,
-  //     duration: this.duration ?? 0
-  //   };
-
-  //   this.generateContentService.getOutline(outlineData).subscribe(
-  //     (response: any) => {
-  //       this.courseOutline = response.outline; // Assuming `outline` is part of the response
-        
-  //     },
-  //     (error: HttpErrorResponse) => {
-  //       console.error('Error fetching course outline:', error);
-  //       alert('Failed to fetch course outline.');
-  //     }
-  //   );
-  // }
 
   // Confirm course generation after viewing the outline
   confirmCourseGeneration() {
@@ -59,14 +63,14 @@ export class GenerateContentComponent {
     this.progress = 0;
 
     const courseData = {
-      prompt: this.courseTitle,
+      courseTitle: this.courseTitle,
       difficulty: this.difficulty,
       duration: this.duration ?? 0
     };
 
     this.generateContentService.generateCourse(courseData).subscribe(
       (response: any) => {
-        this.isLoading = false;
+        this.isLoading = true;
         this.progress = 100;
 
         // Navigate to view content

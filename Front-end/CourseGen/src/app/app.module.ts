@@ -25,6 +25,8 @@ import { ViewUsersComponent } from './Admin/view-users/view-users.component';
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
 import { NavComponent } from './nav/nav.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
+import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
+import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { CourseSaveComponent } from './Trainer/course-save-component/course-save
     AdminViewContentComponent,
     AdminViewCoursesComponent,
     NavComponent,
-    CourseSaveComponent
+    CourseSaveComponent,
+    ViewGeneratedCourseComponent,
+    TextRegenerationComponent
   ],
   imports: [
     HttpClientModule,
