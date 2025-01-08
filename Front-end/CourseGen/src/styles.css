@@ -158,7 +158,7 @@
   .sidebar ul {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 8px;
   }
   
   .sidebar ul li {
@@ -272,7 +272,6 @@
 .back-button{
   position: fixed;
   right: 36px;
-  /* background-color: #007bff; */
   background-color: #145570;
   color: white;
   border: none;
@@ -298,25 +297,37 @@ div.body {
   position: fixed;
   z-index: 1000;
   width: 100%;
+  margin-left: 250px;
   height: 45px;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   background-color: #ffffff;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.1);
   transition: margin-left 0.3s ease;
 }
+
+.sub-header.isCollapsed {
+  margin-left: 0px;
+  justify-content: center;
+}
+
 .sub-header.shifted {
   margin-left: 70px;
+}
+
+.sub-header sub-heading {
+  margin-left: 200px;
 }
 
 .sub-heading {
   font-family: Arial, sans-serif;
   font-weight: bold;
   font-size: 32px;
+  margin-left: 260px;
   background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-align: center;
+  /* text-align: center; */
 }
 
 .dash-container-1 {
@@ -329,13 +340,12 @@ div.body {
   background-color: #e4e9ef;
   flex-grow: 1;
   transition: margin-left 0.3s ease;
+  /* padding-left: 260px; */
   margin-left: 250px;
 }
 .dash-container-1.shifted {
-  margin-left: 120px;
+  margin-left: 70px;
 }
-
-/*  */
 
 
 .floating-button {
