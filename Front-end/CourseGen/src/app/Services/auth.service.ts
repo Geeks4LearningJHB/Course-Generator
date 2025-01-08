@@ -1,33 +1,47 @@
-// import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 
-// @Injectable({
-//   providedIn: 'root',
-// })
-// export class AuthService {
-//   getRole(): string {
-//     throw new Error('Method not implemented.');
-//   }
-//   private userRole: string | null = null; // Store the current user's role (admin/user)
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  // private apiUrlAdmin = 'http://localhost:8080/Adminlogin';
+  // private apiUrlTrainer = 'http://localhost:8080/Trainerlogin';
 
-//   constructor() {}
+  private userRoleSubject = new BehaviorSubject<string | null>(this.getUserRole());
+  userRole$ = this.userRoleSubject.asObservable();
 
-//   // Set the role after login
-//   setUserRole(role: string): void {
-//     this.userRole = role;
-//     localStorage.setItem('userRole', role); // Optional: Persist in local storage
-//   }
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient, private router: Router) {}
 
-//   // Get the role of the current user
-//   getUserRole(): string | null {
-//     if (!this.userRole) {
-//       this.userRole = localStorage.getItem('userRole'); // Retrieve from local storage if needed
-//     }
-//     return this.userRole;
-//   }
+  setUserRole(role: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+    localStorage.setItem('userRole', role); // Persist role
+  }
+  this.userRoleSubject.next(role);
+}
 
-//   // Logout the user
-//   logout(): void {
-//     this.userRole = null;
-//     localStorage.removeItem('userRole'); // Clear from local storage
-//   }
-// }
+  // Get the user role
+  getUserRole(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+    return localStorage.getItem('userRole');
+  }
+  return null 
+}
+
+  // Clear the user role (e.g., on logout)
+  clearUserRole(): void {
+    if (isPlatformBrowser(this.platformId)) {
+    localStorage.removeItem('userRole');
+  }
+  this.userRoleSubject.next(null);
+}
+
+  // Logout and redirect to login page
+  logout(): void {
+    this.clearUserRole();
+    this.router.navigate(['/login']);
+  }
+}

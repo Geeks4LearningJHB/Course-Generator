@@ -27,6 +27,7 @@ import { NavComponent } from './nav/nav.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
 import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
+import { AuthService } from './Services/auth.service';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { TextRegenerationComponent } from './text-regeneration/text-regeneration
     ReactiveFormsModule
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    AuthService
   ],
   bootstrap: [AppComponent]
 })

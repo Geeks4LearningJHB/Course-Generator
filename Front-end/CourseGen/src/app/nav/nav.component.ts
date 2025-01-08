@@ -1,28 +1,37 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-// import { AuthService } from '../Services/auth.service';
+import { AuthService } from '../Services/auth.service';
+// import { UserService } from '../Services/user.service';
 
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
-  styleUrl: './nav.component.css'
+  styleUrls: ['./nav.component.css'],
 })
-export class NavComponent {
+export class NavComponent implements OnInit {
   faHome = faHome;
   isCollapsed = true;
-  userRole: string= 'admin';
+  userRole: string | null = null;
 
-  // constructor(public authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
-  // isAuthorized(...roles: string[]): boolean {
-  //   return roles.includes(this.authService.getRole());
-  // }
+  ngOnInit(): void {
+    // Listen for role changes
+    this.authService.userRole$.subscribe((role) => {
+      this.userRole = role;
+    });
+  }
 
-  toggleSidebar() {
+  logout(): void {
+    this.authService.logout();
+  }
+
+  toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
   }
+
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
+  onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
 
     if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {

@@ -1,4 +1,5 @@
 import { Component, HostListener } from '@angular/core';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,6 +8,20 @@ import { Component, HostListener } from '@angular/core';
 })
 export class DashboardComponent {
   isCollapsed = true;
+  userRole: string | null = null;
+
+  constructor(private authService: AuthService ) { }
+
+  ngOnInit(): void {
+    // Listen for role changes
+    this.authService.userRole$.subscribe((role) => {
+      this.userRole = role;
+    });
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
