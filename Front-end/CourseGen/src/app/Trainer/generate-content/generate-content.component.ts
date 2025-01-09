@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { GenerateContentService } from '../../Services/generate-content.service'; // Adjust import path as needed
+import { GenerateContentService } from '../../Services/generate-content.service'; 
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -15,8 +15,7 @@ export class GenerateContentComponent {
   isCollapsed = true;
   progress = 0;
   isLoading = false;
-  courseOutline: string = ''; // Store course outline
-
+  courseOutline: string = ''; 
   constructor(
     private router: Router,
     private generateContentService: GenerateContentService
