@@ -8,24 +8,28 @@ import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './Trainer/login/login.component';
 import { RegisterComponent } from './Trainer/register/register.component';
 import { DashboardComponent } from './Trainer/dashboard/dashboard.component';
+import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { ViewContentComponent } from './Trainer/view-content/view-content.component';
+import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view-content.component';
 import { GenerateContentComponent } from './Trainer/generate-content/generate-content.component';
 import { AdminGenerateContentComponent } from './Admin/admin-dashboard/admin-generate-content/admin-generate-content.component';
 import { AdminLoginComponent } from './Admin/admin-login/admin-login.component';
 import { ForgotPasswordComponent } from './Trainer/forgot-password/forgot-password.component';
 import { ProfileManagementComponent } from './profile-management/profile-management.component';
 import { ViewCoursesComponent } from './Trainer/view-courses/view-courses.component';
-import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
-import { UserManagementService } from './Services/user-management.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { UserManagementComponent } from './Admin/admin-dashboard/user-management/user-management.component';
 import { ViewUsersComponent } from './Admin/view-users/view-users.component';
-import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view-content.component';
+
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
+import { NavComponent } from './nav/nav.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
 import { ContentParserService } from './Services/content-parser.service';
+import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
+// import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
+import { AuthService } from './Services/auth.service';
 
 @NgModule({
   declarations: [
@@ -47,8 +51,10 @@ import { ContentParserService } from './Services/content-parser.service';
     AdminGenerateContentComponent,
     AdminViewContentComponent,
     AdminViewCoursesComponent,
+    NavComponent,
     CourseSaveComponent,
-    ViewGeneratedCourseComponent
+    ViewGeneratedCourseComponent,
+    TextRegenerationComponent
   ],
   imports: [
     HttpClientModule,
@@ -61,7 +67,8 @@ import { ContentParserService } from './Services/content-parser.service';
   ],
   providers: [
     provideClientHydration(),
-    ContentParserService
+    ContentParserService,
+    AuthService
   ],
   bootstrap: [AppComponent]
 })

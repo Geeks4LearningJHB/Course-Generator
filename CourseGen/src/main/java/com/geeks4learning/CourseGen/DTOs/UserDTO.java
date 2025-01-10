@@ -1,6 +1,5 @@
 package com.geeks4learning.CourseGen.DTOs;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,12 +7,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class TrainerDTO {
+public class UserDTO {
 
-    private String Name;
-    private String Surname;
+    private Long userId;
     private String email;
-    private String password;
-    
-
+    private String userType; 
 }
+

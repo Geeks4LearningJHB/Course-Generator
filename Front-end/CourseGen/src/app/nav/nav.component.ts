@@ -1,16 +1,19 @@
-import { Component, HostListener } from '@angular/core';
-import { AuthService } from '../../Services/auth.service';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { AuthService } from '../Services/auth.service';
+// import { UserService } from '../Services/user.service';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  selector: 'app-nav',
+  templateUrl: './nav.component.html',
+  styleUrls: ['./nav.component.css'],
 })
-export class DashboardComponent {
+export class NavComponent implements OnInit {
+  faHome = faHome;
   isCollapsed = true;
   userRole: string | null = null;
 
-  constructor(private authService: AuthService ) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
     // Listen for role changes
@@ -23,11 +26,12 @@ export class DashboardComponent {
     this.authService.logout();
   }
 
-  toggleSidebar() {
+  toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
   }
+
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
+  onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
 
     if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
