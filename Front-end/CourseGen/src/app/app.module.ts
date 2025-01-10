@@ -25,6 +25,7 @@ import { AdminViewContentComponent } from './Admin/admin-view-content/admin-view
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
+import { ContentParserService } from './Services/content-parser.service';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/vi
     ReactiveFormsModule
   ],
   providers: [
-    provideClientHydration()
+    provideClientHydration(),
+    ContentParserService
   ],
   bootstrap: [AppComponent]
 })

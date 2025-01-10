@@ -1,5 +1,4 @@
-<div class="admin-dashboard-container" style="background-color: #e4e9ef;">
-
+<div class="admin-dashboard-container">
   <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
@@ -36,30 +35,107 @@
     </div>
 
     <div class="sub-header" [class.shifted]="isCollapsed">
-      <h3 class="sub-heading">GENERATE CONTENT</h3>
-      <button class="back-button" routerLink="/dashboard">
+      <h3 class="sub-heading">GENERATED COURSE CONTENT</h3>
+      <button class="back-button" style="background-color: #133B50;" routerLink="/view-courses">
         <span class="icon"></span> Back
       </button>
     </div>
 
-    <div class="generated-course-container">
-      <h2>{{ generatedCourse?.courseTitle }}</h2>
-      <p><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</p>
-      <p><strong>Duration:</strong> {{ generatedCourse?.duration }} hours</p>
-
-      <h3>Course Outline:</h3>
-      <ul>
-        <li *ngFor="let item of generatedCourse?.outline">{{ item }}</li>
-      </ul>
-
-      <h3>Units:</h3>
-      <div *ngFor="let unit of generatedCourse?.units">
-        <h4>{{ unit.unitName }}</h4>
-        <p>{{ unit.content }}</p>
+    <div class="course-container">
+      <div class="course-header">
+        <h2>{{ generatedCourse?.module?.moduleName }}</h2>
+        <div class="course-meta">
+          <span><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</span>
+          <span><strong>Duration:</strong> {{ generatedCourse?.duration }} months</span>
+        </div>
       </div>
 
-      <div class="button-container">
-        <button class="back-btn" (click)="goBack()">Back</button>
+      <div class="outline-section">
+        <h3>Course Outline</h3>
+        <div class="unit-list">
+          <div *ngIf="paginatedUnits.length; else noUnits">
+            <div *ngFor="let unit of paginatedUnits; let i = index" class="unit-card">
+              <div class="unit-header" (click)="toggleUnit(unit.title, i)">
+                <h4>{{ unit.title }}</h4>
+                <i class="fas" [class.fa-chevron-down]="!expandedUnits[unit.title]"
+                  [class.fa-chevron-up]="expandedUnits[unit.title]"></i>
+              </div>
+
+              <div class="unit-content" *ngIf="expandedUnits[unit.title]">
+                <!-- Loading spinner -->
+                <div *ngIf="isLoading[unit.title]" class="loading-spinner">
+                  Loading content...
+                </div>
+
+                <!-- Loaded content -->
+                <ng-container *ngIf="!isLoading[unit.title] && unit.isLoaded">
+
+                  <div class="content-section">
+                    <h5>Introduction:</h5>
+                    <p>{{ unit.introduction }}</p>
+                  </div>
+
+                  <!-- Key Concepts -->
+                  <div class="content-section">
+                    <h5>Key Concepts:</h5>
+                    <ul>
+                      <li *ngFor="let concept of unit.keyConcepts">{{ concept }}</li>
+                    </ul>
+                  </div>
+
+                  <!-- Sections -->
+                  <div *ngFor="let section of unit.sections" class="content-section">
+                    <h5>{{ section.heading }}</h5>
+
+                    <!-- Regular content -->
+                    <div *ngIf="isString(section.content)" [innerHTML]="sanitizeContent(parseLinksAndBold(section.content))">
+                    </div>
+
+                    <!-- List content -->
+                    <ul *ngIf="isArray(section.content)">
+                      <ng-container *ngFor="let item of asArray(section.content)">
+                        <!-- Code block -->
+                        <li *ngIf="isCodeBlock(item)" class="code-block">
+                          <pre><code [class]="'language-' + item.language">{{ item.code }}</code></pre>
+                        </li>
+
+                        <!-- Regular list item -->
+                        <li *ngIf="!isCodeBlock(item) && isString(item)">{{ item }}</li>
+
+                        <!-- List item with sub-items -->
+                        <li *ngIf="!isCodeBlock(item) && hasSubItems(item)">
+                          {{ item.text }}
+                          <ul *ngIf="item.subItems?.length">
+                            <li *ngFor="let subItem of item.subItems">{{ subItem }}</li>
+                          </ul>
+                        </li>
+                      </ng-container>
+                    </ul>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <ng-template #noUnits>
+            <p>No units available for this course.</p>
+          </ng-template>
+        </div>
+
+        <div class="pagination">
+          <button [disabled]="currentPage === 1" (click)="previousPage()" class="pagination-btn">
+            Previous
+          </button>
+          <span class="page-info">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+          <button [disabled]="currentPage === totalPages" (click)="nextPage()" class="pagination-btn">
+            Next
+          </button>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="edit-btn" (click)="onEditCourse()">Edit Course</button>
         <button class="save-btn" (click)="saveCourse()">Save Course</button>
       </div>
     </div>

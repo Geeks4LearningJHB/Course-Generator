@@ -84,6 +84,19 @@ input, textarea {
 .module-container {
   margin-bottom: 15px;
 }
+
+.dash-container-2 {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-top: 46px;
+  width: 80vw;
+  background-color: #e4e9ef;
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+  margin-left: 250px;
+}
  
 .module-header {
   cursor: pointer;
@@ -122,5 +135,3 @@ input, textarea {
   margin-left: 40px;
   list-style: square;
 }
-
-

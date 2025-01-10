@@ -39,28 +39,28 @@ public class AIController {
 
     @Autowired
     private RestTemplate restTemplate;
-    
+
     @Autowired
     private PromptService promptService;
-    
+
     @Autowired
     private OutlineService outlineService;
-    
+
     @Autowired
     private ModuleService moduleService;
-    
+
     @Autowired
     private UnitService unitService;
-    
+
     @Autowired
     private AssessmentService assessmentService;
-    
+
     @Autowired
     private ActivityService activityService;
-    
+
     @Autowired
     private ModuleRepository moduleRepository;
-    
+
     @Autowired
     private unitRepository unitRepository;
 
@@ -79,12 +79,14 @@ public class AIController {
 
             // Step 2: Generate structured outline
             String moduleOutlinePrompt = getStructuredOutlinePrompt(courseRequest);
+            System.out.println("moduleOutlinePrompt= " + moduleOutlinePrompt);
             String moduleOutline = respondToPrompt(moduleOutlinePrompt);
+            System.out.println("moduleOutline= " + moduleOutline);
 
             // Parse the outline
             String[] outlineLines = moduleOutline.split("\n");
             String outlineName = findOutlineName(outlineLines);
-            List<String> unitLines = parseUnitLines(outlineLines);
+            List<Map<String, String>> unitDetails = parseUnitLines(outlineLines);
 
             // Create Outline and Module objects
             Outline outline = new Outline();
@@ -92,20 +94,24 @@ public class AIController {
 
             CourseModule module = new CourseModule();
             module.setModuleName("Module: " + courseRequest.getCourseTitle());
+            // module.setModuleDescription("Description: " +
+            // courseRequest.getDescription());
             module.setDuration(String.valueOf(courseRequest.getDuration()));
             module.setUnits(new ArrayList<>());
 
             // Step 3: Generate detailed content for each unit
-            List<CompletableFuture<Unit>> unitTasks = unitLines.stream()
-                .map(unitName -> CompletableFuture.supplyAsync(() -> 
-                    createDetailedUnitContent(module, unitName, courseRequest)))
-                .collect(Collectors.toList());
-
+            List<CompletableFuture<Unit>> unitTasks = unitDetails.stream()
+                    .map(detail -> CompletableFuture.supplyAsync(() -> createDetailedUnitContent(
+                            module,
+                            detail.get("unitName"),
+                            detail.get("unitDescription"),
+                            courseRequest)))
+                    .collect(Collectors.toList());
             // Wait for all unit tasks to complete
             List<Unit> units = unitTasks.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-            
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+
             module.setUnits(units);
             outline.setModule(module);
             outline.setUnits(units);
@@ -113,10 +119,9 @@ public class AIController {
             // Store in cache for later saving
             String courseId = UUID.randomUUID().toString();
             courseCache.put(courseId, Map.of(
-                "outline", outline,
-                "module", module,
-                "units", units
-            ));
+                    "outline", outline,
+                    "module", module,
+                    "units", units));
 
             // Return response
             response.put("courseId", courseId);
@@ -127,40 +132,47 @@ public class AIController {
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Error generating course: " + e.getMessage()));
+                    .body(Map.of("error", "Error generating course: " + e.getMessage()));
         }
     }
 
-    private Unit createDetailedUnitContent(CourseModule module, String unitName, CourseRequest courseRequest) {
+    private Unit createDetailedUnitContent(CourseModule module, String unitName, String unitDescription,
+            CourseRequest courseRequest) {
         Unit unit = new Unit();
-        String sanitizedUnitName = sanitizeText(unitName);
-        unit.setUnitName(sanitizedUnitName);
+        unit.setUnitName(sanitizeText(unitName));
         unit.setModule(module);
+        unit.setUnitDescription(sanitizeText(unitDescription));
 
         // Generate detailed content
         String contentPrompt = String.format(
-            "Create detailed educational content for the unit '%s' in the course '%s'. " +
-            "The content should be suitable for %s difficulty level and include:\n" +
-            "1. Key concepts and theories\n" +
-            "2. Practical examples\n" +
-            "3. Important definitions\n" +
-            "4. Real-world applications",
-            sanitizedUnitName,
-            courseRequest.getCourseTitle(),
-            courseRequest.getDifficulty()
-        );
+                "Create detailed educational content for the unit '%s' in the course '%s'. " +
+                        "The content should be suitable for %s difficulty level and formatted as a textbook. " +
+                        "Please organize the content into the following sections:\n" +
+                        "1. Introduction to key concepts\n" +
+                        "2. Detailed explanation of the theories\n" +
+                        "3. Practical examples\n" +
+                        "4. Key definitions and terminology\n" +
+                        "5. Real-world applications\n" +
+                        "6. Summary and takeaways\n" +
+                        "7. Additional readings or resources",
+                unitName,
+                courseRequest.getCourseTitle(),
+                courseRequest.getDifficulty());
+
         String content = respondToPrompt(contentPrompt);
         unit.setContent(sanitizeText(content));
 
         // Generate activities
         String activityPrompt = String.format(
-            "Create 3 engaging practical activities for '%s' that:\n" +
-            "1. Reinforce key concepts\n" +
-            "2. Promote active learning\n" +
-            "3. Are appropriate for %s difficulty level",
-            sanitizedUnitName,
-            courseRequest.getDifficulty()
-        );
+                "Create 3 engaging practical activities for '%s' that:\n" +
+                        "1. Reinforce key concepts from the unit\n" +
+                        "2. Promote active learning and interaction\n" +
+                        "3. Are appropriate for %s difficulty level\n" +
+                        "4. Relate to real-world scenarios and applications discussed in the content\n" +
+                        "5. Include instructions and expected outcomes",
+                unitName,
+                courseRequest.getDifficulty());
+
         String activityContent = respondToPrompt(activityPrompt);
         Activity activity = new Activity(sanitizeText(activityContent), unit);
         unit.setActivityUnits(Collections.singletonList(activity));
@@ -170,18 +182,17 @@ public class AIController {
 
     private String getStructuredOutlinePrompt(CourseRequest courseRequest) {
         return String.format(
-            "Create a detailed course outline for: '%s'\n" +
-            "Duration: %d months\n" +
-            "Difficulty: %s\n\n" +
-            "Format the outline with:\n" +
-            "1. Monthly topics (e.g., 'Month 1: Foundation')\n" +
-            "2. Weekly subtopics under each month\n" +
-            "3. Key learning objectives for each week\n" +
-            "Please ensure progressive difficulty and logical flow between topics.",
-            courseRequest.getCourseTitle(),
-            courseRequest.getDuration(),
-            courseRequest.getDifficulty()
-        );
+                "Create a detailed course outline for: '%s'\n" +
+                        "Duration: %d months\n" +
+                        "Difficulty: %s\n\n" +
+                        "Format the outline with:\n" +
+                        "1. Monthly topics\n" +
+                        "2. Weekly subtopics under each month\n" +
+                        "3. Key learning objectives for each week\n" +
+                        "Please ensure the outline follows a textbook-like structure with clear headings and logical progression.",
+                courseRequest.getCourseTitle(),
+                courseRequest.getDuration(),
+                courseRequest.getDifficulty());
     }
 
     private String findOutlineName(String[] lines) {
@@ -192,62 +203,88 @@ public class AIController {
             }
         }
         return Arrays.stream(lines)
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .findFirst()
-            .map(this::sanitizeText)
-            .orElse("Course Outline");
+                .map(String::trim)
+                .filter(line -> !line.isEmpty())
+                .findFirst()
+                .map(this::sanitizeText)
+                .orElse("Course Outline");
     }
 
-    private List<String> parseUnitLines(String[] lines) {
-        List<String> unitLines = new ArrayList<>();
-        StringBuilder currentSection = new StringBuilder();
-        boolean isProcessingSection = false;
+    // private String findOutlineName(String[] lines) {
+    // for (String line : lines) {
+    // String trimmed = line.trim();
+    // if (trimmed.startsWith("Month") || trimmed.matches(".*: .*")) {
+    // return sanitizeText(trimmed);
+    // }
+    // }
+    // return Arrays.stream(lines)
+    // .map(String::trim)
+    // .filter(line -> !line.isEmpty())
+    // .findFirst()
+    // .map(this::sanitizeText)
+    // .orElse("Course Outline");
+    // }
+
+    private List<Map<String, String>> parseUnitLines(String[] lines) {
+        List<Map<String, String>> unitDetails = new ArrayList<>();
+        StringBuilder currentDescription = new StringBuilder();
+        String currentUnitName = null;
 
         for (String line : lines) {
             String trimmed = line.trim();
-            
+
             if (trimmed.isEmpty() || trimmed.startsWith("Here's") || trimmed.startsWith("The course")) {
-                continue;
+                continue; // Skip non-relevant lines
             }
 
-            if (trimmed.startsWith("Month") || trimmed.startsWith("Week")) {
-                if (isProcessingSection && currentSection.length() > 0) {
-                    unitLines.add(currentSection.toString().trim());
+            // Detect new unit (Month or Week)
+            if (trimmed.startsWith("Month")) {
+                if (currentUnitName != null && currentDescription.length() > 0) {
+                    // Save previous unit details
+                    unitDetails.add(Map.of(
+                            "unitName", currentUnitName,
+                            "unitDescription", currentDescription.toString().trim()));
                 }
-                currentSection = new StringBuilder(trimmed);
-                isProcessingSection = true;
-            } else if (isProcessingSection && (trimmed.startsWith("•") || trimmed.startsWith("-"))) {
-                currentSection.append("\n").append(trimmed);
+                currentUnitName = trimmed; // Set the unit name to the month title
+                currentDescription = new StringBuilder(); // Start new description
+            } else if (trimmed.startsWith("Week")) {
+                if (currentUnitName == null) {
+                    // Handle cases where "Week" appears without a preceding "Month"
+                    currentUnitName = "General Course Outline";
+                }
+                currentDescription.append(trimmed).append("\n");
+            } else {
+                // Append additional lines to the current unit description
+                currentDescription.append(trimmed).append("\n");
             }
         }
 
-        if (currentSection.length() > 0) {
-            unitLines.add(currentSection.toString().trim());
+        // Add the last unit
+        if (currentUnitName != null && currentDescription.length() > 0) {
+            unitDetails.add(Map.of(
+                    "unitName", currentUnitName,
+                    "unitDescription", currentDescription.toString().trim()));
         }
 
-        return unitLines;
+        return unitDetails;
     }
 
     private String respondToPrompt(String prompt) {
-        ChatCompletionRequest request = new ChatCompletionRequest("gpt-4o-mini", prompt);
-        ChatCompletionResponse response = restTemplate.postForObject(
-            completionsURL,
-            request,
-            ChatCompletionResponse.class
-        );
-        assert response != null;
-        return sanitizeText(response.getChoices().get(0).getMessage().getContent());
+        ChatCompletionRequest chatCompletionRequest = new ChatCompletionRequest("gpt-4o-mini", prompt);
+        ChatCompletionResponse chatCompletionResponse = restTemplate.postForObject(completionsURL,
+                chatCompletionRequest, ChatCompletionResponse.class);
+        assert chatCompletionResponse != null;
+        String rawContent = chatCompletionResponse.getChoices().get(0).getMessage().getContent();
+        return sanitizeText(rawContent);
     }
 
     private String sanitizeText(String text) {
         return text
-            .replaceAll("(?m)^#+\\s*", "")
-            .replaceAll("(?m)^---+$", "")
-            .replaceAll("(?m)^[-*]\\s+", "• ")
-            .replaceAll("(?m)^\\|.*\\|$", "")
-            .replaceAll("(?m)^\\|-+\\|$", "")
-            .trim();
+                .replaceAll("(?m)^#+\\s*", "") // Remove markdown headings
+                .replaceAll("(?m)^---+$", "") // Remove separators
+                .replaceAll("(?m)^(\\d+\\.\\s)", "$1 ") // Ensure numbering is consistent
+                .replaceAll("(?m)^(\\*\\s)", "• ") // Use bullet points for lists
+                .trim();
     }
 
     @PostMapping("/saveGeneratedCourse")
@@ -277,8 +314,8 @@ public class AIController {
                 Assessment assessment = new Assessment();
                 assessment.setAssessmentName("Assessment for " + module.getModuleName());
                 String durationStr = module.getDuration();
-                assessment.setDuration(durationStr != null && !durationStr.isEmpty() ? 
-                    Integer.parseInt(durationStr) : 0);
+                assessment
+                        .setDuration(durationStr != null && !durationStr.isEmpty() ? Integer.parseInt(durationStr) : 0);
                 assessment.setUnit(unit);
                 assessmentService.saveAssessment(assessment);
             });
@@ -289,14 +326,6 @@ public class AIController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error while saving generated data: " + e.getMessage());
         }
-    }
-
-    @PostMapping("/discardGeneratedCourse")
-    public ResponseEntity<String> discardGeneratedCourse(@RequestParam String courseId) {
-        if (courseCache.remove(courseId) != null) {
-            return ResponseEntity.ok("Course discarded successfully.");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found in memory.");
     }
 
     @PostMapping("/regenerateText")
@@ -354,6 +383,10 @@ public class AIController {
         return moduleService.getAllCourseModules();
     }
 
+    @GetMapping("/getModuleById")
+    public Optional<CourseModule> getModuleById(@RequestParam String id){
+        return moduleService.findCourseModuleById(id);
+    }
     @GetMapping("/getAllUnits")
     public List<Unit> getAllUnits() {
         return unitService.getAllUnits();

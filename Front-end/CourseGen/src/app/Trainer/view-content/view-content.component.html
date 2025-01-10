@@ -42,39 +42,26 @@
     </div>
 
     <div class="dash-container-1" [class.shifted]="isCollapsed">
-      <div class="form-container">
-        <h3 class="form-title">View Modules by Course</h3>
-
-        <!-- Dropdown for selecting a course -->
-        <div class="form-group">
-          <label for="course-select">Select a Course:</label>
-          <select id="course-select" [(ngModel)]="selectedCourse" (change)="selectedCourse && onCourseSelect(selectedCourse)">
-
-            <option *ngFor="let course of courses" [ngValue]="course">{{ course.moduleName }}</option>
-          </select>
+      <div *ngIf="units.length > 0; else noUnits" class="course-content">
+        <div *ngFor="let unit of units" class="module-container">
+          <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
+            {{ unit.unitName }}
+          </p>
+          <ul *ngIf="unit.isExpanded" class="unit-content">
+            <li class="topic">
+              <p>{{ unit.content }}</p>
+            </li>
+          </ul>
         </div>
+      </div>
 
-        <!-- Displaying units -->
-        <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
-          <div *ngFor="let unit of units; let i = index" class="module-container">
-            <!-- Unit Header -->
-            <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
-              {{ unit.unitName }}
-            </p>
+      <ng-template #noUnits>
+        <p>No units available for this course.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>
 
-            <!-- Unit Content -->
-            <ul *ngIf="unit.isExpanded" class="unit-content">
-              <li class="topic">
-                <p>{{ unit.content }}</p>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- No Units Template -->
-        <ng-template #noUnits>
-          <p>No units available for the selected course.</p>
-        </ng-template>
 
         <button class="download-button">⬇️ Download Content</button>
         <button class="re-generate-button" (click)="showModifyFields = !showModifyFields">
@@ -101,7 +88,3 @@
             <button type="submit" class="send-button">Re-Generate</button>
           </form>
         </div>
-      </div>
-    </div>
-  </div>
-</div>

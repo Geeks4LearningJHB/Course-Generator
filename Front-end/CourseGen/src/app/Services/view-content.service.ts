@@ -10,7 +10,26 @@ export interface Unit {
   content: string;
   unitNum: number;
   isExpanded?: boolean;
+  isLoaded?: boolean;
+  moduleName?: string;
+  title?: string;
+  introduction?: string;
+  keyConcepts?: string[];
+  sections?: Section[];
 }
+
+export interface Section {
+  heading: string;
+  content: string | ListItem[];
+}
+
+export interface ListItem {
+  text?: string;
+  subItems?: string[];
+  language?: string;
+  code?: string;
+}
+
 
 
 @Injectable({

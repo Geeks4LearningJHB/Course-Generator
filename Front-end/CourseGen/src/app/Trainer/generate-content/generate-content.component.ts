@@ -43,7 +43,7 @@ export class GenerateContentComponent {
         // Store the generated course data in the service
         this.generateContentService.setGeneratedCourse(response);
 
-        this.isLoading = false;
+        this.isLoading = true;
 
         // Navigate to the view page to show the generated course
         this.router.navigate(['/view-generated-course']);
