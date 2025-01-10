@@ -5,6 +5,7 @@
   justify-content: center;
   height: 100vh;
   background-color: #12324d;
+  position: relative;
 }
 
 .form-container {
@@ -147,7 +148,7 @@ input, textarea {
 
 .floating-button {
   position: absolute;
-  z-index: 1000;
+  z-index: 2000;
   background-color: #133B50;
   color: white;
   border: none;
@@ -243,4 +244,10 @@ input, textarea {
 
 .confirm-button:hover {
   background-color: #1c5472;
+}
+@media (max-width: 768px) {
+  .floating-button {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
 }

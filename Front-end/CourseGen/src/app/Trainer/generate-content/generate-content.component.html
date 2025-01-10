@@ -1,47 +1,5 @@
 <div class="admin-dashboard-container">
   <!-- Top Navigation -->
-  <div class="top-nav">
-    <div class="logo">
-      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
-    </div>
-    <div class="nav-right">
-      <button class="profile-btn">
-        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
-      </button>
-    </div>
-  </div>
-
-  <div class="body">
-    <!-- Sidebar -->
-    <div class="sidebar" [class.collapsed]="isCollapsed">
-      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-      <ul>
-        <li>
-          <i class="icon fa fa-home"></i>
-          <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
-        </li>
-        <li>
-          <i class="icon fas fa-book"></i>
-          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-          <i class="icon fas fa-file-alt"></i>
-          <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
-        </li>
-        <hr class="divider" />
-        <li>
-          <i class="icon fas fa-sign-out-alt"></i>
-          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Sub Header -->
-    <div class="sub-header" [class.shifted]="!isCollapsed">
-      <h3 class="sub-heading">GENERATE CONTENT</h3>
-      <button class="back-button" routerLink="/dashboard">
-      <span class="icon"></span> Back </button>
-    </div> -->
 
     <!-- Main Content -->
     <div class="dash-container-1" [class.shifted]="!isCollapsed">
