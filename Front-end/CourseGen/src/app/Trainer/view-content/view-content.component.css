@@ -5,6 +5,7 @@
   justify-content: center;
   height: 100vh;
   background-color: #12324d;
+  position: relative;
 }
 
 .form-container {
@@ -84,6 +85,19 @@ input, textarea {
 .module-container {
   margin-bottom: 15px;
 }
+
+.dash-container-2 {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-top: 46px;
+  width: 80vw;
+  background-color: #e4e9ef;
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+  margin-left: 250px;
+}
  
 .module-header {
   cursor: pointer;
@@ -122,6 +136,7 @@ input, textarea {
   margin-left: 40px;
   list-style: square;
 }
+
 .floating-button{
   margin-bottom: 50%;
 }
@@ -133,7 +148,7 @@ input, textarea {
 
 .floating-button {
   position: absolute;
-  z-index: 1000;
+  z-index: 2000;
   background-color: #133B50;
   color: white;
   border: none;
@@ -229,4 +244,10 @@ input, textarea {
 
 .confirm-button:hover {
   background-color: #1c5472;
+}
+@media (max-width: 768px) {
+  .floating-button {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
 }

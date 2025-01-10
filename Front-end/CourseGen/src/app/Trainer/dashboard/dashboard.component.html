@@ -1,5 +1,5 @@
-<div class="admin-dashboard-container"style="background-color:  #e4e9ef;">
-  <div class="top-nav">
+<div class="admin-dashboard-container" style="background-color:  #e4e9ef;">
+  <!-- <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
     </div>
@@ -32,17 +32,18 @@
         <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
       </li>
     </ul>
-  </div>
+  </div> -->
 
-  <div class="sub-header" [class.shifted]="isCollapsed">
+  <!-- <div class="sub-header" [class.shifted]="isCollapsed">
     <h3 class="sub-heading">COURSE CONTENT GENERATOR</h3>
-  </div>
+  </div> -->
 
   <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="button-container">
-      <div class="card" style="width: 18rem;">
+      <div class="card" style="width: 18rem;" *ngIf="userRole === 'Administrator' || userRole === 'Trainer'">
         <div class="chatgpt-spinner card-img-top">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT Logo" class="chatgpt-logo">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPT Logo"
+            class="chatgpt-logo">
         </div>
         <div class="card-body">
           <h5 class="card-title">Generate Course</h5>
@@ -53,7 +54,7 @@
         </div>
       </div>
 
-      <div class="card" style="width: 18rem;">
+      <div class="card" style="width: 18rem;" *ngIf="userRole === 'Administrator' || userRole === 'Trainer'">
         <div class="book-spinner card-img-top">
           <div class="book">
             <div class="page"></div>
@@ -69,8 +70,29 @@
           </a>
         </div>
       </div>
+
+      <div class="card" style="width: 18rem;" *ngIf="userRole === 'Administrator'">
+        <img src="assets/accept.png" class="card-img-top" alt="Card image">
+        <div class="card-body">
+          <h5 class="card-title">Accept Users</h5>
+          <p class="card-text">Manage and accept users efficiently.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/user-management">
+            <span class="icon">✔️</span> Accept Users
+          </a>
+        </div>
       </div>
+
+      <div class="card" style="width: 18rem;" *ngIf="userRole === 'Administrator'">
+        <img src="assets/user-card.png" class="card-img-top" alt="Card image">
+        <div class="card-body">
+          <h5 class="card-title">View Users</h5>
+          <p class="card-text">Access and manage all system users.</p>
+          <a class="btn btn-primary dashboard-button" routerLink="/view-users">
+            <span class="icon">👤</span> View Users
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
-

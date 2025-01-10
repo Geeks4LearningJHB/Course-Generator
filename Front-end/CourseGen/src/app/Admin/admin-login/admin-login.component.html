@@ -28,7 +28,7 @@
         />
       </div>
 
-      <div *ngIf="isLoading" class="loading-overlay">
+      <div *ngIf="LoggingIn" class="loading-overlay">
         <div class="loading-content">
           <p>{{ successMessage }}</p>
           <div class="spinner"></div>
@@ -40,12 +40,7 @@
         {{ loginError }}
       </div>
 
-      <button 
-        type="submit" 
-        class="btn-signin"
-      >
-        Sign In
-      </button>
+      <button type="submit" class="btn-signin"> Sign In </button>
       
       <a routerLink="/forgot-password" class="forgot-password">Forgot password?</a>
     </form>

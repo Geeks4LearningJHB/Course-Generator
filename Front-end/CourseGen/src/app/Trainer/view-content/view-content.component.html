@@ -1,5 +1,5 @@
 <div class="admin-dashboard-container">
-  <div class="top-nav">
+  <!-- <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
     </div>
@@ -39,19 +39,19 @@
       <button class="back-button" style="background-color: #133B50;" routerLink="/view-courses">
         <span class="icon"></span> Back
       </button>
-    </div>
+    </div> -->
 
     <div class="dash-container-1" [class.shifted]="isCollapsed">
       <div class="form-container">
         <h3 class="form-title">View Modules by Course</h3>
 
         <!-- Dropdown for selecting a course -->
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label for="course-select">Select a Course:</label>
           <select id="course-select" [(ngModel)]="selectedCourse" (change)="selectedCourse && onCourseSelect(selectedCourse)">
             <option *ngFor="let course of courses" [ngValue]="course">{{ course.moduleName }}</option>
           </select>
-        </div>
+        </div> -->
 
         <!-- Displaying units -->
         <!-- <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
@@ -68,21 +68,27 @@
         </div> -->
 
         <div *ngFor="let unit of units; let i = index" class="module-container">
+      <div *ngIf="units.length > 0; else noUnits" class="course-content">
+        <div *ngFor="let unit of units" class="module-container">
           <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
             {{ unit.unitName }}
           </p>
           <ul *ngIf="unit.isExpanded" class="unit-content">
-            <li class="topic" [attr.data-unit-id]="unit.unitId">
+            <li class="topic">
               <p>{{ unit.content }}</p>
             </li>
           </ul>
         </div>
+      </div>
 
-        <ng-template #noUnits>
-          <p>No units available for the selected course.</p>
-        </ng-template>
+      <ng-template #noUnits>
+        <p>No units available for this course.</p>
+      </ng-template>
+    </div>
 
-        <button class="download-button">⬇️ Download Content</button>
+
+
+    <button class="download-button" (click)="downloadPDF()">⬇️ Download Content</button>
         <button class="re-generate-button" (click)="showModifyFields = !showModifyFields">
           🔄 Re-Generate Content
         </button>
@@ -126,6 +132,6 @@
    </div>
    
       </div>
-    </div>
-  </div>
-</div>
+    
+
+<!-- </div> -->

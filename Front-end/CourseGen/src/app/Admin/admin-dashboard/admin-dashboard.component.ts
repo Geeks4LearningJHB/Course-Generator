@@ -1,6 +1,6 @@
 import { Component, HostListener ,OnInit } from '@angular/core';
 import { faHome, faUser, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-
+// import { AuthService } from '../../Services/auth.service';
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
@@ -10,6 +10,12 @@ export class AdminDashboardComponent {
 
   faHome = faHome;
   isCollapsed = true;
+
+  // constructor(public authService: AuthService) {}
+
+  // get isAdmin(): boolean {
+  //   return this.authService.getUserRole() === 'admin';
+  // }
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
