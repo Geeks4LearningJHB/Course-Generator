@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { GenerateContentService } from '../../Services/generate-content.service'; // Adjust import path as needed
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ToggleService } from '../../Services/toggle.service';
 
 @Component({
   selector: 'app-generate-content',
@@ -19,8 +20,15 @@ export class GenerateContentComponent {
 
   constructor(
     private router: Router,
-    private generateContentService: GenerateContentService
+    private generateContentService: GenerateContentService,
+    private toggleService: ToggleService
   ) {}
+
+  ngOnInit(): void {
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
+  }
 
   // Triggered when the form is submitted
   onGenerateCourse() {

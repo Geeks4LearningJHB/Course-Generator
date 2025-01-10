@@ -1,9 +1,11 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '../Services/auth.service';
 import { ToggleService } from '../Services/toggle.service';
+import { Location } from '@angular/common';
+
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -16,11 +18,15 @@ export class NavComponent implements OnInit {
   userRole: string | null = null;
   headerTitle  = 'COURSE GENERATOR';
   showBackButton = true;
+  private previousUrl: string | null = null;
+  private currentUrl: string | null = null;
 
   constructor( private authService: AuthService,
                private toggleService: ToggleService,
                private router: Router,
-               private activatedRoute: ActivatedRoute) { 
+               private activatedRoute: ActivatedRoute,
+              //  private location: Location
+              ) { 
     this.toggleService.isCollapsed$.subscribe(
       (collapsed) => (this.isCollapsed = collapsed)
     );
@@ -39,15 +45,23 @@ export class NavComponent implements OnInit {
         this.headerTitle = currentRoute.snapshot.data['title'] || this.headerTitle;
         this.showBackButton = currentRoute.snapshot.data['showBackButton'] ?? true;
       });
-  }
+
+      // Track previous and current URLs
+    this.router.events
+    .pipe(filter((event) => event instanceof NavigationStart))
+    .subscribe((event: NavigationStart) => {
+      this.previousUrl = this.currentUrl;
+      this.currentUrl = event.url;
+    });
+    }
+
+    
 
   // Navigate to the previous page or a default route
   goBack(): void {
-    if (history.state.navigationId) {
-      this.router.navigate(['-1']);
-    } else {
-      this.router.navigate(['/dashboard']); // Default fallback route
-    }
+    const currentRoute = this.router.routerState.snapshot.root;
+    const previous = currentRoute.firstChild?.data['previous'] || '/dashboard';
+    this.router.navigate([previous]);
   }
 
   // Helper method to get the deepest child route

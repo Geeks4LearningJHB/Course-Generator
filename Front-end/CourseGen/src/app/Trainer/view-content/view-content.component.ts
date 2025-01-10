@@ -3,6 +3,7 @@ import { Unit, ViewContentService } from '../../Services/view-content.service';
 import { Course, ViewCoursesService } from '../../Services/view-courses.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { ToggleService } from '../../Services/toggle.service';
 
 @Component({
   selector: 'app-view-content',
@@ -33,7 +34,8 @@ export class ViewContentComponent implements OnInit {
     private router: Router,
     private viewContentService: ViewContentService,
     private viewCoursesService: ViewCoursesService,
-    private http: HttpClient
+    private http: HttpClient,
+    private toggleService: ToggleService
   ) {
     const nav = this.router.getCurrentNavigation();
     this.generatedData = nav?.extras.state?.['data'];
@@ -56,6 +58,9 @@ export class ViewContentComponent implements OnInit {
       },
       error: (err) => console.error('Error fetching courses', err),
     });
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
   }
   currentUnit: Unit | null = null;
 

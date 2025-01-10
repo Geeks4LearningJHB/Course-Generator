@@ -16,6 +16,7 @@ export class AppComponent {
     ).subscribe(() => {
       const currentUrl = this.router.url;
       this.Exclusion = 
+        currentUrl === '/forgot-password' ||
         currentUrl === '/admin-login' ||
         currentUrl === '/register' ||
         currentUrl === '/login' ||
