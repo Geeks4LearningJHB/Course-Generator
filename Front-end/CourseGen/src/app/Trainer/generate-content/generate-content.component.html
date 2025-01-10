@@ -1,6 +1,6 @@
-<div class="admin-dashboard-container" style="background-color: #e4e9ef;">
-
-  <!-- <div class="top-nav">
+<div class="admin-dashboard-container">
+  <!-- Top Navigation -->
+  <div class="top-nav">
     <div class="logo">
       <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
     </div>
@@ -12,6 +12,7 @@
   </div>
 
   <div class="body">
+    <!-- Sidebar -->
     <div class="sidebar" [class.collapsed]="isCollapsed">
       <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
       <ul>
@@ -35,24 +36,37 @@
       </ul>
     </div>
 
-    <div class="sub-header" [class.shifted]="isCollapsed">
+    <!-- Sub Header -->
+    <div class="sub-header" [class.shifted]="!isCollapsed">
       <h3 class="sub-heading">GENERATE CONTENT</h3>
       <button class="back-button" routerLink="/dashboard">
       <span class="icon"></span> Back </button>
     </div> -->
 
-    <div class="dash-container-1" [class.shifted]="isCollapsed">
+    <!-- Main Content -->
+    <div class="dash-container-1" [class.shifted]="!isCollapsed">
       <div class="form-box" *ngIf="!isLoading">
         <form (ngSubmit)="onGenerateCourse()">
           <div class="form-group">
             <label for="title">Title</label>
-            <input type="text" id="title" [(ngModel)]="courseTitle" name="title" placeholder="Enter course title"
-              required />
+            <input 
+              type="text" 
+              id="title" 
+              [(ngModel)]="courseTitle" 
+              name="title" 
+              placeholder="Enter course title"
+              required 
+            />
           </div>
 
           <div class="form-group">
             <label for="difficulty">Difficulty</label>
-            <select id="difficulty" [(ngModel)]="difficulty" name="difficulty" required>
+            <select 
+              id="difficulty" 
+              [(ngModel)]="difficulty" 
+              name="difficulty" 
+              required
+            >
               <option value="Beginner">Beginner</option>
               <option value="Intermediate">Intermediate</option>
               <option value="Advanced">Advanced</option>
@@ -61,13 +75,20 @@
 
           <div class="form-group">
             <label for="duration">Duration</label>
-            <input type="number" id="duration" [(ngModel)]="duration" name="duration" placeholder="Enter duration"
-              required />
+            <input 
+              type="number" 
+              id="duration" 
+              [(ngModel)]="duration" 
+              name="duration" 
+              placeholder="Enter duration"
+              required 
+            />
           </div>
 
           <div class="gen-content">
-            <button type="submit" class="generate-btn">
-              <span>📋</span> Generate Course
+            <button type="submit" class="generate-btn" [disabled]="isLoading">
+              <span>📋</span> 
+              {{ isLoading ? 'Generating...' : 'Generate Course' }}
             </button>
           </div>
         </form>
@@ -76,11 +97,8 @@
       <!-- Loading State -->
       <div class="loading-box" *ngIf="isLoading">
         <p>Generating course... Please wait.</p>
-        <div class="progress-bar">
-          <div class="progress" [style.width]="progress + '%'"></div>
-        </div>
+        <div class="loader"></div>
       </div>
-
     </div>
   </div>
 <!-- </div> -->

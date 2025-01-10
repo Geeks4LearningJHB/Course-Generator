@@ -1,6 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpErrorResponse, HttpParams  } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +19,36 @@ export class GenerateContentService {
     const { difficulty, duration } = data;
     return this.http.post(`${this.apiUrl}generateCourse`, data);
   }
+ 
+  saveGeneratedCourse(generatedCourseData: any): Observable<any> {
+    // Extract courseId from generatedCourseData
+    const courseId = generatedCourseData.courseId || generatedCourseData.id;
+    
+    // Create HttpParams with courseId
+    const params = new HttpParams().set('courseId', courseId);
 
-  saveGeneratedCourse(courseData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}saveGeneratedCourse?courseId=${courseData}`, courseData);
-    // http://localhost:8080/AI/saveGeneratedCourse?courseId=5171dc23-a14f-4bcc-8107-617e799c34e9
+    // Make the POST request with params
+    return this.http.post(`http://localhost:8080/AI/saveGeneratedCourse`, null, { 
+      params: params,
+      responseType: 'text'
+    }).pipe(
+      catchError(this.handleError)
+    );
   }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'An error occurred';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = error.error.message;
+    } else {
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.error(errorMessage);
+    return throwError(() => new Error(errorMessage));
+  }
+  // saveGeneratedCourse(courseData: any): Observable<any> {
+  //   return this.http.post('http://localhost:8080/AI/saveGeneratedCourse', courseData);
+  // }
   
   // Set the generated course
   setGeneratedCourse(course: any): void {
