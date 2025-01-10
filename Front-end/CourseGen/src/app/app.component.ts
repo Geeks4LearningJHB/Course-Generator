@@ -17,6 +17,7 @@ export class AppComponent {
       const currentUrl = this.router.url;
       this.Exclusion = 
         currentUrl === '/admin-login' ||
+        currentUrl === '/register' ||
         currentUrl === '/login' ||
         currentUrl === '/';
     });
