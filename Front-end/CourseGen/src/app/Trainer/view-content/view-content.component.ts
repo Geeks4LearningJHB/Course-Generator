@@ -75,6 +75,7 @@ export class ViewContentComponent implements AfterViewInit  {
   selectedCourse: Course | null = null;
   generatedData: any;
   courseName: string = '';
+  currentCourseId: string = '';
 
   // Variables for highlighted text and floating button
   highlightedText: string = '';
@@ -96,26 +97,21 @@ export class ViewContentComponent implements AfterViewInit  {
     this.generatedData = nav?.extras.state?.['data'];
   }
  
-    ngAfterViewInit() {
-      const unitElement = document.querySelector('#unit-element');
-      console.log('Unit Element:', unitElement);
-      if (!unitElement) {
-        console.warn('Unit Element is null or undefined.');
-      } else {
-        // Logic for adding event listeners or handling unitElement
-        unitElement.addEventListener('click', () => {
-          console.log('Unit Element clicked!');
-          // Show the button or perform other actions
-        });
-      }
+  ngAfterViewInit() {
+    const unitElement = document.querySelector('#unit-element');
+    if (unitElement) {
+      unitElement.addEventListener('click', () => {
+        console.log('Unit Element clicked!');
+      });
     }
+  }
   
 
   ngOnInit(): void {
-    // Get the courseId from the query parameters
     this.route.queryParams.subscribe((params) => {
       const courseId = params['id'];
       if (courseId) {
+        this.currentCourseId = courseId;
         this.loadCourseContent(courseId);
       } else {
         console.error('No course ID found in query parameters.');
@@ -126,7 +122,7 @@ export class ViewContentComponent implements AfterViewInit  {
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
       next: (course) => {
-        this.courseName = course.moduleName; // Assuming course contains moduleName
+        this.courseName = course.moduleName;
       },
       error: (err) => console.error('Error fetching course details:', err),
     });
@@ -240,9 +236,7 @@ export class ViewContentComponent implements AfterViewInit  {
       next: () => {
         this.isModalVisible = false;
         // Reload the units to show the updated content
-        if (this.selectedCourse) {
-          this.onCourseSelect(this.selectedCourse);
-        }
+        this.loadCourseContent(this.currentCourseId);
       },
       error: (error) => {
         console.error('Error updating unit:', error);
