@@ -54,7 +54,7 @@
         </div>
 
         <!-- Displaying units -->
-        <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
+        <!-- <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
           <div *ngFor="let unit of units; let i = index" class="module-container">
             <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
               {{ unit.unitName }}
@@ -65,7 +65,7 @@
               </li>
             </ul>
           </div>
-        </div>
+        </div> -->
 
         <div *ngFor="let unit of units; let i = index" class="module-container">
           <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
