@@ -66,7 +66,7 @@ export class ViewContentService {
   regenerateText(payload: { highlightedText: string; moduleId: string; unitId: string }) {
     return this.http.post('http://localhost:8080/AI/regenerateText', payload);
   }
-  
+  // http://localhost:8080/AI/regenerateText
 
   confirmUpdate(request: UpdateRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/confirmUpdate`, request);

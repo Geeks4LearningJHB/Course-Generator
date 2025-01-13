@@ -137,16 +137,30 @@ input, textarea {
   list-style: square;
 }
 
-.floating-button{
+.floating-button button{
   margin-bottom: 50%;
 }
 
 
 /*  */
 
+/* .floating-button button{
+  background-color: #133B50;
 
+} */
 
-.floating-button {
+/* .back-button{
+  position: fixed;
+  right: 36px;
+  background-color: #145570;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  height: 30px;
+} */
+
+.floating-button button{
   position: absolute;
   z-index: 2000;
   background-color: #133B50;
@@ -162,7 +176,7 @@ input, textarea {
   transition: background-color 0.3s;
 }
 
-.floating-button:hover {
+.floating-button:hover button{
   background-color: #1c5472;
 }
 

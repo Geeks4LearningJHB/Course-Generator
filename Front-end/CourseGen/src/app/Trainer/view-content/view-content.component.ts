@@ -1,12 +1,12 @@
-import { Component, HostListener, OnInit,AfterViewInit } from '@angular/core';
-import {Unit, ViewContentService } from '../../Services/view-content.service';
+import { Component, HostListener, OnInit, AfterViewInit } from '@angular/core';
+import { Unit, ViewContentService } from '../../Services/view-content.service';
 import {
   Course,
   ViewCoursesService,
 } from '../../Services/view-courses.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas'
 
@@ -64,7 +64,7 @@ export interface ParsedUnit {
   templateUrl: './view-content.component.html',
   styleUrls: ['./view-content.component.css'],
 })
-export class ViewContentComponent implements AfterViewInit  {
+export class ViewContentComponent implements AfterViewInit {
   showModifyFields: boolean = false;
   module: string = '';
   topic: string = '';
@@ -96,7 +96,7 @@ export class ViewContentComponent implements AfterViewInit  {
     const nav = this.router.getCurrentNavigation();
     this.generatedData = nav?.extras.state?.['data'];
   }
- 
+
   ngAfterViewInit() {
     const unitElement = document.querySelector('#unit-element');
     if (unitElement) {
@@ -105,7 +105,7 @@ export class ViewContentComponent implements AfterViewInit  {
       });
     }
   }
-  
+
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -140,83 +140,96 @@ export class ViewContentComponent implements AfterViewInit  {
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     const selection = window.getSelection();
-    console.log('Selection:', selection?.toString());
-  
+    
     if (selection && selection.toString().trim().length > 0) {
       const unitElement = this.findParentUnitElement(
         selection.getRangeAt(0).commonAncestorContainer
       );
-      console.log('Unit Element:', unitElement);
-  
+      
       if (unitElement) {
         const unitId = unitElement.getAttribute('data-unit-id');
-        console.log('Unit ID:', unitId);
-  
+        
         this.currentUnit = this.units.find((u) => u.unitId === unitId) || null;
-  
+        
         if (this.currentUnit) {
           this.highlightedText = selection.toString();
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
-  
+          
           this.buttonPosition = {
             top: `${rect.bottom + window.scrollY + 5}px`,
             left: `${rect.left + window.scrollX}px`,
           };
-  
-          console.log('Button Position:', this.buttonPosition);
+          
           this.showFloatingButton = true;
           return;
         }
       }
     }
-  
+    
     this.showFloatingButton = false;
     this.currentUnit = null;
   }
-  
+
 
   // Helper function to find the parent unit element
   private findParentUnitElement(element: Node): HTMLElement | null {
     let current: Node | null = element;
-
-    // Traverse up the DOM tree to find an element with the attribute 'data-unit-id'
     while (
       current &&
       !(current instanceof HTMLElement && current.hasAttribute('data-unit-id'))
     ) {
       current = current.parentNode;
     }
-
-    // Ensure current is an HTMLElement before returning
     return current instanceof HTMLElement ? current : null;
   }
 
   regenerateSelection() {
-    if (!this.highlightedText || !this.currentUnit || !this.selectedCourse) {
+    if (!this.highlightedText || !this.currentUnit) {
       alert('Please select text within a unit to regenerate.');
       return;
     }
 
+    // Log the current state for debugging
+    console.log('Current Unit:', this.currentUnit);
+    console.log('Highlighted Text:', this.highlightedText);
+    console.log('Current Course ID:', this.currentCourseId);
+
     const requestPayload = {
       highlightedText: this.highlightedText,
-      moduleId: this.selectedCourse.moduleId,
+      moduleId: this.currentCourseId,
       unitId: this.currentUnit.unitId,
       startIndex: this.currentUnit.content.indexOf(this.highlightedText),
-      endIndex:
-        this.currentUnit.content.indexOf(this.highlightedText) +
-        this.highlightedText.length,
+      endIndex: this.currentUnit.content.indexOf(this.highlightedText) + this.highlightedText.length,
     };
+
+    // Log the request payload
+    console.log('Request Payload:', requestPayload);
 
     this.viewContentService.regenerateText(requestPayload).subscribe({
       next: (response: any) => {
+        console.log('Regeneration Response:', response);
         this.regeneratedText = response.regeneratedText;
         this.isModalVisible = true;
       },
-      error: (error) => {
+      error: (error: HttpErrorResponse) => {
         console.error('Error regenerating text:', error);
-        alert('Failed to regenerate content.');
-      },
+        console.error('Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          error: error.error
+        });
+        
+        let errorMessage = 'Failed to regenerate content. ';
+        if (error.error?.message) {
+          errorMessage += error.error.message;
+        } else if (error.status === 500) {
+          errorMessage += 'Internal server error occurred.';
+        }
+        
+        alert(errorMessage);
+      }
     });
   }
 
@@ -235,7 +248,6 @@ export class ViewContentComponent implements AfterViewInit  {
     this.viewContentService.confirmUpdate(request).subscribe({
       next: () => {
         this.isModalVisible = false;
-        // Reload the units to show the updated content
         this.loadCourseContent(this.currentCourseId);
       },
       error: (error) => {
