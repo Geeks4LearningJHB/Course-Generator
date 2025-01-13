@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { GenerateContentService } from '../../Services/generate-content.service'; // Adjust import path as needed
+import { GenerateContentService } from '../../Services/generate-content.service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToggleService } from '../../Services/toggle.service';
@@ -14,21 +14,13 @@ export class GenerateContentComponent {
   difficulty: string = 'Beginner';
   duration: number | null = null;
   isCollapsed = true;
-  progress = 0;
   isLoading = false;
-  courseOutline: string = ''; // Store course outline
+  courseOutline: string = '';
 
   constructor(
     private router: Router,
-    private generateContentService: GenerateContentService,
-    private toggleService: ToggleService
+    private generateContentService: GenerateContentService
   ) {}
-
-  ngOnInit(): void {
-    this.toggleService.isCollapsed$.subscribe(
-      (collapsed) => (this.isCollapsed = collapsed)
-    );
-  }
 
   // Triggered when the form is submitted
   onGenerateCourse() {
@@ -45,30 +37,22 @@ export class GenerateContentComponent {
       duration: this.duration ?? 0
     };
 
-    // Call the backend API to generate the course dynamically
-    this.generateContentService.generateCourse(courseData).subscribe(
-      (response: any) => {
-        // Store the generated course data in the service
+    this.generateContentService.generateCourse(courseData).subscribe({
+      next: (response: any) => {
         this.generateContentService.setGeneratedCourse(response);
-
         this.isLoading = false;
-
-        // Navigate to the view page to show the generated course
         this.router.navigate(['/view-generated-course']);
       },
-      (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse) => {
         console.error('Error generating course:', error);
         this.isLoading = false;
         alert('Failed to generate course.');
       }
-    );
+    });
   }
 
-  // Confirm course generation after viewing the outline
   confirmCourseGeneration() {
-    
-    this.isLoading = true; // Start loading process
-    this.progress = 0;
+    this.isLoading = true;
 
     const courseData = {
       courseTitle: this.courseTitle,
@@ -76,20 +60,17 @@ export class GenerateContentComponent {
       duration: this.duration ?? 0
     };
 
-    this.generateContentService.generateCourse(courseData).subscribe(
-      (response: any) => {
-        this.isLoading = true;
-        this.progress = 100;
-
-        // Navigate to view content
+    this.generateContentService.generateCourse(courseData).subscribe({
+      next: (response: any) => {
+        this.isLoading = false;
         this.router.navigate(['/course-save-component']);
       },
-      (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse) => {
         console.error('Error generating course:', error);
         this.isLoading = false;
         alert('Failed to generate course.');
       }
-    );
+    });
   }
 
   toggleSidebar() {
@@ -99,7 +80,6 @@ export class GenerateContentComponent {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-
     if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
       this.isCollapsed = true;
     }

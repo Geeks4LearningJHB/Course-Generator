@@ -26,7 +26,9 @@ import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view
 import { NavComponent } from './nav/nav.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
-import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
+import { ContentParserService } from './Services/content-parser.service';
+// import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
+// import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
 import { AuthService } from './Services/auth.service';
 
 @NgModule({
@@ -52,7 +54,7 @@ import { AuthService } from './Services/auth.service';
     NavComponent,
     CourseSaveComponent,
     ViewGeneratedCourseComponent,
-    TextRegenerationComponent
+   
   ],
   imports: [
     HttpClientModule,
@@ -65,6 +67,7 @@ import { AuthService } from './Services/auth.service';
   ],
   providers: [
     provideClientHydration(),
+    ContentParserService,
     AuthService
   ],
   bootstrap: [AppComponent]

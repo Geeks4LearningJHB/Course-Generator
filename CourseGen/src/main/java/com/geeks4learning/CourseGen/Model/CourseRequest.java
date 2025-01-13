@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class CourseRequest {
     private String courseTitle;
+    // private String description;
     private String difficulty;
     private Integer duration;
 }

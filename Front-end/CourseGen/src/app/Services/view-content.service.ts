@@ -10,7 +10,26 @@ export interface Unit {
   content: string;
   unitNum: number;
   isExpanded?: boolean;
+  isLoaded?: boolean;
+  moduleName?: string;
+  title?: string;
+  introduction?: string;
+  keyConcepts?: string[];
+  sections?: Section[];
 }
+
+export interface Section {
+  heading: string;
+  content: string | ListItem[];
+}
+
+export interface ListItem {
+  text?: string;
+  subItems?: string[];
+  language?: string;
+  code?: string;
+}
+
 
 export interface RegenerateRequest {
   moduleId: string;
@@ -47,7 +66,7 @@ export class ViewContentService {
   regenerateText(payload: { highlightedText: string; moduleId: string; unitId: string }) {
     return this.http.post('http://localhost:8080/AI/regenerateText', payload);
   }
-  
+  // http://localhost:8080/AI/regenerateText
 
   confirmUpdate(request: UpdateRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/confirmUpdate`, request);
