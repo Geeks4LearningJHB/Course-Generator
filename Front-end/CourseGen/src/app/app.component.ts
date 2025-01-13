@@ -11,15 +11,16 @@ export class AppComponent {
   Exclusion = false;
 
   constructor(private router: Router) {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        const currentUrl = this.router.url;
-        this.Exclusion =
-          currentUrl === '/register' ||
-          currentUrl === '/admin-login' ||
-          currentUrl === '/login' ||
-          currentUrl === '/';
-      });
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const currentUrl = this.router.url;
+      this.Exclusion = 
+        currentUrl === '/forgot-password' ||
+        currentUrl === '/admin-login' ||
+        currentUrl === '/register' ||
+        currentUrl === '/login' ||
+        currentUrl === '/';
+    });
   }
 }

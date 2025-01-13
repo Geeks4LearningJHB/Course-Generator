@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { GenerateContentService } from '../../Services/generate-content.service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ToggleService } from '../../Services/toggle.service';
 
 @Component({
   selector: 'app-generate-content',
@@ -21,6 +22,7 @@ export class GenerateContentComponent {
     private generateContentService: GenerateContentService
   ) {}
 
+  // Triggered when the form is submitted
   onGenerateCourse() {
     if (!this.courseTitle || !this.difficulty || this.duration == null) {
       alert('Please fill in all fields.');

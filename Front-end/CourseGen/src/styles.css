@@ -323,7 +323,7 @@ div.body {
   font-family: Arial, sans-serif;
   font-weight: bold;
   font-size: 32px;
-  margin-left: 260px;
+  margin-left: 300px;
   background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
