@@ -88,10 +88,38 @@
   </div>
 
 
-  <button class="download-button" (click)="downloadPDF()">⬇️ Download Content</button>
-  <button class="re-generate-button" (click)="showModifyFields = !showModifyFields">
-    🔄 Re-Generate Content
+  <button class="download-button" (click)="downloadPDF()" [disabled]="!units || units.length === 0">
+    ⬇️ Download PDF
   </button>
+  <!-- Re-Generate Content Button -->
+<button class="re-generate-button" (click)="toggleRegeneratePopup()">
+  🔄 Re-Generate Content
+</button>
+
+<!-- Modal Popup -->
+<div class="modal" *ngIf="showModifyFields">
+  <div class="modal-content">
+    <h2>Why do you want to re-generate the content?</h2>
+    <form (ngSubmit)="submitReason()">
+      <div>
+        <label for="reason">Reason:</label>
+        <textarea
+          id="reason"
+          [(ngModel)]="regenerationReason"
+          name="reason"
+          rows="4"
+          cols="50"
+          required
+        ></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="submit-button">Submit</button>
+        <button type="button" class="cancel-button" (click)="closePopup()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
   <!-- Floating button to regenerate content -->
   <!-- <button *ngIf="showFloatingButton" class="floating-button" (click)="regenerateSelection()">🔄</button> -->

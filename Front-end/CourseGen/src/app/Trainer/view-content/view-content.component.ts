@@ -76,6 +76,7 @@ export class ViewContentComponent implements AfterViewInit {
   generatedData: any;
   courseName: string = '';
   currentCourseId: string = '';
+  regenerationReason: string = '';
 
   // Variables for highlighted text and floating button
   highlightedText: string = '';
@@ -279,35 +280,118 @@ export class ViewContentComponent implements AfterViewInit {
   }
 
   downloadPDF(): void {
-    const contentElement = document.querySelector('.course-content') as HTMLElement;
-
-    if (contentElement) {
-      html2canvas(contentElement).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 190; // Adjust for A4 width with margins
-        const pageHeight = 295; // A4 page height
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        let heightLeft = imgHeight;
-        let position = 10; // Start position
-
-        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
+    try {
+      // Initialize PDF document
+      const pdf = new jsPDF();
+      
+      // Set initial variables for formatting
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const margin = 20;
+      const contentWidth = pageWidth - (2 * margin);
+      let yPosition = 20;
+  
+      // Add title with null check
+      pdf.setFontSize(20);
+      pdf.setFont('helvetica', 'bold');
+      const title = this.courseName || 'Course Content';
+      pdf.text(title, pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 20;
+  
+      // Check if units exist
+      if (!this.units || this.units.length === 0) {
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text('No content available', margin, yPosition);
+        pdf.save('empty_course.pdf');
+        return;
+      }
+  
+      // Process each unit
+      this.units.forEach((unit, index) => {
+        // Check if we need a new page for the unit
+        if (yPosition > 270) {
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+          yPosition = 20;
         }
-
-        pdf.save('CourseContent.pdf');
+  
+        // Add unit header
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        const unitHeader = `Unit ${index + 1}: ${unit.unitName || 'Untitled Unit'}`;
+        pdf.text(unitHeader, margin, yPosition);
+        yPosition += 10;
+  
+        // Add unit content with proper text wrapping
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'normal');
+        
+        // Handle null or undefined content
+        const content = unit.content || 'No content available';
+        
+        // Split content into paragraphs
+        const paragraphs = content.split('\n').filter((p: string) => p.trim());
+        
+        paragraphs.forEach((paragraph: string) => {
+          // Split paragraph into lines that fit the page width
+          const lines: string[] = pdf.splitTextToSize(paragraph, contentWidth);
+          
+          lines.forEach((line: string) => {
+            // Check if we need a new page
+            if (yPosition > 270) {
+              pdf.addPage();
+              yPosition = 20;
+            }
+            
+            // Add the line of text
+            pdf.text(line, margin, yPosition);
+            yPosition += 7; // Line spacing
+          });
+          
+          yPosition += 5; // Paragraph spacing
+        });
+  
+        yPosition += 10; // Space between units
       });
-    } else {
-      console.error('Content element not found!');
+  
+      // Generate filename with sanitization
+      const filename = `${(this.courseName || 'course').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_content.pdf`;
+      
+      // Save the PDF
+      pdf.save(filename);
+  
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('There was an error generating the PDF. Please try again.');
     }
   }
+
+  toggleRegeneratePopup(): void {
+    this.showModifyFields = !this.showModifyFields;
+  }
+
+  // Close popup without submitting
+  closePopup(): void {
+    this.showModifyFields = false;
+    this.regenerationReason = '';
+  }
+
+  submitReason(): void {
+    if (this.regenerationReason.trim()) {
+      console.log('Reason for Re-Generation:', this.regenerationReason);
+
+      // You can pass this reason to a backend service here
+      // Example:
+      // this.viewContentService.submitRegenerationReason(this.regenerationReason).subscribe(response => {
+      //   console.log('Regeneration reason submitted successfully', response);
+      // });
+
+      alert('Thank you for providing the reason.');
+      this.closePopup();
+    } else {
+      alert('Please provide a reason before submitting.');
+    }
+  }
+
 }
 /*
 const unitElement = document.querySelector('#unit-element');
@@ -315,7 +399,4 @@ console.log('Unit Element:', unitElement);
 if (!unitElement) {
   console.warn('Unit Element is null or undefined.');
 }
-
-
-
 */
