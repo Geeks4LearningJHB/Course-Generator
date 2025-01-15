@@ -97,27 +97,27 @@ export class ViewContentComponent implements AfterViewInit {
     this.generatedData = nav?.extras.state?.['data'];
   }
 
-  ngOnInit(): void {
-    this.viewContentService.getAllUnits().subscribe({
-      next: (data) => {
-        this.units = data.map((unit) => ({ ...unit, isExpanded: false }));
-      },
-      error: (err) => console.error('Error fetching units', err),
-    });
+  // ngOnInit(): void {
+  //   this.viewContentService.getAllUnits().subscribe({
+  //     next: (data) => {
+  //       this.units = data.map((unit) => ({ ...unit, isExpanded: false }));
+  //     },
+  //     error: (err) => console.error('Error fetching units', err),
+  //   });
 
-    this.viewCoursesService.getCourses().subscribe({
-      next: (data) => {
-        this.courses = data;
-        if (this.courses.length > 0) {
-          this.selectedCourse = null;
-        }
-      },
-      error: (err) => console.error('Error fetching courses', err),
-    });
-    this.toggleService.isCollapsed$.subscribe(
-      (collapsed) => (this.isCollapsed = collapsed)
-    );
-  }
+  //   this.viewCoursesService.getCourses().subscribe({
+  //     next: (data) => {
+  //       this.courses = data;
+  //       if (this.courses.length > 0) {
+  //         this.selectedCourse = null;
+  //       }
+  //     },
+  //     error: (err) => console.error('Error fetching courses', err),
+  //   });
+  //   this.toggleService.isCollapsed$.subscribe(
+  //     (collapsed) => (this.isCollapsed = collapsed)
+  //   );
+  // }
   currentUnit: Unit | null = null;
 
 //   @HostListener('window:mouseup', ['$event'])
@@ -136,17 +136,17 @@ export class ViewContentComponent implements AfterViewInit {
   }
 
 
-  // ngOnInit(): void {
-  //   this.route.queryParams.subscribe((params) => {
-  //     const courseId = params['id'];
-  //     if (courseId) {
-  //       this.currentCourseId = courseId;
-  //       this.loadCourseContent(courseId);
-  //     } else {
-  //       console.error('No course ID found in query parameters.');
-  //     }
-  //   });
-  // }
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const courseId = params['id'];
+      if (courseId) {
+        this.currentCourseId = courseId;
+        this.loadCourseContent(courseId);
+      } else {
+        console.error('No course ID found in query parameters.');
+      }
+    });
+  }
 
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
