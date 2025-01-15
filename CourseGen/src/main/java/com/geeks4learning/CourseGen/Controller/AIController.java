@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geeks4learning.CourseGen.DTOs.HighlightRequestDTO;
 import com.geeks4learning.CourseGen.DTOs.UpdateRequestDTO;
 import com.geeks4learning.CourseGen.DTOs.PromtDTO;
+import com.geeks4learning.CourseGen.DTOs.RegenerationRequestsDTO;
 import com.geeks4learning.CourseGen.Entities.Activity;
 import com.geeks4learning.CourseGen.Entities.Assessment;
 import com.geeks4learning.CourseGen.Entities.CourseModule;
@@ -335,29 +336,27 @@ public class AIController {
             Optional<CourseModule> optionalModule = moduleRepository.findById(requestDTO.getModuleId());
             if (optionalModule.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Module not found."));
+                        .body(Map.of("error", "Module not found."));
             }
-            
+
             Optional<Unit> optionalUnit = unitRepository.findById(requestDTO.getUnitId());
             if (optionalUnit.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Unit not found."));
+                        .body(Map.of("error", "Unit not found."));
             }
-            
+
             String prompt = "Rewrite the following content: " + requestDTO.getHighlightedText();
             String regeneratedText = respondToPrompt(prompt);
-            
+
             return ResponseEntity.ok(Map.of(
-                "regeneratedText", regeneratedText,
-                "startIndex", String.valueOf(requestDTO.getStartIndex()),
-                "endIndex", String.valueOf(requestDTO.getEndIndex())
-            ));
+                    "regeneratedText", regeneratedText,
+                    "startIndex", String.valueOf(requestDTO.getStartIndex()),
+                    "endIndex", String.valueOf(requestDTO.getEndIndex())));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Error regenerating text: " + e.getMessage()));
+                    .body(Map.of("error", "Error regenerating text: " + e.getMessage()));
         }
     }
-
 
     @PostMapping("/confirmUpdate")
     public ResponseEntity<Map<String, String>> confirmUpdate(
@@ -369,18 +368,18 @@ public class AIController {
                 response.put("error", "Unit not found with ID: " + updateDTO.getUnitId());
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
-            
+
             Unit unit = optionalUnit.get();
             String currentContent = unit.getContent();
-            
+
             // Replace only the highlighted portion with regenerated text
             String updatedContent = currentContent.substring(0, updateDTO.getStartIndex()) +
-                                  updateDTO.getRegeneratedText() +
-                                  currentContent.substring(updateDTO.getEndIndex());
-            
+                    updateDTO.getRegeneratedText() +
+                    currentContent.substring(updateDTO.getEndIndex());
+
             unit.setContent(updatedContent);
             unitService.saveUnit(unit);
-            
+
             Map<String, String> response = new HashMap<>();
             response.put("message", "Unit updated successfully.");
             return ResponseEntity.ok(response);
@@ -390,10 +389,58 @@ public class AIController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    
 
+    @PostMapping("/regenerateUnitWithReason")
+public ResponseEntity<Map<String, String>> regenerateUnitWithReason(@RequestBody RegenerationRequestsDTO requestDTO) {
+    try {
+        // Find the module by its ID (as a String)
+        Optional<CourseModule> optionalModule = moduleRepository.findById(requestDTO.getModuleId());
+        if (optionalModule.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Module not found."));
+        }
 
-    
+        // Find the unit by its ID (as a String)
+        Optional<Unit> optionalUnit = unitRepository.findById(requestDTO.getUnitId());
+        if (optionalUnit.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Unit not found."));
+        }
+
+        // Validate the reason
+        if (requestDTO.getReason() == null || requestDTO.getReason().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Reason for regeneration is required."));
+        }
+
+        // Generate the prompt
+        String prompt = String.format(
+            "Rewrite the content for the unit '%s' under the module '%s' for the following reason: %s",
+            optionalUnit.get().getUnitName(),
+            optionalModule.get().getModuleName(),
+            requestDTO.getReason()
+        );
+
+        // Call ChatGPT to regenerate text
+        String regeneratedText = respondToPrompt(prompt);
+
+        // Save or process the regenerated text as needed
+        Unit unit = optionalUnit.get();
+        unit.setContent(sanitizeText(regeneratedText));
+        unitRepository.save(unit);
+
+        // Return the response
+        return ResponseEntity.ok(Map.of(
+            "message", "Unit content regenerated successfully.",
+            "unitId", unit.getUnitId(),
+            "regeneratedContent", regeneratedText
+        ));
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of("error", "Error regenerating unit content: " + e.getMessage()));
+    }
+}
+
 
     @GetMapping("/getAllModules")
     public List<CourseModule> getAllCourseModules() {
@@ -401,9 +448,10 @@ public class AIController {
     }
 
     @GetMapping("/getModuleById")
-    public Optional<CourseModule> getModuleById(@RequestParam String id){
+    public Optional<CourseModule> getModuleById(@RequestParam String id) {
         return moduleService.findCourseModuleById(id);
     }
+
     @GetMapping("/getAllUnits")
     public List<Unit> getAllUnits() {
         return unitService.getAllUnits();

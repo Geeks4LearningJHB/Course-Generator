@@ -75,6 +75,8 @@ export class ViewContentComponent implements AfterViewInit {
   courseName: string = '';
   currentCourseId: string = '';
   regenerationReason: string = '';
+  selectedUnit: string = '';
+  reason: string = '';
 
   // Variables for highlighted text and floating button
   highlightedText: string = '';
@@ -82,6 +84,7 @@ export class ViewContentComponent implements AfterViewInit {
   highlightedTextRange: any = null;
   buttonPosition: { top: string; left: string } = { top: '0px', left: '0px' }; // Define button position
   isModalVisible: boolean = false;
+  isRegenerateModalVisible: boolean = false;
   selectedText: string = '';
   regeneratedText: string = '';
   currentUnit: Unit | null = null;
@@ -126,6 +129,8 @@ ngAfterViewInit() {
     this.toggleService.isCollapsed$.subscribe(
       (collapsed) => (this.isCollapsed = collapsed)
     );
+
+    this.getUnits();
   }
 
   loadCourseContent(courseId: string): void {
@@ -373,8 +378,8 @@ ngAfterViewInit() {
     }
   }
 
-  toggleRegeneratePopup(): void {
-    this.showModifyFields = !this.showModifyFields;
+  showRegenerateForm() {
+    this.isRegenerateModalVisible = true;
   }
 
   closePopup(): void {
@@ -396,6 +401,31 @@ ngAfterViewInit() {
     } else {
       alert('Please provide a reason before submitting.');
     }
+  }
+
+  getUnits() {
+    this.viewContentService.getAllUnits().subscribe((response: Unit[]) => {
+      this.units = response;
+    });
+  }
+
+  onSubmit() {
+    const requestBody = {
+      unitId: this.selectedUnit,
+      reason: this.reason
+    };
+
+    this.viewContentService.regenerateUnit(requestBody).subscribe(
+      (response) => {
+        console.log('Unit regeneration successful!', response);
+        this.isModalVisible = false;  // Hide modal after success
+        // You can add additional logic to notify the user of success
+      },
+      (error) => {
+        console.error('Error regenerating unit', error);
+        // Add additional error handling logic as needed
+      }
+    );
   }
 
 }

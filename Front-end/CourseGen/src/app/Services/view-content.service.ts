@@ -50,6 +50,8 @@ export interface UpdateRequest {
   providedIn: 'root'
 })
 export class ViewContentService {
+
+ 
   private apiUrl = 'http://localhost:8080/AI';
 
   constructor(private http: HttpClient) { }
@@ -57,6 +59,11 @@ export class ViewContentService {
   getAllUnits(): Observable<Unit[]> {
     return this.http.get<Unit[]>(`${this.apiUrl}/getAllUnits`);
   }
+
+  regenerateUnit(requestBody: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/regenerateUnitWithReason`, requestBody);
+  }
+  // http://localhost:8080/AI/regenerateUnitWithReason
 
   getUnitsByModules(moduleId: string): Observable<Unit[]> {
     console.log('Fetching units for moduleId:', moduleId);

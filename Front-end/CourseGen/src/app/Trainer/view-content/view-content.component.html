@@ -29,34 +29,36 @@
     ⬇️ Download PDF
   </button>
   <!-- Re-Generate Content Button -->
-  <button class="re-generate-button" (click)="toggleRegeneratePopup()">
+  <button class="re-generate-button" (click)="showRegenerateForm()">
     🔄 Re-Generate Content
   </button>
 
-  <!-- Modal Popup -->
-  <div class="modal" *ngIf="showModifyFields">
-    <div class="modal-content">
-      <h2>Why do you want to re-generate the content?</h2>
-      <form (ngSubmit)="submitReason()">
-        <div>
-          <label for="reason">Reason:</label>
-          <textarea
-            id="reason"
-            [(ngModel)]="regenerationReason"
-            name="reason"
-            rows="4"
-            cols="50"
-            required
-          ></textarea>
-        </div>
-        <div class="modal-actions">
-          <button type="submit" class="submit-button">Submit</button>
-          <button type="button" class="cancel-button" (click)="closePopup()">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
+ <!-- Modal for Regeneration Form -->
+ <div class="modal-overlay" *ngIf="isRegenerateModalVisible">
+  <div class="modal-content">
+    <h3 class="modal-title">Regenerate Unit</h3>
+
+    <form (ngSubmit)="onSubmit()" #regenerateForm="ngForm">
+      <div class="form-group">
+        <label for="unit">Select Unit</label>
+        <select id="unit" name="unit" [(ngModel)]="selectedUnit" required>
+          <option *ngFor="let unit of units" [value]="unit.unitId">{{ unit.unitName }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="reason">Reason for Regeneration</label>
+        <textarea id="reason" name="reason" [(ngModel)]="reason" required></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
+        <button class="confirm-button" [disabled]="!regenerateForm.form.valid" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
   <!-- Floating button to regenerate content -->
@@ -69,6 +71,8 @@
       Regenerate
     </button>
   </div>
+
+   
 
   <div class="modal-overlay" *ngIf="isModalVisible">
     <div class="modal-content">
