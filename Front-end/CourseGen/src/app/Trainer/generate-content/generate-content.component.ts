@@ -19,7 +19,8 @@ export class GenerateContentComponent {
 
   constructor(
     private router: Router,
-    private generateContentService: GenerateContentService
+    private generateContentService: GenerateContentService,
+    private toggleService: ToggleService
   ) {}
 
   // Triggered when the form is submitted
@@ -51,6 +52,12 @@ export class GenerateContentComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
+  }
+
   confirmCourseGeneration() {
     this.isLoading = true;
 
@@ -73,9 +80,9 @@ export class GenerateContentComponent {
     });
   }
 
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
-  }
+  // toggleSidebar() {
+  //   this.isCollapsed = !this.isCollapsed;
+  // }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

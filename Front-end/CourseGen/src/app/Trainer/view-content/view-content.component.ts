@@ -84,6 +84,7 @@ export class ViewContentComponent implements AfterViewInit {
   isModalVisible: boolean = false;
   selectedText: string = '';
   regeneratedText: string = '';
+  currentUnit: Unit | null = null;
 
   constructor(
     private router: Router,
@@ -97,56 +98,35 @@ export class ViewContentComponent implements AfterViewInit {
     this.generatedData = nav?.extras.state?.['data'];
   }
 
-  // ngOnInit(): void {
-  //   this.viewContentService.getAllUnits().subscribe({
-  //     next: (data) => {
-  //       this.units = data.map((unit) => ({ ...unit, isExpanded: false }));
-  //     },
-  //     error: (err) => console.error('Error fetching units', err),
-  //   });
-
-  //   this.viewCoursesService.getCourses().subscribe({
-  //     next: (data) => {
-  //       this.courses = data;
-  //       if (this.courses.length > 0) {
-  //         this.selectedCourse = null;
-  //       }
-  //     },
-  //     error: (err) => console.error('Error fetching courses', err),
-  //   });
-  //   this.toggleService.isCollapsed$.subscribe(
-  //     (collapsed) => (this.isCollapsed = collapsed)
-  //   );
-  // }
-  currentUnit: Unit | null = null;
-
-//   @HostListener('window:mouseup', ['$event'])
-// onMouseUp(event: MouseEvent) {
-//   const selection = window.getSelection();
-//   if (selection && selection.toString().trim().length > 0) {
-//     const unitElement = this.findParentUnitElement(selection.getRangeAt(0).commonAncestorContainer);
-
-  ngAfterViewInit() {
-    const unitElement = document.querySelector('#unit-element');
-    if (unitElement) {
-      unitElement.addEventListener('click', () => {
-        console.log('Unit Element clicked!');
-      });
-    }
+ngAfterViewInit() {
+  const unitElement = document.querySelector('#unit-element');
+  console.log('Unit Element:', unitElement);
+  if (!unitElement) {
+    console.warn('Unit Element is null or undefined.');
+  } else {
+    // Logic for adding event listeners or handling unitElement
+    unitElement.addEventListener('click', () => {
+      console.log('Unit Element clicked!');
+      // Show the button or perform other actions
+    });
   }
+}
 
 
-  // ngOnInit(): void {
-  //   this.route.queryParams.subscribe((params) => {
-  //     const courseId = params['id'];
-  //     if (courseId) {
-  //       this.currentCourseId = courseId;
-  //       this.loadCourseContent(courseId);
-  //     } else {
-  //       console.error('No course ID found in query parameters.');
-  //     }
-  //   });
-  // }
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const courseId = params['id'];
+      if (courseId) {
+        this.currentCourseId = courseId;
+        this.loadCourseContent(courseId);
+      } else {
+        console.error('No course ID found in query parameters.');
+      }
+    });
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
+  }
 
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
@@ -169,33 +149,33 @@ export class ViewContentComponent implements AfterViewInit {
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     const selection = window.getSelection();
-    
+
     if (selection && selection.toString().trim().length > 0) {
       const unitElement = this.findParentUnitElement(
         selection.getRangeAt(0).commonAncestorContainer
       );
-      
+
       if (unitElement) {
         const unitId = unitElement.getAttribute('data-unit-id');
-        
+
         this.currentUnit = this.units.find((u) => u.unitId === unitId) || null;
-        
+
         if (this.currentUnit) {
           this.highlightedText = selection.toString();
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
-          
+
           this.buttonPosition = {
             top: `${rect.bottom + window.scrollY + 5}px`,
             left: `${rect.left + window.scrollX}px`,
           };
-          
+
           this.showFloatingButton = true;
           return;
         }
       }
     }
-    
+
     this.showFloatingButton = false;
     this.currentUnit = null;
   }
@@ -249,14 +229,14 @@ export class ViewContentComponent implements AfterViewInit {
           message: error.message,
           error: error.error
         });
-        
+
         let errorMessage = 'Failed to regenerate content. ';
         if (error.error?.message) {
           errorMessage += error.error.message;
         } else if (error.status === 500) {
           errorMessage += 'Internal server error occurred.';
         }
-        
+
         alert(errorMessage);
       }
     });
@@ -311,20 +291,20 @@ export class ViewContentComponent implements AfterViewInit {
     try {
       // Initialize PDF document
       const pdf = new jsPDF();
-      
+
       // Set initial variables for formatting
       const pageWidth = pdf.internal.pageSize.getWidth();
       const margin = 20;
       const contentWidth = pageWidth - (2 * margin);
       let yPosition = 20;
-  
+
       // Add title with null check
       pdf.setFontSize(20);
       pdf.setFont('helvetica', 'bold');
       const title = this.courseName || 'Course Content';
       pdf.text(title, pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
-  
+
       // Check if units exist
       if (!this.units || this.units.length === 0) {
         pdf.setFontSize(12);
@@ -333,7 +313,7 @@ export class ViewContentComponent implements AfterViewInit {
         pdf.save('empty_course.pdf');
         return;
       }
-  
+
       // Process each unit
       this.units.forEach((unit, index) => {
         // Check if we need a new page for the unit
@@ -341,52 +321,52 @@ export class ViewContentComponent implements AfterViewInit {
           pdf.addPage();
           yPosition = 20;
         }
-  
+
         // Add unit header
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
         const unitHeader = `Unit ${index + 1}: ${unit.unitName || 'Untitled Unit'}`;
         pdf.text(unitHeader, margin, yPosition);
         yPosition += 10;
-  
+
         // Add unit content with proper text wrapping
         pdf.setFontSize(12);
         pdf.setFont('helvetica', 'normal');
-        
+
         // Handle null or undefined content
         const content = unit.content || 'No content available';
-        
+
         // Split content into paragraphs
         const paragraphs = content.split('\n').filter((p: string) => p.trim());
-        
+
         paragraphs.forEach((paragraph: string) => {
           // Split paragraph into lines that fit the page width
           const lines: string[] = pdf.splitTextToSize(paragraph, contentWidth);
-          
+
           lines.forEach((line: string) => {
             // Check if we need a new page
             if (yPosition > 270) {
               pdf.addPage();
               yPosition = 20;
             }
-            
+
             // Add the line of text
             pdf.text(line, margin, yPosition);
             yPosition += 7; // Line spacing
           });
-          
+
           yPosition += 5; // Paragraph spacing
         });
-  
+
         yPosition += 10; // Space between units
       });
-  
+
       // Generate filename with sanitization
       const filename = `${(this.courseName || 'course').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_content.pdf`;
-      
+
       // Save the PDF
       pdf.save(filename);
-  
+
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('There was an error generating the PDF. Please try again.');
@@ -397,10 +377,8 @@ export class ViewContentComponent implements AfterViewInit {
     this.showModifyFields = !this.showModifyFields;
   }
 
-  // Close popup without submitting
   closePopup(): void {
-    this.showModifyFields = false;
-    this.regenerationReason = '';
+    this.showModifyFields = false;  // Close the modal when cancel is clicked
   }
 
   submitReason(): void {

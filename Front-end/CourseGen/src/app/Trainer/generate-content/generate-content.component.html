@@ -2,27 +2,27 @@
   <!-- Top Navigation -->
 
     <!-- Main Content -->
-    <div class="dash-container-1" [class.shifted]="!isCollapsed">
+    <div class="dash-container-1" [class.shifted]="isCollapsed">
       <div class="form-box" *ngIf="!isLoading">
         <form (ngSubmit)="onGenerateCourse()">
           <div class="form-group">
             <label for="title">Title</label>
-            <input 
-              type="text" 
-              id="title" 
-              [(ngModel)]="courseTitle" 
-              name="title" 
+            <input
+              type="text"
+              id="title"
+              [(ngModel)]="courseTitle"
+              name="title"
               placeholder="Enter course title"
-              required 
+              required
             />
           </div>
 
           <div class="form-group">
             <label for="difficulty">Difficulty</label>
-            <select 
-              id="difficulty" 
-              [(ngModel)]="difficulty" 
-              name="difficulty" 
+            <select
+              id="difficulty"
+              [(ngModel)]="difficulty"
+              name="difficulty"
               required
             >
               <option value="Beginner">Beginner</option>
@@ -33,19 +33,19 @@
 
           <div class="form-group">
             <label for="duration">Duration</label>
-            <input 
-              type="number" 
-              id="duration" 
-              [(ngModel)]="duration" 
-              name="duration" 
+            <input
+              type="number"
+              id="duration"
+              [(ngModel)]="duration"
+              name="duration"
               placeholder="Enter duration in months"
-              required 
+              required
             />
           </div>
 
           <div class="gen-content">
             <button type="submit" class="generate-btn" [disabled]="isLoading">
-              <span>📋</span> 
+              <span>📋</span>
               {{ isLoading ? 'Generating...' : 'Generate Course' }}
             </button>
           </div>

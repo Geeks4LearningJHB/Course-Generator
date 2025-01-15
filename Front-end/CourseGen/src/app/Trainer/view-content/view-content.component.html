@@ -1,57 +1,8 @@
 <div class="admin-dashboard-container">
-  <!-- <div class="top-nav">
-    <div class="logo">
-      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
-    </div>
-    <div class="nav-right">
-      <button class="profile-btn">
-        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
-      </button>
-    </div>
-  </div>
-
-  <div class="body">
-    <div class="sidebar" [class.collapsed]="isCollapsed">
-      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-      <ul>
-        <li>
-          <i class="icon fa fa-home"></i>
-          <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
-        </li>
-        <li>
-          <i class="icon fas fa-book"></i>
-          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-          <i class="icon fas fa-file-alt"></i>
-          <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
-        </li>
-        <hr class="divider" />
-        <li>
-          <i class="icon fas fa-sign-out-alt"></i>
-          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-        </li>
-      </ul>
-    </div>
-
-    <div class="sub-header" [class.shifted]="isCollapsed">
-      <h3 class="sub-heading">VIEW CONTENT</h3>
-      <button class="back-button" style="background-color: #133B50;" routerLink="/view-courses">
-        <span class="icon"></span> Back
-      </button>
-    </div> -->
 
   <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="form-container">
       <h3 class="form-title">View Modules by Course</h3>
-
-      <!-- Dropdown for selecting a course -->
-      <!-- <div class="form-group">
-          <label for="course-select">Select a Course:</label>
-          <select id="course-select" [(ngModel)]="selectedCourse" (change)="selectedCourse && onCourseSelect(selectedCourse)">
-            <option *ngFor="let course of courses" [ngValue]="course">{{ course.moduleName }}</option>
-          </select>
-        </div> -->
 
       <!-- Displaying units -->
       <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
@@ -67,20 +18,6 @@
         </div>
       </div>
 
-      <!-- <div *ngFor="let unit of units; let i = index" class="module-container"> -->
-      <!-- <div *ngIf="units.length > 0; else noUnits" class="course-content">
-        <div *ngFor="let unit of units" class="module-container">
-          <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
-            {{ unit.unitName }}
-          </p>
-          <ul *ngIf="unit.isExpanded" class="unit-content">
-            <li class="topic">
-              <p>{{ unit.content }}</p>
-            </li>
-          </ul>
-        </div>
-      </div> -->
-
       <ng-template #noUnits>
         <p>No units available for this course.</p>
       </ng-template>
@@ -92,33 +29,34 @@
     ⬇️ Download PDF
   </button>
   <!-- Re-Generate Content Button -->
-<button class="re-generate-button" (click)="toggleRegeneratePopup()">
-  🔄 Re-Generate Content
-</button>
+  <button class="re-generate-button" (click)="toggleRegeneratePopup()">
+    🔄 Re-Generate Content
+  </button>
 
-<!-- Modal Popup -->
-<div class="modal" *ngIf="showModifyFields">
-  <div class="modal-content">
-    <h2>Why do you want to re-generate the content?</h2>
-    <form (ngSubmit)="submitReason()">
-      <div>
-        <label for="reason">Reason:</label>
-        <textarea
-          id="reason"
-          [(ngModel)]="regenerationReason"
-          name="reason"
-          rows="4"
-          cols="50"
-          required
-        ></textarea>
-      </div>
-      <div class="modal-actions">
-        <button type="submit" class="submit-button">Submit</button>
-        <button type="button" class="cancel-button" (click)="closePopup()">Cancel</button>
-      </div>
-    </form>
+  <!-- Modal Popup -->
+  <div class="modal" *ngIf="showModifyFields">
+    <div class="modal-content">
+      <h2>Why do you want to re-generate the content?</h2>
+      <form (ngSubmit)="submitReason()">
+        <div>
+          <label for="reason">Reason:</label>
+          <textarea
+            id="reason"
+            [(ngModel)]="regenerationReason"
+            name="reason"
+            rows="4"
+            cols="50"
+            required
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="submit-button">Submit</button>
+          <button type="button" class="cancel-button" (click)="closePopup()">Cancel</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+
 
 
   <!-- Floating button to regenerate content -->
