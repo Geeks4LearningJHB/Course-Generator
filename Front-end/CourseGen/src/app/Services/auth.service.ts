@@ -8,17 +8,23 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  // private apiUrlAdmin = 'http://localhost:8080/Adminlogin';
-  // private apiUrlTrainer = 'http://localhost:8080/Trainerlogin';
 
   private userRoleSubject = new BehaviorSubject<string | null>(this.getUserRole());
   userRole$ = this.userRoleSubject.asObservable();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient, private router: Router) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private http: HttpClient, private router: Router) {
+
+    if (isPlatformBrowser(this.platformId)) {
+      const savedRole = sessionStorage.getItem('userRole');
+      if (savedRole) {
+        this.userRoleSubject.next(savedRole);
+      }
+    }
+  }
 
   setUserRole(role: string): void {
     if (isPlatformBrowser(this.platformId)) {
-    localStorage.setItem('userRole', role); // Persist role
+      sessionStorage.setItem('userRole', role); // Persist role
   }
   this.userRoleSubject.next(role);
 }
@@ -26,7 +32,7 @@ export class AuthService {
   // Get the user role
   getUserRole(): string | null {
     if (isPlatformBrowser(this.platformId)) {
-    return localStorage.getItem('userRole');
+    return sessionStorage.getItem('userRole');
   }
   return null 
 }
@@ -34,7 +40,7 @@ export class AuthService {
   // Clear the user role (e.g., on logout)
   clearUserRole(): void {
     if (isPlatformBrowser(this.platformId)) {
-    localStorage.removeItem('userRole');
+      sessionStorage.removeItem('userRole');
   }
   this.userRoleSubject.next(null);
 }

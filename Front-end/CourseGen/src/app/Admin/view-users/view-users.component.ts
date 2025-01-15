@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { UserManagementService } from '../../Services/user-management.service';
 import { TrainerDTO } from '../dtos/TrainerDTO';
+import { ToggleService } from '../../Services/toggle.service';
 
 @Component({
   selector: 'app-view-users',
@@ -12,10 +13,13 @@ export class ViewUsersComponent implements OnInit {
   selectedTrainer: TrainerDTO | null = null;
   isCollapsed = true;
 
-  constructor(private userManagementService: UserManagementService) {}
+  constructor(private userManagementService: UserManagementService, private toggleService: ToggleService) {}
 
   ngOnInit(): void {
     this.fetchTrainers();
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
   }
 
   // Fetch trainers from the backend and assign to 'trainers'

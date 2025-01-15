@@ -1,9 +1,7 @@
 import { Component, HostListener, OnInit, AfterViewInit } from '@angular/core';
 import { Unit, ViewContentService } from '../../Services/view-content.service';
-import {
-  Course,
-  ViewCoursesService,
-} from '../../Services/view-courses.service';
+import { Course, ViewCoursesService } from '../../Services/view-courses.service';
+import { ToggleService } from '../../Services/toggle.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -92,11 +90,41 @@ export class ViewContentComponent implements AfterViewInit {
     private viewContentService: ViewContentService,
     private route: ActivatedRoute,
     private viewCoursesService: ViewCoursesService,
-    private http: HttpClient
+    private http: HttpClient,
+    private toggleService: ToggleService
   ) {
     const nav = this.router.getCurrentNavigation();
     this.generatedData = nav?.extras.state?.['data'];
   }
+
+  ngOnInit(): void {
+    this.viewContentService.getAllUnits().subscribe({
+      next: (data) => {
+        this.units = data.map((unit) => ({ ...unit, isExpanded: false }));
+      },
+      error: (err) => console.error('Error fetching units', err),
+    });
+
+    this.viewCoursesService.getCourses().subscribe({
+      next: (data) => {
+        this.courses = data;
+        if (this.courses.length > 0) {
+          this.selectedCourse = null;
+        }
+      },
+      error: (err) => console.error('Error fetching courses', err),
+    });
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
+  }
+  currentUnit: Unit | null = null;
+
+//   @HostListener('window:mouseup', ['$event'])
+// onMouseUp(event: MouseEvent) {
+//   const selection = window.getSelection();
+//   if (selection && selection.toString().trim().length > 0) {
+//     const unitElement = this.findParentUnitElement(selection.getRangeAt(0).commonAncestorContainer);
 
   ngAfterViewInit() {
     const unitElement = document.querySelector('#unit-element');
@@ -108,17 +136,17 @@ export class ViewContentComponent implements AfterViewInit {
   }
 
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      const courseId = params['id'];
-      if (courseId) {
-        this.currentCourseId = courseId;
-        this.loadCourseContent(courseId);
-      } else {
-        console.error('No course ID found in query parameters.');
-      }
-    });
-  }
+  // ngOnInit(): void {
+  //   this.route.queryParams.subscribe((params) => {
+  //     const courseId = params['id'];
+  //     if (courseId) {
+  //       this.currentCourseId = courseId;
+  //       this.loadCourseContent(courseId);
+  //     } else {
+  //       console.error('No course ID found in query parameters.');
+  //     }
+  //   });
+  // }
 
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
@@ -136,7 +164,7 @@ export class ViewContentComponent implements AfterViewInit {
     });
   }
 
-  currentUnit: Unit | null = null;
+  // currentUnit: Unit | null = null;
 
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
