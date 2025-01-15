@@ -136,17 +136,17 @@ export class ViewContentComponent implements AfterViewInit {
   }
 
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      const courseId = params['id'];
-      if (courseId) {
-        this.currentCourseId = courseId;
-        this.loadCourseContent(courseId);
-      } else {
-        console.error('No course ID found in query parameters.');
-      }
-    });
-  }
+  // ngOnInit(): void {
+  //   this.route.queryParams.subscribe((params) => {
+  //     const courseId = params['id'];
+  //     if (courseId) {
+  //       this.currentCourseId = courseId;
+  //       this.loadCourseContent(courseId);
+  //     } else {
+  //       console.error('No course ID found in query parameters.');
+  //     }
+  //   });
+  // }
 
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
