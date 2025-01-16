@@ -3,8 +3,24 @@
   <div class="dash-container-1" [class.shifted]="isCollapsed">
     <div class="form-container">
       <h3 class="form-title">View Modules by Course</h3>
-
-      <!-- Displaying units -->
+<!-- Displaying units -->
+<div *ngIf="units && units.length > 0; else noUnits" class="course-content">
+  <div *ngFor="let unit of units" class="module-container" [attr.data-unit-id]="unit.unitId">
+    <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
+      {{ unit.unitName }}
+    </p>
+    <ul *ngIf="unit.isExpanded" class="unit-content">
+      <li class="topic">
+        <p>{{ unit.content }}</p>
+      </li>
+      <!-- Regenerate Button -->
+      <li class="regenerate-button">
+        <button (click)="regenerateUnit(unit)">Regenerate</button>
+      </li>
+    </ul>
+  </div>
+</div>
+      <!-- Displaying units
       <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
         <div *ngFor="let unit of units" class="module-container" [attr.data-unit-id]="unit.unitId">
           <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
@@ -16,7 +32,7 @@
             </li>
           </ul>
         </div>
-      </div>
+      </div> -->
 
       <ng-template #noUnits>
         <p>No units available for this course.</p>

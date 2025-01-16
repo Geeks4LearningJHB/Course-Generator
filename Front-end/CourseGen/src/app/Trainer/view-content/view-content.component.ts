@@ -7,6 +7,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas'
+import { GenerateContentService } from '../../Services/generate-content.service';
 
 export interface ListItem {
   text?: string;
@@ -29,33 +30,6 @@ export interface ParsedUnit {
   isLoaded?: boolean;
 }
 
-// interface Section {
-//   heading: string;
-//   content: string | string[] | CodeBlock[] | ListItem[];
-// }
-
-// interface CodeBlock {
-//   language: string;
-//   code: string;
-// }
-
-// interface ListItem {
-//   text: string;
-//   subItems?: string[];
-// }
-
-// interface UnitWithState extends Unit {
-//   isExpanded?: boolean;
-//   isLoaded?: boolean;
-// }
-
-// interface UnitContent {
-//   title: string;
-//   introduction: string;
-//   keyConcepts: string[];
-//   sections: Section[];
-//   isLoaded: boolean;
-// }
 
 @Component({
   selector: 'app-view-content',
@@ -92,7 +66,8 @@ export class ViewContentComponent implements AfterViewInit {
     private route: ActivatedRoute,
     private viewCoursesService: ViewCoursesService,
     private http: HttpClient,
-    private toggleService: ToggleService
+    private toggleService: ToggleService,
+    private generateContentService : GenerateContentService
   ) {
     const nav = this.router.getCurrentNavigation();
     this.generatedData = nav?.extras.state?.['data'];
@@ -385,11 +360,6 @@ ngAfterViewInit() {
     if (this.regenerationReason.trim()) {
       console.log('Reason for Re-Generation:', this.regenerationReason);
 
-      // You can pass this reason to a backend service here
-      // Example:
-      // this.viewContentService.submitRegenerationReason(this.regenerationReason).subscribe(response => {
-      //   console.log('Regeneration reason submitted successfully', response);
-      // });
 
       alert('Thank you for providing the reason.');
       this.closePopup();
@@ -397,12 +367,26 @@ ngAfterViewInit() {
       alert('Please provide a reason before submitting.');
     }
   }
+// ///////
 
+regenerateUnit(unit: any) {
+  if (!unit.unitId) {
+    alert('Unit ID is missing. Cannot regenerate.');
+    return;
+  }
+
+  // Call the service to regenerate content for this unit
+  this.generateContentService.regenerateUnit(unit.unitId).subscribe({
+    next: (updatedUnit) => {
+      // Update the unit content in the UI
+      unit.content = updatedUnit.content;
+      alert('Unit regenerated successfully!');
+    },
+    error: (err) => {
+      console.error('Error regenerating unit:', err);
+      alert('Failed to regenerate unit. Please try again.');
+    }
+  });
 }
-/*
-const unitElement = document.querySelector('#unit-element');
-console.log('Unit Element:', unitElement);
-if (!unitElement) {
-  console.warn('Unit Element is null or undefined.');
 }
-*/
+

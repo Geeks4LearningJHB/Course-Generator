@@ -20,6 +20,7 @@ export class GenerateContentService {
     return this.http.post(`${this.apiUrl}generateCourse`, data);
   }
  
+
   saveGeneratedCourse(generatedCourseData: any): Observable<any> {
     // Extract courseId from generatedCourseData
     const courseId = generatedCourseData.courseId || generatedCourseData.id;
@@ -63,5 +64,9 @@ export class GenerateContentService {
   // Clear the stored course
   clearGeneratedCourse(): void {
     this.generatedCourse = null;
+  }
+
+  regenerateUnit(unitId: string) {
+    return this.http.post<any>('http://localhost:8080/AI/regenerateText', { unitId });
   }
 }
