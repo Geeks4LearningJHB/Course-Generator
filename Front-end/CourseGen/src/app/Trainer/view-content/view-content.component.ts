@@ -9,11 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import jsPDF from 'jspdf';
-<<<<<<< HEAD
 import html2canvas from 'html2canvas';
-=======
-import html2canvas from 'html2canvas'
->>>>>>> 426f1e0e81594a717d70196963439770f05d6657
 import { ContentParserService } from '../../Services/content-parser.service';
 import { GenerateContentService } from '../../Services/generate-content.service';
 
