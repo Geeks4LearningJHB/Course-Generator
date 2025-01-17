@@ -9,7 +9,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import jsPDF from 'jspdf';
+<<<<<<< HEAD
 import html2canvas from 'html2canvas';
+=======
+import html2canvas from 'html2canvas'
+>>>>>>> 426f1e0e81594a717d70196963439770f05d6657
 import { ContentParserService } from '../../Services/content-parser.service';
 import { GenerateContentService } from '../../Services/generate-content.service';
 
@@ -26,7 +30,7 @@ export interface ParsedSection {
 }
 
 export interface ParsedUnit {
-  // monthNumber: number;
+  monthNumber: number;
   title: string;
   introduction: string;
   keyConcepts: string[];
@@ -168,12 +172,10 @@ export class ViewContentComponent implements AfterViewInit {
     try {
       const unit = this.generatedCourse.units[globalIndex];
       if (!unit?.content) return;
-
       const parsedContent = await this.contentParserService.parseContent(
         unit.content,
         1000 // chunk size
       );
-
       if (parsedContent.length > 0) {
         this.parsedUnits[globalIndex] = {
           ...this.parsedUnits[globalIndex],
@@ -189,7 +191,6 @@ export class ViewContentComponent implements AfterViewInit {
   public parseLinksAndBold(content: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const boldRegex = /\*\*(.*?)\*\*/g;
-
     // Replace URLs with anchor tags
     let formattedContent = content.replace(
       urlRegex,
@@ -420,9 +421,9 @@ export class ViewContentComponent implements AfterViewInit {
     });
   }
 
-  toggleUnit(unit: any): void {
-    unit.isExpanded = !unit.isExpanded; // Toggle expanded state
-  }
+  // toggleUnit(unit: any): void {
+  //   unit.isExpanded = !unit.isExpanded; // Toggle expanded state
+  // }
 
   onCourseSelect(course: Course): void {
     this.selectedCourse = course;
