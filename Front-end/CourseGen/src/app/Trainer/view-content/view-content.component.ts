@@ -7,6 +7,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas'
+import { ContentParserService } from '../../Services/content-parser.service';
+import { GenerateContentService } from '../../Services/generate-content.service';
 
 export interface ListItem {
   text?: string;
@@ -21,41 +23,13 @@ export interface ParsedSection {
 }
 
 export interface ParsedUnit {
-  // monthNumber: number;
+  monthNumber: number;
   title: string;
   introduction: string;
   keyConcepts: string[];
   sections: ParsedSection[];
   isLoaded?: boolean;
 }
-
-// interface Section {
-//   heading: string;
-//   content: string | string[] | CodeBlock[] | ListItem[];
-// }
-
-// interface CodeBlock {
-//   language: string;
-//   code: string;
-// }
-
-// interface ListItem {
-//   text: string;
-//   subItems?: string[];
-// }
-
-// interface UnitWithState extends Unit {
-//   isExpanded?: boolean;
-//   isLoaded?: boolean;
-// }
-
-// interface UnitContent {
-//   title: string;
-//   introduction: string;
-//   keyConcepts: string[];
-//   sections: Section[];
-//   isLoaded: boolean;
-// }
 
 @Component({
   selector: 'app-view-content',
@@ -77,6 +51,13 @@ export class ViewContentComponent implements AfterViewInit {
   regenerationReason: string = '';
   selectedUnit: string = '';
   reason: string = '';
+  generatedCourse: any = null;
+  parsedUnits: ParsedUnit[] = [];
+  expandedUnits: { [key: string]: boolean } = {};
+  loadedUnits: Set<number> = new Set();
+  currentPage: number = 1;
+  itemsPerPage: number = 5; // Number of units displayed per page
+  isLoading: { [key: string]: boolean } = {};
 
   // Variables for highlighted text and floating button
   highlightedText: string = '';
@@ -94,26 +75,28 @@ export class ViewContentComponent implements AfterViewInit {
     private viewContentService: ViewContentService,
     private route: ActivatedRoute,
     private viewCoursesService: ViewCoursesService,
+    private generateContentService: GenerateContentService,
     private http: HttpClient,
-    private toggleService: ToggleService
+    private toggleService: ToggleService, private contentParserService: ContentParserService,
+    private sanitizer: DomSanitizer
   ) {
     const nav = this.router.getCurrentNavigation();
     this.generatedData = nav?.extras.state?.['data'];
   }
 
-ngAfterViewInit() {
-  const unitElement = document.querySelector('#unit-element');
-  console.log('Unit Element:', unitElement);
-  if (!unitElement) {
-    console.warn('Unit Element is null or undefined.');
-  } else {
-    // Logic for adding event listeners or handling unitElement
-    unitElement.addEventListener('click', () => {
-      console.log('Unit Element clicked!');
-      // Show the button or perform other actions
-    });
+  ngAfterViewInit() {
+    const unitElement = document.querySelector('#unit-element');
+    console.log('Unit Element:', unitElement);
+    if (!unitElement) {
+      console.warn('Unit Element is null or undefined.');
+    } else {
+      // Logic for adding event listeners or handling unitElement
+      unitElement.addEventListener('click', () => {
+        console.log('Unit Element clicked!');
+        // Show the button or perform other actions
+      });
+    }
   }
-}
 
 
   ngOnInit(): void {
@@ -131,6 +114,105 @@ ngAfterViewInit() {
     );
 
     this.getUnits();
+
+    this.generatedCourse = this.generateContentService.getGeneratedCourse();
+    
+    if (this.generatedCourse?.units) {
+      // Initialize units with minimal data
+      this.parsedUnits = this.generatedCourse.units.map((unit: any, index: number) => ({
+        monthNumber: index + 1,
+        title: unit.unitName,
+        introduction: '',
+        keyConcepts: [],
+        sections: [],
+        isLoaded: false
+      }));
+
+      // Initialize expansion state
+      this.generatedCourse.units.forEach((unit: any) => {
+        this.expandedUnits[unit.unitName] = false;
+      });
+    }
+  }
+
+  get paginatedUnits() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.parsedUnits.slice(startIndex, endIndex);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.parsedUnits.length / this.itemsPerPage);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  changePage(page: number): void {
+    this.currentPage = page;
+  }
+
+  async loadUnitContent(globalIndex: number): Promise<void> {
+    try {
+      const unit = this.generatedCourse.units[globalIndex];
+      if (!unit?.content) return;
+  
+      const parsedContent = await this.contentParserService.parseContent(
+        unit.content,
+        1000 // chunk size
+      );
+  
+      if (parsedContent.length > 0) {
+        this.parsedUnits[globalIndex] = {
+          ...this.parsedUnits[globalIndex],
+          ...parsedContent[0],
+          isLoaded: true
+        };
+      }
+    } catch (error) {
+      console.error('Error loading unit:', error);
+    }
+  }
+
+  public parseLinksAndBold(content: string): string {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const boldRegex = /\*\*(.*?)\*\*/g;
+  
+    // Replace URLs with anchor tags
+    let formattedContent = content.replace(
+      urlRegex,
+      '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+  
+    // Replace **bold** with <b>bold</b>
+    formattedContent = formattedContent.replace(boldRegex, '<b>$1</b>');
+  
+    return formattedContent;
+  }
+
+  async toggleUnit(unitTitle: string, index: number): Promise<void> {
+    this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
+    
+    // Calculate the global index considering pagination
+    const globalIndex = (this.currentPage - 1) * this.itemsPerPage + index;
+    
+    if (this.expandedUnits[unitTitle] && !this.parsedUnits[globalIndex]?.isLoaded) {
+      this.isLoading[unitTitle] = true;
+      try {
+        await this.loadUnitContent(globalIndex);
+      } finally {
+        this.isLoading[unitTitle] = false;
+      }
+    }
   }
 
   loadCourseContent(courseId: string): void {
@@ -149,7 +231,61 @@ ngAfterViewInit() {
     });
   }
 
-  // currentUnit: Unit | null = null;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
+  }
+
+  isListContent(content: string | any[]): boolean {
+    return Array.isArray(content);
+  }
+
+  isString(value: any): value is string {
+    return typeof value === 'string';
+  }
+
+  isArray(value: any): value is Array<any> {
+    return Array.isArray(value);
+  }
+
+  asArray(value: any): any[] {
+    return this.isArray(value) ? value : [];
+  }
+
+  isCodeBlock(item: any): item is { language: string; code: string } {
+    return (
+      item && typeof item.language === 'string' && typeof item.code === 'string'
+    );
+  }
+
+  hasSubItems(item: any): item is { text: string; subItems: string[] } {
+    return (
+      item && typeof item.text === 'string' && Array.isArray(item.subItems)
+    );
+  }
+
+  sanitizeContent(content: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
+  formatContent(content: string | any[]): SafeHtml {
+    if (typeof content === 'string') {
+      // Handle any HTML in the content safely
+      return this.sanitizer.bypassSecurityTrustHtml(content);
+    }
+    // If it's not a string, convert it to a string representation
+    return this.sanitizer.bypassSecurityTrustHtml(String(content));
+  }
+
+  getSectionContent(content: string | any[]): string {
+    if (typeof content === 'string') {
+      return content;
+    }
+    return JSON.stringify(content);
+  }
 
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
@@ -271,9 +407,9 @@ ngAfterViewInit() {
     });
   }
 
-  toggleUnit(unit: any): void {
-    unit.isExpanded = !unit.isExpanded; // Toggle expanded state
-  }
+  // toggleUnit(unit: any): void {
+  //   unit.isExpanded = !unit.isExpanded; // Toggle expanded state
+  // }
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;

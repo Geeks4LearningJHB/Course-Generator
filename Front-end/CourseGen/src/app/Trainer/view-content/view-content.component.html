@@ -1,105 +1,173 @@
 <div class="admin-dashboard-container">
 
-  <div class="dash-container-1" [class.shifted]="isCollapsed">
-    <div class="form-container">
-      <h3 class="form-title">View Modules by Course</h3>
-
-      <!-- Displaying units -->
-      <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
-        <div *ngFor="let unit of units" class="module-container" [attr.data-unit-id]="unit.unitId">
-          <p class="module-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
-            {{ unit.unitName }}
-          </p>
-          <ul *ngIf="unit.isExpanded" class="unit-content">
-            <li class="topic">
-              <p>{{ unit.content }}</p>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <ng-template #noUnits>
-        <p>No units available for this course.</p>
-      </ng-template>
+  <div class="course-container">
+    <div class="course-header">
+      <h2>{{ generatedCourse?.module?.moduleName }}</h2>
+      <!-- <div class="course-meta">
+        <span><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</span>
+        <span><strong>Duration:</strong> {{ generatedCourse?.duration }} months</span>
+      </div> -->
     </div>
-  </div>
 
+    <!-- Displaying units -->
+    <div class="outline-section">
+      <h3>Course Outline</h3>
+      <div class="unit-list">
+        <div *ngIf="paginatedUnits.length; else noUnits">
+          <div *ngFor="let unit of paginatedUnits; let i = index" class="unit-card">
+            <div class="unit-header" (click)="toggleUnit(unit.title, i)">
+              <h4>{{ unit.title }}</h4>
+              <i class="fas" [class.fa-chevron-down]="!expandedUnits[unit.title]"
+                [class.fa-chevron-up]="expandedUnits[unit.title]"></i>
+            </div>
 
-  <button class="download-button" (click)="downloadPDF()" [disabled]="!units || units.length === 0">
-    ⬇️ Download PDF
-  </button>
-  <!-- Re-Generate Content Button -->
-  <button class="re-generate-button" (click)="showRegenerateForm()">
-    🔄 Re-Generate Content
-  </button>
+            <div class="unit-content" *ngIf="expandedUnits[unit.title]">
+              <!-- Loading spinner -->
+              <div *ngIf="isLoading[unit.title]" class="loading-spinner">
+                Loading content...
+              </div>
 
+              <ng-container *ngIf="!isLoading[unit.title] && unit.isLoaded">
 
- <!-- Modal for Regeneration Form -->
- <div class="modal-overlay" *ngIf="isRegenerateModalVisible">
-  <div class="modal-content">
-    <h3 class="modal-title">Regenerate Unit</h3>
+                <div class="content-section">
+                  <h5>Introduction:</h5>
+                  <p>{{ unit.introduction }}</p>
+                </div>
 
-    <form (ngSubmit)="onSubmit()" #regenerateForm="ngForm">
-      <div class="form-group">
-        <label for="unit">Select Unit</label>
-        <select id="unit" name="unit" [(ngModel)]="selectedUnit" required>
-          <option *ngFor="let unit of units" [value]="unit.unitId">{{ unit.unitName }}</option>
-        </select>
+                <!-- Key Concepts -->
+                <div class="content-section">
+                  <h5>Key Concepts:</h5>
+                  <ul>
+                    <li *ngFor="let concept of unit.keyConcepts">{{ concept }}</li>
+                  </ul>
+                </div>
+
+                <!-- Sections -->
+                <div *ngFor="let section of unit.sections" class="content-section">
+                  <h5>{{ section.heading }}</h5>
+
+                  <!-- Regular content -->
+                  <div *ngIf="isString(section.content)"
+                    [innerHTML]="sanitizeContent(parseLinksAndBold(section.content))">
+                  </div>
+
+                  <!-- List content -->
+                  <ul *ngIf="isArray(section.content)">
+                    <ng-container *ngFor="let item of asArray(section.content)">
+                      <!-- Code block -->
+                      <li *ngIf="isCodeBlock(item)" class="code-block">
+                        <pre><code [class]="'language-' + item.language">{{ item.code }}</code></pre>
+                      </li>
+
+                      <!-- Regular list item -->
+                      <li *ngIf="!isCodeBlock(item) && isString(item)">{{ item }}</li>
+
+                      <!-- List item with sub-items -->
+                      <li *ngIf="!isCodeBlock(item) && hasSubItems(item)">
+                        {{ item.text }}
+                        <ul *ngIf="item.subItems?.length">
+                          <li *ngFor="let subItem of item.subItems">{{ subItem }}</li>
+                        </ul>
+                      </li>
+                    </ng-container>
+                  </ul>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <ng-template #noUnits>
+          <p>No units available for this course.</p>
+        </ng-template>
       </div>
 
-      <div class="form-group">
-        <label for="reason">Reason for Regeneration</label>
-        <textarea id="reason" name="reason" [(ngModel)]="reason" required></textarea>
+      <div class="pagination">
+        <button [disabled]="currentPage === 1" (click)="previousPage()" class="pagination-btn">
+          Previous
+        </button>
+        <span class="page-info">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+        <button [disabled]="currentPage === totalPages" (click)="nextPage()" class="pagination-btn">
+          Next
+        </button>
       </div>
-
-      <div class="modal-actions">
-        <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
-        <button class="confirm-button" [disabled]="!regenerateForm.form.valid" type="submit">Submit</button>
-      </div>
-    </form>
-  </div>
-</div>
+    </div>
 
 
-  <!-- Floating button to regenerate content -->
-  <!-- <button *ngIf="showFloatingButton" class="floating-button" (click)="regenerateSelection()">🔄</button> -->
-
-  <div class="floating-button" *ngIf="showFloatingButton" [style.top]="buttonPosition.top"
-    [style.left]="buttonPosition.left">
-    <button class="regenerate-button" (click)="regenerateSelection()">
-      <i class="fas fa-sync-alt"></i>
-      Regenerate
+    <button class="download-button" (click)="downloadPDF()" [disabled]="!units || units.length === 0">
+      ⬇️ Download PDF
     </button>
-  </div>
+    <!-- Re-Generate Content Button -->
+    <button class="re-generate-button" (click)="showRegenerateForm()">
+      🔄 Re-Generate Content
+    </button>
 
-   
 
-  <div class="modal-overlay" *ngIf="isModalVisible">
-    <div class="modal-content">
-      <h3 class="modal-title">Review Generated Text</h3>
+    <!-- Modal for Regeneration Form -->
+    <div class="modal-overlay" *ngIf="isRegenerateModalVisible">
+      <div class="modal-content">
+        <h3 class="modal-title">Regenerate Unit</h3>
 
-      <div class="text-section">
-        <div class="text-label">Original Text:</div>
-        <div class="text-content">
-          {{ highlightedText }}
-        </div>
-      </div>
+        <form (ngSubmit)="onSubmit()" #regenerateForm="ngForm">
+          <div class="form-group">
+            <label for="unit">Select Unit</label>
+            <select id="unit" name="unit" [(ngModel)]="selectedUnit" required>
+              <option *ngFor="let unit of units" [value]="unit.unitId">{{ unit.unitName }}</option>
+            </select>
+          </div>
 
-      <div class="text-section">
-        <div class="text-label">Regenerated Text:</div>
-        <div class="text-content">
-          {{ regeneratedText }}
-        </div>
-      </div>
+          <div class="form-group">
+            <label for="reason">Reason for Regeneration</label>
+            <textarea id="reason" name="reason" [(ngModel)]="reason" required></textarea>
+          </div>
 
-      <div class="modal-actions">
-        <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
-        <button class="confirm-button" (click)="confirmUpdate()">Confirm Update</button>
+          <div class="modal-actions">
+            <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
+            <button class="confirm-button" [disabled]="!regenerateForm.form.valid" type="submit">Submit</button>
+          </div>
+        </form>
       </div>
     </div>
+
+
+    <!-- Floating button to regenerate content -->
+    <!-- <button *ngIf="showFloatingButton" class="floating-button" (click)="regenerateSelection()">🔄</button> -->
+
+    <div class="floating-button" *ngIf="showFloatingButton" [style.top]="buttonPosition.top"
+      [style.left]="buttonPosition.left">
+      <button class="regenerate-button" (click)="regenerateSelection()">
+        <i class="fas fa-sync-alt"></i>
+        Regenerate
+      </button>
+    </div>
+
+
+
+    <div class="modal-overlay" *ngIf="isModalVisible">
+      <div class="modal-content">
+        <h3 class="modal-title">Review Generated Text</h3>
+
+        <div class="text-section">
+          <div class="text-label">Original Text:</div>
+          <div class="text-content">
+            {{ highlightedText }}
+          </div>
+        </div>
+
+        <div class="text-section">
+          <div class="text-label">Regenerated Text:</div>
+          <div class="text-content">
+            {{ regeneratedText }}
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
+          <button class="confirm-button" (click)="confirmUpdate()">Confirm Update</button>
+        </div>
+      </div>
+    </div>
+
   </div>
-
 </div>
-
-
-<!-- </div> -->

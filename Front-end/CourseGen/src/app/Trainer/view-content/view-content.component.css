@@ -269,3 +269,256 @@ input, textarea {
     font-size: 14px;
   }
 }
+
+
+
+
+
+
+.generated-course-container {
+  background-color: #ffffff;
+  width: 70%;
+  padding: 20px; 
+  padding-bottom: 60px; 
+  box-sizing: border-box; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  margin: auto;
+  margin-top: 150px;
+}
+
+.button-container {
+  display: flex; 
+  justify-content: center; 
+  margin-top: 20px; 
+}
+
+
+.back-btn, .save-btn {
+  background-color: #12324d; 
+  color: white; 
+  border: none; 
+  padding: 10px 20px; 
+  border-radius: 5px; 
+  font-size: 16px; 
+  cursor: pointer; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+  margin-right: 10px; 
+  transition: background-color 0.3s ease; 
+}
+
+
+
+button:last-child {
+  margin-right: 0; 
+}
+
+.back-btn:hover, .save-btn:hover{
+  background-color: #0b1f2f;
+}
+
+/* Main Content Styles */
+.main-content {
+margin-left: 250px;
+padding: 2rem;
+transition: margin-left 0.3s;
+}
+
+.main-content.shifted {
+margin-left: 80px;
+}
+
+.course-container {
+background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  margin-left: 50%;
+  margin-right: 50%;
+  margin-bottom: 50%;
+  margin-top: 10%;
+}
+
+.course-header {
+margin-bottom: 2rem;
+border-bottom: 2px solid #f0f0f0;
+padding-bottom: 1rem;
+}
+
+.course-meta {
+display: flex;
+gap: 2rem;
+color: #666;
+margin-top: 1rem;
+}
+
+.unit-card {
+background: #f8f9fa;
+border-radius: 6px;
+margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+.course-container {
+  width: 90%;
+  margin-left: 5%;
+  padding: 1rem;
+}
+
+.unit-header h4 {
+  font-size: 1rem;
+}
+}
+
+.unit-header {
+padding: 1rem;
+background: #f0f0f0;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.unit-header h4 {
+margin: 0;
+color: #333;
+}
+
+.unit-content {
+padding: 1.5rem;
+background: #fafafa;
+border-top: 1px solid #eee;
+line-height: 1.6; /* Improves text readability */
+font-family: 'Arial', sans-serif; /* Use a clean font */
+white-space: pre-line; /* Preserves formatting like newlines */
+}
+
+
+.content-section, .activities-section {
+margin-bottom: 1.5rem;
+text-align: left;
+}
+
+.content-section h5, .activities-section h5 {
+color: #444;
+margin-bottom: 1rem;
+}
+
+.activity {
+background: #f8f9fa;
+padding: 1rem;
+border-radius: 4px;
+margin-bottom: 1rem;
+}
+
+.action-buttons {
+display: flex;
+gap: 1rem;
+margin-top: 2rem;
+justify-content: flex-end;
+}
+
+.edit-btn {
+background: #f0f0f0;
+color: #333;
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.save-btn {
+background: #007bff;
+color: white;
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.loading-spinner {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 2rem;
+color: #666;
+}
+
+.loading-spinner::after {
+content: '';
+width: 20px;
+height: 20px;
+margin-left: 10px;
+border: 2px solid #f3f3f3;
+border-top: 2px solid #133B50;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+.pagination {
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 20px 0;
+}
+
+.pagination button {
+background-color: #133B50;
+color: white;
+border: none;
+padding: 8px 12px;
+margin: 0 5px;
+cursor: pointer;
+border-radius: 4px;
+}
+
+.pagination button[disabled] {
+background-color: #ccc;
+cursor: not-allowed;
+}
+
+.pagination span {
+font-size: 1rem;
+margin: 0 10px;
+}
+
+/* view-generated-course.component.css */
+.unit-header.disabled {
+opacity: 0.7;
+cursor: not-allowed;
+}
+
+.loading-indicator {
+font-size: 0.8em;
+color: #666;
+margin-right: 10px;
+}
+
+.error-message {
+color: #dc3545;
+padding: 10px;
+margin: 5px 0;
+background-color: #f8d7da;
+border-radius: 4px;
+}
+
+.error-message button {
+margin-left: 10px;
+padding: 2px 8px;
+background-color: #dc3545;
+color: white;
+border: none;
+border-radius: 3px;
+cursor: pointer;
+}
