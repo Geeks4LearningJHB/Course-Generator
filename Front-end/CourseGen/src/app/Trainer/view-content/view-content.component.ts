@@ -421,92 +421,128 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
 
   downloadPDF(): void {
     try {
-      // Initialize PDF document
       const pdf = new jsPDF();
-
-      // Set initial variables for formatting
+  
+      // Document dimensions and formatting
       const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 20;
       const contentWidth = pageWidth - 2 * margin;
+  
+      // Set initial position
       let yPosition = 20;
-
-      // Add title with null check
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
+  
+      // Add document title
       const title = this.courseName || 'Course Content';
+      pdf.setFontSize(32).setFont('Bahnschrift Regular', 'bold');
       pdf.text(title, pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
-
-      // Check if units exist
+  
+      // Reserve a page for the Table of Contents
+      pdf.addPage(); // Add a blank page for the ToC
+      const tocPage = pdf.getNumberOfPages();
+  
+      // Move to the next page for units
+      pdf.addPage();
+      yPosition = 20;
+  
+      // Check if there are any units
       if (!this.units || this.units.length === 0) {
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(14).setFont('helvetica', 'italic');
         pdf.text('No content available', margin, yPosition);
         pdf.save('empty_course.pdf');
         return;
       }
-
+  
+      // Initialize Table of Contents array
+      const tableOfContents: { unitTitle: string; pageNumber: number }[] = [];
+  
       // Process each unit
-      this.units.forEach((unit, index) => {
-        // Check if we need a new page for the unit
-        if (yPosition > 270) {
+      this.units.forEach((unit: { unitName: string; content: string }, index: number) => {
+        if (yPosition + 40 > pageHeight) {
           pdf.addPage();
           yPosition = 20;
         }
-
-        // Add unit header
-        pdf.setFontSize(16);
-        pdf.setFont('helvetica', 'bold');
-        const unitHeader = `Unit ${index + 1}: ${
-          unit.unitName || 'Untitled Unit'
-        }`;
-        pdf.text(unitHeader, margin, yPosition);
-        yPosition += 10;
-
-        // Add unit content with proper text wrapping
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
-
-        // Handle null or undefined content
+  
+        // Add unit title
+        const unitTitle = `Unit ${index + 1}: ${unit.unitName || 'Untitled Unit'}`;
+        pdf.setFontSize(18).setFont('helvetica', 'bold');
+        pdf.text(unitTitle, margin, yPosition);
+  
+        // Add entry to ToC
+        tableOfContents.push({
+          unitTitle,
+          pageNumber: pdf.getNumberOfPages(),
+        });
+  
+        yPosition += 15;
+  
+        // Add unit content
         const content = unit.content || 'No content available';
-
-        // Split content into paragraphs
         const paragraphs = content.split('\n').filter((p: string) => p.trim());
-
+        pdf.setFontSize(12).setFont('helvetica', 'normal');
+  
         paragraphs.forEach((paragraph: string) => {
-          // Split paragraph into lines that fit the page width
           const lines: string[] = pdf.splitTextToSize(paragraph, contentWidth);
-
+  
           lines.forEach((line: string) => {
-            // Check if we need a new page
-            if (yPosition > 270) {
+            if (yPosition + 10 > pageHeight) {
               pdf.addPage();
               yPosition = 20;
             }
-
-            // Add the line of text
             pdf.text(line, margin, yPosition);
-            yPosition += 7; // Line spacing
+            yPosition += 7;
           });
-
-          yPosition += 5; // Paragraph spacing
+  
+          yPosition += 5; // Space after paragraph
         });
-
-        yPosition += 10; // Space between units
+  
+        yPosition += 10; // Space after unit
       });
-
-      // Generate filename with sanitization
+  
+      // Populate the Table of Contents
+      pdf.setPage(tocPage);
+      yPosition = 20;
+      pdf.setFontSize(20).setFont('helvetica', 'bold');
+      pdf.text('Table of Contents', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 20;
+  
+      tableOfContents.forEach(({ unitTitle, pageNumber }) => {
+        if (yPosition + 10 > pageHeight) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        pdf.setFontSize(12).setFont('helvetica', 'normal');
+        pdf.text(`${unitTitle} ................ ${pageNumber}`, margin, yPosition);
+        yPosition += 7;
+      });
+  
+      // Add footer with page numbers
+      const pageCount = pdf.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(10).setFont('helvetica', 'italic');
+        pdf.text(
+          `Page ${i} of ${pageCount}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        );
+      }
+  
+      // Save the PDF
       const filename = `${(this.courseName || 'course')
         .replace(/[^a-z0-9]/gi, '_')
         .toLowerCase()}_content.pdf`;
-
-      // Save the PDF
       pdf.save(filename);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('There was an error generating the PDF. Please try again.');
     }
   }
+  
+  
+  
 
   showRegenerateForm() {
     this.isRegenerateModalVisible = true;

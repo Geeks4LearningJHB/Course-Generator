@@ -69,7 +69,7 @@
           <textarea id="reason" name="reason" [(ngModel)]="reason" required></textarea>
         </div>
         <div class="modal-actions">
-          <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
+          <button class="cancel-button" (click)="isRegenerateModalVisible = false">Cancel</button>
           <button class="confirm-button" [disabled]="!regenerateForm.form.valid" type="submit">Submit</button>
         </div>
       </form>

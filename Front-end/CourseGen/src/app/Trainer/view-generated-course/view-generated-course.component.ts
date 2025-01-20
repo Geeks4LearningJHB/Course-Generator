@@ -3,6 +3,7 @@ import { GenerateContentService } from '../../Services/generate-content.service'
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ContentParserService } from '../../Services/content-parser.service';
+import { Unit, ViewContentService } from '../../Services/view-content.service';
 
 export interface ListItem {
   text?: string;
@@ -39,18 +40,26 @@ export class ViewGeneratedCourseComponent {
   currentPage: number = 1;
   itemsPerPage: number = 5; // Number of units displayed per page
   isLoading: { [key: string]: boolean } = {};
+  isRegenerateModalVisible: boolean = false;
+  isModalVisible: boolean = false;
+  selectedUnit: string = '';
+  reason: string = '';
+  units: Unit[] = [];
 
   constructor(
     private router: Router,
     private generateContentService: GenerateContentService,
     private contentParserService: ContentParserService,
+    private viewContentService: ViewContentService,
     private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
     this.generatedCourse = this.generateContentService.getGeneratedCourse();
+    console.log(this.generatedCourse);
     
     if (this.generatedCourse?.units) {
+      console.log(this.generatedCourse?.units);
       // Initialize units with minimal data
       this.parsedUnits = this.generatedCourse.units.map((unit: any, index: number) => ({
         monthNumber: index + 1,
@@ -134,7 +143,24 @@ export class ViewGeneratedCourseComponent {
     return formattedContent;
   }
   
-  
+  onSubmit() {
+    const requestBody = {
+      unitId: this.selectedUnit,
+      reason: this.reason,
+    };
+
+    this.viewContentService.regenerateUnit(requestBody).subscribe(
+      (response) => {
+        console.log('Unit regeneration successful!', response);
+        this.isModalVisible = false; // Hide modal after success
+        // You can add additional logic to notify the user of success
+      },
+      (error) => {
+        console.error('Error regenerating unit', error);
+        // Add additional error handling logic as needed
+      }
+    );
+  }
 
   async toggleUnit(unitTitle: string, index: number): Promise<void> {
     this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
@@ -154,7 +180,7 @@ export class ViewGeneratedCourseComponent {
   
 
   onEditCourse() {
-    this.router.navigate(['/generate-content']);
+    this.isRegenerateModalVisible = true;
   }
 
   saveCourse() {
