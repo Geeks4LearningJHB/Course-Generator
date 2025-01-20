@@ -1,12 +1,17 @@
 import { Component, HostListener, OnInit, AfterViewInit } from '@angular/core';
 import { Unit, ViewContentService } from '../../Services/view-content.service';
-import { Course, ViewCoursesService } from '../../Services/view-courses.service';
+import {
+  Course,
+  ViewCoursesService,
+} from '../../Services/view-courses.service';
 import { ToggleService } from '../../Services/toggle.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvas';
+import { ContentParserService } from '../../Services/content-parser.service';
+import { GenerateContentService } from '../../Services/generate-content.service';
 
 export interface ListItem {
   text?: string;
@@ -29,34 +34,6 @@ export interface ParsedUnit {
   isLoaded?: boolean;
 }
 
-// interface Section {
-//   heading: string;
-//   content: string | string[] | CodeBlock[] | ListItem[];
-// }
-
-// interface CodeBlock {
-//   language: string;
-//   code: string;
-// }
-
-// interface ListItem {
-//   text: string;
-//   subItems?: string[];
-// }
-
-// interface UnitWithState extends Unit {
-//   isExpanded?: boolean;
-//   isLoaded?: boolean;
-// }
-
-// interface UnitContent {
-//   title: string;
-//   introduction: string;
-//   keyConcepts: string[];
-//   sections: Section[];
-//   isLoaded: boolean;
-// }
-
 @Component({
   selector: 'app-view-content',
   templateUrl: './view-content.component.html',
@@ -77,6 +54,13 @@ export class ViewContentComponent implements AfterViewInit {
   regenerationReason: string = '';
   selectedUnit: string = '';
   reason: string = '';
+  generatedCourse: any = null;
+  parsedUnits: ParsedUnit[] = [];
+  expandedUnits: { [key: string]: boolean } = {};
+  loadedUnits: Set<number> = new Set();
+  currentPage: number = 1;
+  itemsPerPage: number = 5; // Number of units displayed per page
+  isLoading: { [key: string]: boolean } = {};
 
   // Variables for highlighted text and floating button
   highlightedText: string = '';
@@ -94,27 +78,29 @@ export class ViewContentComponent implements AfterViewInit {
     private viewContentService: ViewContentService,
     private route: ActivatedRoute,
     private viewCoursesService: ViewCoursesService,
+    private generateContentService: GenerateContentService,
     private http: HttpClient,
-    private toggleService: ToggleService
+    private toggleService: ToggleService,
+    private contentParserService: ContentParserService,
+    private sanitizer: DomSanitizer
   ) {
     const nav = this.router.getCurrentNavigation();
     this.generatedData = nav?.extras.state?.['data'];
   }
 
-ngAfterViewInit() {
-  const unitElement = document.querySelector('#unit-element');
-  console.log('Unit Element:', unitElement);
-  if (!unitElement) {
-    console.warn('Unit Element is null or undefined.');
-  } else {
-    // Logic for adding event listeners or handling unitElement
-    unitElement.addEventListener('click', () => {
-      console.log('Unit Element clicked!');
-      // Show the button or perform other actions
-    });
+  ngAfterViewInit() {
+    const unitElement = document.querySelector('#unit-element');
+    console.log('Unit Element:', unitElement);
+    if (!unitElement) {
+      console.warn('Unit Element is null or undefined.');
+    } else {
+      // Logic for adding event listeners or handling unitElement
+      unitElement.addEventListener('click', () => {
+        console.log('Unit Element clicked!');
+        // Show the button or perform other actions
+      });
+    }
   }
-}
-
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -130,7 +116,109 @@ ngAfterViewInit() {
       (collapsed) => (this.isCollapsed = collapsed)
     );
 
-    this.getUnits();
+    // this.getUnits();
+
+    // this.generatedCourse = this.generateContentService.getGeneratedCourse();
+
+    // if (this.generatedCourse?.units) {
+    //   // Initialize units with minimal data
+    //   this.parsedUnits = this.generatedCourse.units.map((unit: any, index: number) => ({
+    //     monthNumber: index + 1,
+    //     title: unit.unitName,
+    //     introduction: '',
+    //     keyConcepts: [],
+    //     sections: [],
+    //     isLoaded: false
+    //   }));
+
+    //   // Initialize expansion state
+    //   this.generatedCourse.units.forEach((unit: any) => {
+    //     this.expandedUnits[unit.unitName] = false;
+    //   });
+    // }
+  }
+
+  get paginatedUnits() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.parsedUnits.slice(startIndex, endIndex);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.parsedUnits.length / this.itemsPerPage);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  changePage(page: number): void {
+    this.currentPage = page;
+  }
+
+  async loadUnitContent(globalIndex: number): Promise<void> {
+    try {
+      const unit = this.generatedCourse.units[globalIndex];
+      if (!unit?.content) return;
+
+      const parsedContent = await this.contentParserService.parseContent(
+        unit.content,
+        1000 // chunk size
+      );
+
+      if (parsedContent.length > 0) {
+        this.parsedUnits[globalIndex] = {
+          ...this.parsedUnits[globalIndex],
+          ...parsedContent[0],
+          isLoaded: true,
+        };
+      }
+    } catch (error) {
+      console.error('Error loading unit:', error);
+    }
+  }
+
+  public parseLinksAndBold(content: string): string {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const boldRegex = /\*\*(.*?)\*\*/g;
+
+    // Replace URLs with anchor tags
+    let formattedContent = content.replace(
+      urlRegex,
+      '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+
+    // Replace **bold** with <b>bold</b>
+    formattedContent = formattedContent.replace(boldRegex, '<b>$1</b>');
+
+    return formattedContent;
+  }
+
+  async toggleUnits(unitTitle: string, index: number): Promise<void> {
+    this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
+
+    // Calculate the global index considering pagination
+    const globalIndex = (this.currentPage - 1) * this.itemsPerPage + index;
+
+    if (
+      this.expandedUnits[unitTitle] &&
+      !this.parsedUnits[globalIndex]?.isLoaded
+    ) {
+      this.isLoading[unitTitle] = true;
+      try {
+        await this.loadUnitContent(globalIndex);
+      } finally {
+        this.isLoading[unitTitle] = false;
+      }
+    }
   }
 
   loadCourseContent(courseId: string): void {
@@ -149,24 +237,84 @@ ngAfterViewInit() {
     });
   }
 
-  // currentUnit: Unit | null = null;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
+  }
+
+  isListContent(content: string | any[]): boolean {
+    return Array.isArray(content);
+  }
+
+  isString(value: any): value is string {
+    return typeof value === 'string';
+  }
+
+  isArray(value: any): value is Array<any> {
+    return Array.isArray(value);
+  }
+
+  asArray(value: any): any[] {
+    return this.isArray(value) ? value : [];
+  }
+
+  isCodeBlock(item: any): item is { language: string; code: string } {
+    return (
+      item && typeof item.language === 'string' && typeof item.code === 'string'
+    );
+  }
+
+  hasSubItems(item: any): item is { text: string; subItems: string[] } {
+    return (
+      item && typeof item.text === 'string' && Array.isArray(item.subItems)
+    );
+  }
+
+  sanitizeContent(content: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
+  formatContent(content: string | any[]): SafeHtml {
+    if (typeof content === 'string') {
+      // Handle any HTML in the content safely
+      return this.sanitizer.bypassSecurityTrustHtml(content);
+    }
+    // If it's not a string, convert it to a string representation
+    return this.sanitizer.bypassSecurityTrustHtml(String(content));
+  }
+
+  getSectionContent(content: string | any[]): string {
+    if (typeof content === 'string') {
+      return content;
+    }
+    return JSON.stringify(content);
+  }
 
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     const selection = window.getSelection();
+    console.log('Selection:', selection);
 
     if (selection && selection.toString().trim().length > 0) {
       const unitElement = this.findParentUnitElement(
         selection.getRangeAt(0).commonAncestorContainer
       );
 
+      console.log('Unit Element:', unitElement);
+
       if (unitElement) {
         const unitId = unitElement.getAttribute('data-unit-id');
+        console.log('Unit ID:', unitId);
 
         this.currentUnit = this.units.find((u) => u.unitId === unitId) || null;
 
         if (this.currentUnit) {
           this.highlightedText = selection.toString();
+          console.log('Highlighted Text:', this.highlightedText);
+
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
 
@@ -184,7 +332,6 @@ ngAfterViewInit() {
     this.showFloatingButton = false;
     this.currentUnit = null;
   }
-
 
   // Helper function to find the parent unit element
   private findParentUnitElement(element: Node): HTMLElement | null {
@@ -214,7 +361,9 @@ ngAfterViewInit() {
       moduleId: this.currentCourseId,
       unitId: this.currentUnit.unitId,
       startIndex: this.currentUnit.content.indexOf(this.highlightedText),
-      endIndex: this.currentUnit.content.indexOf(this.highlightedText) + this.highlightedText.length,
+      endIndex:
+        this.currentUnit.content.indexOf(this.highlightedText) +
+        this.highlightedText.length,
     };
 
     // Log the request payload
@@ -232,7 +381,7 @@ ngAfterViewInit() {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
-          error: error.error
+          error: error.error,
         });
 
         let errorMessage = 'Failed to regenerate content. ';
@@ -243,7 +392,7 @@ ngAfterViewInit() {
         }
 
         alert(errorMessage);
-      }
+      },
     });
   }
 
@@ -275,10 +424,6 @@ ngAfterViewInit() {
     unit.isExpanded = !unit.isExpanded; // Toggle expanded state
   }
 
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
-  }
-
   onCourseSelect(course: Course): void {
     this.selectedCourse = course;
     this.viewContentService
@@ -300,7 +445,7 @@ ngAfterViewInit() {
       // Set initial variables for formatting
       const pageWidth = pdf.internal.pageSize.getWidth();
       const margin = 20;
-      const contentWidth = pageWidth - (2 * margin);
+      const contentWidth = pageWidth - 2 * margin;
       let yPosition = 20;
 
       // Add title with null check
@@ -330,7 +475,9 @@ ngAfterViewInit() {
         // Add unit header
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
-        const unitHeader = `Unit ${index + 1}: ${unit.unitName || 'Untitled Unit'}`;
+        const unitHeader = `Unit ${index + 1}: ${
+          unit.unitName || 'Untitled Unit'
+        }`;
         pdf.text(unitHeader, margin, yPosition);
         yPosition += 10;
 
@@ -367,11 +514,12 @@ ngAfterViewInit() {
       });
 
       // Generate filename with sanitization
-      const filename = `${(this.courseName || 'course').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_content.pdf`;
+      const filename = `${(this.courseName || 'course')
+        .replace(/[^a-z0-9]/gi, '_')
+        .toLowerCase()}_content.pdf`;
 
       // Save the PDF
       pdf.save(filename);
-
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('There was an error generating the PDF. Please try again.');
@@ -383,7 +531,7 @@ ngAfterViewInit() {
   }
 
   closePopup(): void {
-    this.showModifyFields = false;  // Close the modal when cancel is clicked
+    this.showModifyFields = false; // Close the modal when cancel is clicked
   }
 
   submitReason(): void {
@@ -403,22 +551,16 @@ ngAfterViewInit() {
     }
   }
 
-  getUnits() {
-    this.viewContentService.getAllUnits().subscribe((response: Unit[]) => {
-      this.units = response;
-    });
-  }
-
   onSubmit() {
     const requestBody = {
       unitId: this.selectedUnit,
-      reason: this.reason
+      reason: this.reason,
     };
 
     this.viewContentService.regenerateUnit(requestBody).subscribe(
       (response) => {
         console.log('Unit regeneration successful!', response);
-        this.isModalVisible = false;  // Hide modal after success
+        this.isModalVisible = false; // Hide modal after success
         // You can add additional logic to notify the user of success
       },
       (error) => {
@@ -427,12 +569,4 @@ ngAfterViewInit() {
       }
     );
   }
-
 }
-/*
-const unitElement = document.querySelector('#unit-element');
-console.log('Unit Element:', unitElement);
-if (!unitElement) {
-  console.warn('Unit Element is null or undefined.');
-}
-*/
