@@ -104,25 +104,25 @@
     <div class="modal-content">
       <h3 class="modal-title">Review Generated Text</h3>
 
-      <div class="text-section">
-        <div class="text-label">Original Text:</div>
-        <div class="text-content">
-          {{ highlightedText }}
+        <div class="text-section">
+          <div class="text-label">Original Text:</div>
+          <div class="text-content">
+            {{ highlightedText }}
+          </div>
         </div>
-      </div>
 
-      <div class="text-section">
-        <div class="text-label">Regenerated Text:</div>
-        <div class="text-content">
-          {{ regeneratedText }}
+        <div class="text-section">
+          <div class="text-label">Regenerated Text:</div>
+          <div class="text-content">
+            {{ regeneratedText }}
+          </div>
         </div>
-      </div>
 
-      <div class="modal-actions">
-        <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
-        <button class="confirm-button" (click)="confirmUpdate()">Confirm Update</button>
+        <div class="modal-actions">
+          <button class="cancel-button" (click)="isModalVisible = false">Cancel</button>
+          <button class="confirm-button" (click)="confirmUpdate()">Confirm Update</button>
+        </div>
       </div>
     </div>
-  </div>
-
+  
 </div>

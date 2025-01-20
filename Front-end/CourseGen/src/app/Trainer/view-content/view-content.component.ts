@@ -279,19 +279,25 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     const selection = window.getSelection();
+    console.log('Selection:', selection);
 
     if (selection && selection.toString().trim().length > 0) {
       const unitElement = this.findParentUnitElement(
         selection.getRangeAt(0).commonAncestorContainer
       );
 
+      console.log('Unit Element:', unitElement);
+
       if (unitElement) {
         const unitId = unitElement.getAttribute('data-unit-id');
+        console.log('Unit ID:', unitId);
 
         this.currentUnit = this.units.find((u) => u.unitId === unitId) || null;
 
         if (this.currentUnit) {
           this.highlightedText = selection.toString();
+          console.log('Highlighted Text:', this.highlightedText);
+
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
 
