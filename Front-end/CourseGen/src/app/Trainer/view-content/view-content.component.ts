@@ -26,7 +26,7 @@ export interface ParsedSection {
 }
 
 export interface ParsedUnit {
-  // monthNumber: number;
+  monthNumber: number;
   title: string;
   introduction: string;
   keyConcepts: string[];
@@ -39,7 +39,7 @@ export interface ParsedUnit {
   templateUrl: './view-content.component.html',
   styleUrls: ['./view-content.component.css'],
 })
-export class ViewContentComponent implements AfterViewInit {
+export class ViewContentComponent implements OnInit, AfterViewInit {
   showModifyFields: boolean = false;
   module: string = '';
   topic: string = '';
@@ -47,6 +47,7 @@ export class ViewContentComponent implements AfterViewInit {
   isCollapsed = true;
   units: Unit[] = [];
   courses: Course[] = [];
+  course: Course | undefined ;
   selectedCourse: Course | null = null;
   generatedData: any;
   courseName: string = '';
@@ -65,7 +66,7 @@ export class ViewContentComponent implements AfterViewInit {
   // Variables for highlighted text and floating button
   highlightedText: string = '';
   showFloatingButton: boolean = false;
-  highlightedTextRange: any = null;
+  // highlightedTextRange: any = null;
   buttonPosition: { top: string; left: string } = { top: '0px', left: '0px' }; // Define button position
   isModalVisible: boolean = false;
   isRegenerateModalVisible: boolean = false;
@@ -84,8 +85,8 @@ export class ViewContentComponent implements AfterViewInit {
     private contentParserService: ContentParserService,
     private sanitizer: DomSanitizer
   ) {
-    const nav = this.router.getCurrentNavigation();
-    this.generatedData = nav?.extras.state?.['data'];
+    // const nav = this.router.getCurrentNavigation();
+    // this.generatedData = nav?.extras.state?.['data'];
   }
 
   ngAfterViewInit() {
@@ -118,24 +119,8 @@ export class ViewContentComponent implements AfterViewInit {
 
     // this.getUnits();
 
-    // this.generatedCourse = this.generateContentService.getGeneratedCourse();
+    // this.generatedCourse = this.courses.moduleName;
 
-    // if (this.generatedCourse?.units) {
-    //   // Initialize units with minimal data
-    //   this.parsedUnits = this.generatedCourse.units.map((unit: any, index: number) => ({
-    //     monthNumber: index + 1,
-    //     title: unit.unitName,
-    //     introduction: '',
-    //     keyConcepts: [],
-    //     sections: [],
-    //     isLoaded: false
-    //   }));
-
-    //   // Initialize expansion state
-    //   this.generatedCourse.units.forEach((unit: any) => {
-    //     this.expandedUnits[unit.unitName] = false;
-    //   });
-    // }
   }
 
   get paginatedUnits() {
@@ -164,32 +149,29 @@ export class ViewContentComponent implements AfterViewInit {
     this.currentPage = page;
   }
 
-  async loadUnitContent(globalIndex: number): Promise<void> {
-    try {
-      const unit = this.generatedCourse.units[globalIndex];
-      if (!unit?.content) return;
-
-      const parsedContent = await this.contentParserService.parseContent(
-        unit.content,
-        1000 // chunk size
-      );
-
-      if (parsedContent.length > 0) {
-        this.parsedUnits[globalIndex] = {
-          ...this.parsedUnits[globalIndex],
-          ...parsedContent[0],
-          isLoaded: true,
-        };
-      }
-    } catch (error) {
-      console.error('Error loading unit:', error);
-    }
-  }
+  // async loadUnitContent(globalIndex: number): Promise<void> {
+  //   try {
+  //     const unit = this.generatedCourse.units[globalIndex];
+  //     if (!unit?.content) return;
+  //     const parsedContent = await this.contentParserService.parseContent(
+  //       unit.content,
+  //       1000 // chunk size
+  //     );
+  //     if (parsedContent.length > 0) {
+  //       this.parsedUnits[globalIndex] = {
+  //         ...this.parsedUnits[globalIndex],
+  //         ...parsedContent[0],
+  //         isLoaded: true,
+  //       };
+  //     }
+  //   } catch (error) {
+  //     console.error('Error loading unit:', error);
+  //   }
+  // }
 
   public parseLinksAndBold(content: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const boldRegex = /\*\*(.*?)\*\*/g;
-
     // Replace URLs with anchor tags
     let formattedContent = content.replace(
       urlRegex,
@@ -202,29 +184,30 @@ export class ViewContentComponent implements AfterViewInit {
     return formattedContent;
   }
 
-  async toggleUnits(unitTitle: string, index: number): Promise<void> {
-    this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
+  // async toggleUnits(unitTitle: string, index: number): Promise<void> {
+  //   this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
 
-    // Calculate the global index considering pagination
-    const globalIndex = (this.currentPage - 1) * this.itemsPerPage + index;
+  //   // Calculate the global index considering pagination
+  //   const globalIndex = (this.currentPage - 1) * this.itemsPerPage + index;
 
-    if (
-      this.expandedUnits[unitTitle] &&
-      !this.parsedUnits[globalIndex]?.isLoaded
-    ) {
-      this.isLoading[unitTitle] = true;
-      try {
-        await this.loadUnitContent(globalIndex);
-      } finally {
-        this.isLoading[unitTitle] = false;
-      }
-    }
-  }
+  //   if (
+  //     this.expandedUnits[unitTitle] &&
+  //     !this.parsedUnits[globalIndex]?.isLoaded
+  //   ) {
+  //     this.isLoading[unitTitle] = true;
+  //     try {
+  //       await this.loadUnitContent(globalIndex);
+  //     } finally {
+  //       this.isLoading[unitTitle] = false;
+  //     }
+  //   }
+  // }
 
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
-      next: (course) => {
+      next: (course : Course) => {
         this.courseName = course.moduleName;
+        this.selectedCourse = course;
       },
       error: (err) => console.error('Error fetching course details:', err),
     });
@@ -296,25 +279,19 @@ export class ViewContentComponent implements AfterViewInit {
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     const selection = window.getSelection();
-    console.log('Selection:', selection);
 
     if (selection && selection.toString().trim().length > 0) {
       const unitElement = this.findParentUnitElement(
         selection.getRangeAt(0).commonAncestorContainer
       );
 
-      console.log('Unit Element:', unitElement);
-
       if (unitElement) {
         const unitId = unitElement.getAttribute('data-unit-id');
-        console.log('Unit ID:', unitId);
 
         this.currentUnit = this.units.find((u) => u.unitId === unitId) || null;
 
         if (this.currentUnit) {
           this.highlightedText = selection.toString();
-          console.log('Highlighted Text:', this.highlightedText);
-
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
 
@@ -332,7 +309,6 @@ export class ViewContentComponent implements AfterViewInit {
     this.showFloatingButton = false;
     this.currentUnit = null;
   }
-
   // Helper function to find the parent unit element
   private findParentUnitElement(element: Node): HTMLElement | null {
     let current: Node | null = element;
