@@ -30,6 +30,11 @@ export interface ListItem {
   code?: string;
 }
 
+interface RegenerationRequest {
+  moduleId: string;
+  unitId: string;
+  reason: string;
+}
 
 export interface RegenerateRequest {
   moduleId: string;
@@ -60,8 +65,8 @@ export class ViewContentService {
     return this.http.get<Unit[]>(`${this.apiUrl}/getAllUnits`);
   }
 
-  regenerateUnit(payload: { unitId: string; reason: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/regenerateUnitWithReason`, payload);
+  regenerateUnit(payload: RegenerationRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/regenerateUnitWithReason`, payload);
   }
   
   

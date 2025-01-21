@@ -12,6 +12,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ContentParserService } from '../../Services/content-parser.service';
 import { GenerateContentService } from '../../Services/generate-content.service';
+import { forkJoin } from 'rxjs';
 
 export interface ListItem {
   text?: string;
@@ -54,8 +55,8 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   courseName: string = '';
   currentCourseId: string = '';
   regenerationReason: string = '';
-  selectedUnit: string = '';
-  selectedUnits: any = null;
+  selectedUnit: string | null = null;
+selectedUnits: Unit | null = null;
   reason: string = '';
   generatedCourse: any = null;
   parsedUnits: ParsedUnit[] = [];
@@ -97,7 +98,7 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       console.warn('No Unit Elements found.');
     } else {
       unitElements.forEach((unitElement) => {
-        console.log('Unit Element found:', unitElement);
+        // console.log('Unit Element found:', unitElement);
         unitElement.addEventListener('click', () => {
           console.log('Unit Element clicked!', unitElement.getAttribute('data-unit-id'));
           // Perform further actions, e.g., showing a modal or expanding content
@@ -167,23 +168,17 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   }
 
   loadCourseContent(courseId: string): void {
-    this.viewCoursesService.getModuleById(courseId).subscribe({
-      next: (course: Course) => {
+    forkJoin({
+      course: this.viewCoursesService.getModuleById(courseId),
+      units: this.viewContentService.getUnitsByModules(courseId)
+    }).subscribe({
+      next: ({course, units}) => {
         this.courseName = course.moduleName;
         this.selectedCourse = course;
+        this.units = units.map(unit => ({ ...unit, isExpanded: false }));
       },
-      error: (err) => console.error('Error fetching course details:', err),
+      error: (err) => console.error('Error loading course content:', err)
     });
-  
-    this.viewContentService.getUnitsByModules(courseId).subscribe({
-      next: (data) => {
-        this.units = data.map((unit) => {
-          console.log(unit);  // Log the unit object to inspect its structure
-          return { ...unit, isExpanded: false };
-        });
-      },
-      error: (err) => console.error('Error fetching course content:', err),
-    });    
   }
 
   onUnitClick(unit: any): void {
@@ -191,27 +186,6 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     console.log(`Unit ${unit.isExpanded ? 'expanded' : 'collapsed'}:`, unit.unitName, unit.unitId);
   }
   
-  
-  
-  
-  handleUnitsLoaded(): void {
-    if (!this.units || this.units.length === 0) {
-      console.warn('No units loaded.');
-      return;
-    }
-  
-    this.units.forEach((unit) => {
-      const element = document.querySelector(`[data-unit-id="${unit.unitId}"]`);
-      if (!element) {
-        console.error('Unit Element is null or undefined for unit:', unit);
-      } else {
-        console.log('Unit Element found:', element);
-      }
-    });
-  }
-  
-
-
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
@@ -532,13 +506,6 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       alert('There was an error generating the PDF. Please try again.');
     }
   }
-  
-  
-  
-
-  showRegenerateForm() {
-    this.isRegenerateModalVisible = true;
-  }
 
   closePopup(): void {
     this.showModifyFields = false; // Close the modal when cancel is clicked
@@ -561,38 +528,64 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openRegenerateForm(unit: Unit) {
+  openRegenerateForm(unit: Unit): void {
+    console.log('Opening regenerate form for unit:', unit);
     this.selectedUnit = unit.unitId;
+    this.selectedUnits = unit;
     this.regenerationReason = '';
+    this.isRegenerateModalVisible = true;
+    console.log('Modal visibility:', this.isRegenerateModalVisible);
   }
-
-  closeRegenerateForm() {
+  
+  closeRegenerateForm(): void {
+    console.log('Closing regenerate form');
+    this.selectedUnit = null;
     this.selectedUnits = null;
     this.regenerationReason = '';
+    this.isRegenerateModalVisible = false;
+    console.log('Modal visibility:', this.isRegenerateModalVisible);
   }
 
-  submitRegenerationForm() {
-    if (!this.selectedUnits || !this.regenerationReason) {
-      alert('Please provide a valid reason for regeneration.');
-      return;
-    }
+  // view-content.component.ts
+submitRegenerationForm() {
+  if (!this.selectedUnits || !this.regenerationReason) {
+    alert('Please provide a valid reason for regeneration.');
+    return;
+  }
 
-    const payload = {
-      unitId: this.selectedUnits.unitId,
-      reason: this.regenerationReason
-    };
+  const payload = {
+    moduleId: this.currentCourseId, // Make sure this is set when loading the course
+    unitId: this.selectedUnits.unitId,
+    reason: this.regenerationReason
+  };
 
-    this.viewContentService.regenerateUnit(payload).subscribe({
-      next: (updatedUnit) => {
-        // Update the unit content in the UI
-        this.selectedUnits.content = updatedUnit.content;
-        alert('Unit regenerated successfully!');
-        this.closeRegenerateForm();
-      },
-      error: (err) => {
-        console.error('Error regenerating unit:', err);
-        alert('Failed to regenerate unit. Please try again.');
+  console.log('Submitting regeneration request:', payload); // Debug log
+
+  this.viewContentService.regenerateUnit(payload).subscribe({
+    next: (response) => {
+      console.log('Regeneration successful:', response);
+      // Update the unit content in the UI
+      const unitIndex = this.units.findIndex(u => u.unitId === this.selectedUnits?.unitId);
+      if (unitIndex !== -1) {
+        this.units[unitIndex].content = response.regeneratedContent;
       }
-    });
-  }
+      alert('Unit regenerated successfully!');
+      this.closeRegenerateForm();
+    },
+    error: (error) => {
+      console.error('Full error details:', error);
+      let errorMessage = 'Failed to regenerate unit: ';
+      
+      if (error.error?.error) {
+        errorMessage += error.error.error;
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += 'Unknown error occurred';
+      }
+      
+      alert(errorMessage);
+    }
+  });
+}
 }
