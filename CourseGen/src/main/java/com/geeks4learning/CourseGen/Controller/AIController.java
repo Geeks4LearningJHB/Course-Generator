@@ -345,7 +345,7 @@ public class AIController {
             }
             
             String prompt = "Rewrite the following content: " + requestDTO.getHighlightedText();
-            String regeneratedText = respondToPrompt(prompt);
+            String regeneratedText = respondToPrompt(prompt);   
             
             return ResponseEntity.ok(Map.of(
                 "regeneratedText", regeneratedText,
