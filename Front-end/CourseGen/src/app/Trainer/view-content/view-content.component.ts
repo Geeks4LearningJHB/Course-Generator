@@ -46,6 +46,7 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   details: string = '';
   isCollapsed = true;
   units: Unit[] = [];
+  unit: any[] = [];
   courses: Course[] = [];
   course: Course | undefined ;
   selectedCourse: Course | null = null;
@@ -54,6 +55,7 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   currentCourseId: string = '';
   regenerationReason: string = '';
   selectedUnit: string = '';
+  selectedUnits: any = null;
   reason: string = '';
   generatedCourse: any = null;
   parsedUnits: ParsedUnit[] = [];
@@ -89,19 +91,21 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     // this.generatedData = nav?.extras.state?.['data'];
   }
 
-  ngAfterViewInit() {
-    const unitElement = document.querySelector('#unit-element');
-    console.log('Unit Element:', unitElement);
-    if (!unitElement) {
-      console.warn('Unit Element is null or undefined.');
+  ngAfterViewInit(): void {
+    const unitElements = document.querySelectorAll('.unit-card');
+    if (unitElements.length === 0) {
+      console.warn('No Unit Elements found.');
     } else {
-      // Logic for adding event listeners or handling unitElement
-      unitElement.addEventListener('click', () => {
-        console.log('Unit Element clicked!');
-        // Show the button or perform other actions
+      unitElements.forEach((unitElement) => {
+        console.log('Unit Element found:', unitElement);
+        unitElement.addEventListener('click', () => {
+          console.log('Unit Element clicked!', unitElement.getAttribute('data-unit-id'));
+          // Perform further actions, e.g., showing a modal or expanding content
+        });
       });
     }
   }
+  
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -116,8 +120,6 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     this.toggleService.isCollapsed$.subscribe(
       (collapsed) => (this.isCollapsed = collapsed)
     );
-
-    // this.getUnits();
 
     // this.generatedCourse = this.courses.moduleName;
 
@@ -149,26 +151,6 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     this.currentPage = page;
   }
 
-  // async loadUnitContent(globalIndex: number): Promise<void> {
-  //   try {
-  //     const unit = this.generatedCourse.units[globalIndex];
-  //     if (!unit?.content) return;
-  //     const parsedContent = await this.contentParserService.parseContent(
-  //       unit.content,
-  //       1000 // chunk size
-  //     );
-  //     if (parsedContent.length > 0) {
-  //       this.parsedUnits[globalIndex] = {
-  //         ...this.parsedUnits[globalIndex],
-  //         ...parsedContent[0],
-  //         isLoaded: true,
-  //       };
-  //     }
-  //   } catch (error) {
-  //     console.error('Error loading unit:', error);
-  //   }
-  // }
-
   public parseLinksAndBold(content: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const boldRegex = /\*\*(.*?)\*\*/g;
@@ -184,41 +166,51 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     return formattedContent;
   }
 
-  // async toggleUnits(unitTitle: string, index: number): Promise<void> {
-  //   this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
-
-  //   // Calculate the global index considering pagination
-  //   const globalIndex = (this.currentPage - 1) * this.itemsPerPage + index;
-
-  //   if (
-  //     this.expandedUnits[unitTitle] &&
-  //     !this.parsedUnits[globalIndex]?.isLoaded
-  //   ) {
-  //     this.isLoading[unitTitle] = true;
-  //     try {
-  //       await this.loadUnitContent(globalIndex);
-  //     } finally {
-  //       this.isLoading[unitTitle] = false;
-  //     }
-  //   }
-  // }
-
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
-      next: (course : Course) => {
+      next: (course: Course) => {
         this.courseName = course.moduleName;
         this.selectedCourse = course;
       },
       error: (err) => console.error('Error fetching course details:', err),
     });
-
+  
     this.viewContentService.getUnitsByModules(courseId).subscribe({
       next: (data) => {
-        this.units = data.map((unit) => ({ ...unit, isExpanded: false }));
+        this.units = data.map((unit) => {
+          console.log(unit);  // Log the unit object to inspect its structure
+          return { ...unit, isExpanded: false };
+        });
       },
       error: (err) => console.error('Error fetching course content:', err),
+    });    
+  }
+
+  onUnitClick(unit: any): void {
+    unit.isExpanded = !unit.isExpanded;
+    console.log(`Unit ${unit.isExpanded ? 'expanded' : 'collapsed'}:`, unit.unitName, unit.unitId);
+  }
+  
+  
+  
+  
+  handleUnitsLoaded(): void {
+    if (!this.units || this.units.length === 0) {
+      console.warn('No units loaded.');
+      return;
+    }
+  
+    this.units.forEach((unit) => {
+      const element = document.querySelector(`[data-unit-id="${unit.unitId}"]`);
+      if (!element) {
+        console.error('Unit Element is null or undefined for unit:', unit);
+      } else {
+        console.log('Unit Element found:', element);
+      }
     });
   }
+  
+
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
@@ -556,6 +548,11 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     if (this.regenerationReason.trim()) {
       console.log('Reason for Re-Generation:', this.regenerationReason);
 
+      // You can pass this reason to a backend service here
+      // Example:
+      // this.viewContentService.submitRegenerationReason(this.regenerationReason).subscribe(response => {
+      //   console.log('Regeneration reason submitted successfully', response);
+      // });
 
       alert('Thank you for providing the reason.');
       this.closePopup();
@@ -563,45 +560,39 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       alert('Please provide a reason before submitting.');
     }
   }
-// ///////
 
-  onSubmit() {
-    const requestBody = {
-      unitId: this.selectedUnit,
-      reason: this.reason,
+  openRegenerateForm(unit: Unit) {
+    this.selectedUnit = unit.unitId;
+    this.regenerationReason = '';
+  }
+
+  closeRegenerateForm() {
+    this.selectedUnits = null;
+    this.regenerationReason = '';
+  }
+
+  submitRegenerationForm() {
+    if (!this.selectedUnits || !this.regenerationReason) {
+      alert('Please provide a valid reason for regeneration.');
+      return;
+    }
+
+    const payload = {
+      unitId: this.selectedUnits.unitId,
+      reason: this.regenerationReason
     };
 
-    this.viewContentService.regenerateUnit(requestBody).subscribe(
-      (response) => {
-        console.log('Unit regeneration successful!', response);
-        this.isModalVisible = false; // Hide modal after success
-        // You can add additional logic to notify the user of success
+    this.viewContentService.regenerateUnit(payload).subscribe({
+      next: (updatedUnit) => {
+        // Update the unit content in the UI
+        this.selectedUnits.content = updatedUnit.content;
+        alert('Unit regenerated successfully!');
+        this.closeRegenerateForm();
       },
-      (error) => {
-        console.error('Error regenerating unit', error);
-        // Add additional error handling logic as needed
+      error: (err) => {
+        console.error('Error regenerating unit:', err);
+        alert('Failed to regenerate unit. Please try again.');
       }
-    );
+    });
   }
-
-regenerateUnit(unit: any) {
-  if (!unit.unitId) {
-    alert('Unit ID is missing. Cannot regenerate.');
-    return;
-  }
-
-  // Call the service to regenerate content for this unit
-  // this.generateContentService.regenerateUnit(unit.unitId).subscribe({
-  //   next: (updatedUnit) => {
-  //     // Update the unit content in the UI
-  //     unit.content = updatedUnit.content;
-  //     alert('Unit regenerated successfully!');
-  //   },
-  //   error: (err) => {
-  //     console.error('Error regenerating unit:', err);
-  //     alert('Failed to regenerate unit. Please try again.');
-  //   }
-  // });
 }
-}
-
