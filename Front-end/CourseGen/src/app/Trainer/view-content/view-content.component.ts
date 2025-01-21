@@ -556,11 +556,6 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     if (this.regenerationReason.trim()) {
       console.log('Reason for Re-Generation:', this.regenerationReason);
 
-      // You can pass this reason to a backend service here
-      // Example:
-      // this.viewContentService.submitRegenerationReason(this.regenerationReason).subscribe(response => {
-      //   console.log('Regeneration reason submitted successfully', response);
-      // });
 
       alert('Thank you for providing the reason.');
       this.closePopup();
@@ -568,6 +563,7 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       alert('Please provide a reason before submitting.');
     }
   }
+// ///////
 
   onSubmit() {
     const requestBody = {
@@ -587,4 +583,25 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       }
     );
   }
+
+regenerateUnit(unit: any) {
+  if (!unit.unitId) {
+    alert('Unit ID is missing. Cannot regenerate.');
+    return;
+  }
+
+  // Call the service to regenerate content for this unit
+  // this.generateContentService.regenerateUnit(unit.unitId).subscribe({
+  //   next: (updatedUnit) => {
+  //     // Update the unit content in the UI
+  //     unit.content = updatedUnit.content;
+  //     alert('Unit regenerated successfully!');
+  //   },
+  //   error: (err) => {
+  //     console.error('Error regenerating unit:', err);
+  //     alert('Failed to regenerate unit. Please try again.');
+  //   }
+  // });
 }
+}
+

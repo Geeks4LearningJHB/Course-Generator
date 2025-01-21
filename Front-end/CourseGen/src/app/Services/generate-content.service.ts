@@ -17,8 +17,8 @@ export class GenerateContentService {
     const { difficulty, duration } = data;
     return this.http.post(`${this.apiUrl}generateCourse`, data);
   }
+ 
 
-  // Method to save the generated course, including units
   saveGeneratedCourse(generatedCourseData: any): Observable<any> {
     const courseId = generatedCourseData.courseId || generatedCourseData.id;
     const params = new HttpParams().set('courseId', courseId);

@@ -4,8 +4,51 @@
     <div class="course-header">
       <h2>{{ courseName }}</h2>
 
+<!-- Displaying units -->
+<div *ngIf="units && units.length > 0; else noUnits" class="course-content">
+  <div *ngFor="let unit of units" class="unit-card" [attr.data-unit-id]="unit.unitId">
+    <h4 class="unit-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
+      {{ unit.unitName }}
+      <i class="fas" [class.fa-chevron-down]="!expandedUnits[unit.unitName]"
+        [class.fa-chevron-up]="expandedUnits[unit.unitName]"></i>
+      
+        
+    </h4>
 
-      <!-- Displaying units -->
+    <ul *ngIf="unit.isExpanded" class="unit-content">
+      
+      <li class="topic">
+        <div *ngIf="isString(unit.content); else arrayContent">
+          <p [innerHTML]="parseLinksAndBold(unit.content)">{{ unit.content }}</p>
+        </div>
+        <ng-template #arrayContent>
+          <ul>
+            <li *ngFor="let item of asArray(unit.content)">
+              <ng-container *ngIf="isCodeBlock(item); else subItems" class="code-block">
+                <pre><code [attr.language]="item.language">{{ item.code }}</code></pre>
+              </ng-container>
+              <ng-template #subItems>
+                <ng-container *ngIf="hasSubItems(item); else plainText">
+                  <strong>{{ item.text }}</strong>
+                  <ul>
+                    <li *ngFor="let subItem of item.subItems">{{ subItem }}</li>
+                  </ul>
+                </ng-container>
+                <ng-template #plainText>
+                  <span>{{ item }}</span>
+                </ng-template>
+              </ng-template>
+            </li>
+            
+          </ul>
+        </ng-template>
+      </li>
+      <button (click)="regenerateUnit(unit)">🔄</button>
+
+    </ul>
+  </div>
+</div>
+      <!-- Displaying units
           <div *ngIf="units && units.length > 0; else noUnits" class="course-content">
             <div *ngFor="let unit of units" class="unit-card" [attr.data-unit-id]="unit.unitId">
               <h4 class="unit-header" [ngClass]="{ collapsed: !unit.isExpanded }" (click)="toggleUnit(unit)">
@@ -42,7 +85,7 @@
                 </li>
               </ul>
             </div>
-          </div>
+          </div> -->
       <ng-template #noUnits>
         <p>No units available for this course.</p>
       </ng-template>
