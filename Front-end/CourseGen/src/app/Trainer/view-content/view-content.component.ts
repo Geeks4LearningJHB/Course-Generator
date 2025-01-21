@@ -1,12 +1,16 @@
 import { Component, HostListener, OnInit, AfterViewInit } from '@angular/core';
 import { Unit, ViewContentService } from '../../Services/view-content.service';
-import { Course, ViewCoursesService } from '../../Services/view-courses.service';
+import {
+  Course,
+  ViewCoursesService,
+} from '../../Services/view-courses.service';
 import { ToggleService } from '../../Services/toggle.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas'
+import html2canvas from 'html2canvas';
+import { ContentParserService } from '../../Services/content-parser.service';
 import { GenerateContentService } from '../../Services/generate-content.service';
 
 export interface ListItem {
@@ -22,7 +26,7 @@ export interface ParsedSection {
 }
 
 export interface ParsedUnit {
-  // monthNumber: number;
+  monthNumber: number;
   title: string;
   introduction: string;
   keyConcepts: string[];
@@ -30,13 +34,12 @@ export interface ParsedUnit {
   isLoaded?: boolean;
 }
 
-
 @Component({
   selector: 'app-view-content',
   templateUrl: './view-content.component.html',
   styleUrls: ['./view-content.component.css'],
 })
-export class ViewContentComponent implements AfterViewInit {
+export class ViewContentComponent implements OnInit, AfterViewInit {
   showModifyFields: boolean = false;
   module: string = '';
   topic: string = '';
@@ -44,18 +47,29 @@ export class ViewContentComponent implements AfterViewInit {
   isCollapsed = true;
   units: Unit[] = [];
   courses: Course[] = [];
+  course: Course | undefined ;
   selectedCourse: Course | null = null;
   generatedData: any;
   courseName: string = '';
   currentCourseId: string = '';
   regenerationReason: string = '';
+  selectedUnit: string = '';
+  reason: string = '';
+  generatedCourse: any = null;
+  parsedUnits: ParsedUnit[] = [];
+  expandedUnits: { [key: string]: boolean } = {};
+  loadedUnits: Set<number> = new Set();
+  currentPage: number = 1;
+  itemsPerPage: number = 5; // Number of units displayed per page
+  isLoading: { [key: string]: boolean } = {};
 
   // Variables for highlighted text and floating button
   highlightedText: string = '';
   showFloatingButton: boolean = false;
-  highlightedTextRange: any = null;
+  // highlightedTextRange: any = null;
   buttonPosition: { top: string; left: string } = { top: '0px', left: '0px' }; // Define button position
   isModalVisible: boolean = false;
+  isRegenerateModalVisible: boolean = false;
   selectedText: string = '';
   regeneratedText: string = '';
   currentUnit: Unit | null = null;
@@ -65,28 +79,29 @@ export class ViewContentComponent implements AfterViewInit {
     private viewContentService: ViewContentService,
     private route: ActivatedRoute,
     private viewCoursesService: ViewCoursesService,
+    private generateContentService: GenerateContentService,
     private http: HttpClient,
     private toggleService: ToggleService,
-    private generateContentService : GenerateContentService
+    private contentParserService: ContentParserService,
+    private sanitizer: DomSanitizer
   ) {
-    const nav = this.router.getCurrentNavigation();
-    this.generatedData = nav?.extras.state?.['data'];
+    // const nav = this.router.getCurrentNavigation();
+    // this.generatedData = nav?.extras.state?.['data'];
   }
 
-ngAfterViewInit() {
-  const unitElement = document.querySelector('#unit-element');
-  console.log('Unit Element:', unitElement);
-  if (!unitElement) {
-    console.warn('Unit Element is null or undefined.');
-  } else {
-    // Logic for adding event listeners or handling unitElement
-    unitElement.addEventListener('click', () => {
-      console.log('Unit Element clicked!');
-      // Show the button or perform other actions
-    });
+  ngAfterViewInit() {
+    const unitElement = document.querySelector('#unit-element');
+    console.log('Unit Element:', unitElement);
+    if (!unitElement) {
+      console.warn('Unit Element is null or undefined.');
+    } else {
+      // Logic for adding event listeners or handling unitElement
+      unitElement.addEventListener('click', () => {
+        console.log('Unit Element clicked!');
+        // Show the button or perform other actions
+      });
+    }
   }
-}
-
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -101,12 +116,98 @@ ngAfterViewInit() {
     this.toggleService.isCollapsed$.subscribe(
       (collapsed) => (this.isCollapsed = collapsed)
     );
+
+    // this.getUnits();
+
+    // this.generatedCourse = this.courses.moduleName;
+
   }
+
+  get paginatedUnits() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.parsedUnits.slice(startIndex, endIndex);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.parsedUnits.length / this.itemsPerPage);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  changePage(page: number): void {
+    this.currentPage = page;
+  }
+
+  // async loadUnitContent(globalIndex: number): Promise<void> {
+  //   try {
+  //     const unit = this.generatedCourse.units[globalIndex];
+  //     if (!unit?.content) return;
+  //     const parsedContent = await this.contentParserService.parseContent(
+  //       unit.content,
+  //       1000 // chunk size
+  //     );
+  //     if (parsedContent.length > 0) {
+  //       this.parsedUnits[globalIndex] = {
+  //         ...this.parsedUnits[globalIndex],
+  //         ...parsedContent[0],
+  //         isLoaded: true,
+  //       };
+  //     }
+  //   } catch (error) {
+  //     console.error('Error loading unit:', error);
+  //   }
+  // }
+
+  public parseLinksAndBold(content: string): string {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const boldRegex = /\*\*(.*?)\*\*/g;
+    // Replace URLs with anchor tags
+    let formattedContent = content.replace(
+      urlRegex,
+      '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+
+    // Replace **bold** with <b>bold</b>
+    formattedContent = formattedContent.replace(boldRegex, '<b>$1</b>');
+
+    return formattedContent;
+  }
+
+  // async toggleUnits(unitTitle: string, index: number): Promise<void> {
+  //   this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
+
+  //   // Calculate the global index considering pagination
+  //   const globalIndex = (this.currentPage - 1) * this.itemsPerPage + index;
+
+  //   if (
+  //     this.expandedUnits[unitTitle] &&
+  //     !this.parsedUnits[globalIndex]?.isLoaded
+  //   ) {
+  //     this.isLoading[unitTitle] = true;
+  //     try {
+  //       await this.loadUnitContent(globalIndex);
+  //     } finally {
+  //       this.isLoading[unitTitle] = false;
+  //     }
+  //   }
+  // }
 
   loadCourseContent(courseId: string): void {
     this.viewCoursesService.getModuleById(courseId).subscribe({
-      next: (course) => {
+      next: (course : Course) => {
         this.courseName = course.moduleName;
+        this.selectedCourse = course;
       },
       error: (err) => console.error('Error fetching course details:', err),
     });
@@ -119,24 +220,84 @@ ngAfterViewInit() {
     });
   }
 
-  // currentUnit: Unit | null = null;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
+      this.isCollapsed = true;
+    }
+  }
+
+  isListContent(content: string | any[]): boolean {
+    return Array.isArray(content);
+  }
+
+  isString(value: any): value is string {
+    return typeof value === 'string';
+  }
+
+  isArray(value: any): value is Array<any> {
+    return Array.isArray(value);
+  }
+
+  asArray(value: any): any[] {
+    return this.isArray(value) ? value : [];
+  }
+
+  isCodeBlock(item: any): item is { language: string; code: string } {
+    return (
+      item && typeof item.language === 'string' && typeof item.code === 'string'
+    );
+  }
+
+  hasSubItems(item: any): item is { text: string; subItems: string[] } {
+    return (
+      item && typeof item.text === 'string' && Array.isArray(item.subItems)
+    );
+  }
+
+  sanitizeContent(content: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
+  formatContent(content: string | any[]): SafeHtml {
+    if (typeof content === 'string') {
+      // Handle any HTML in the content safely
+      return this.sanitizer.bypassSecurityTrustHtml(content);
+    }
+    // If it's not a string, convert it to a string representation
+    return this.sanitizer.bypassSecurityTrustHtml(String(content));
+  }
+
+  getSectionContent(content: string | any[]): string {
+    if (typeof content === 'string') {
+      return content;
+    }
+    return JSON.stringify(content);
+  }
 
   @HostListener('window:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     const selection = window.getSelection();
+    console.log('Selection:', selection);
 
     if (selection && selection.toString().trim().length > 0) {
       const unitElement = this.findParentUnitElement(
         selection.getRangeAt(0).commonAncestorContainer
       );
 
+      console.log('Unit Element:', unitElement);
+
       if (unitElement) {
         const unitId = unitElement.getAttribute('data-unit-id');
+        console.log('Unit ID:', unitId);
 
         this.currentUnit = this.units.find((u) => u.unitId === unitId) || null;
 
         if (this.currentUnit) {
           this.highlightedText = selection.toString();
+          console.log('Highlighted Text:', this.highlightedText);
+
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
 
@@ -154,8 +315,6 @@ ngAfterViewInit() {
     this.showFloatingButton = false;
     this.currentUnit = null;
   }
-
-
   // Helper function to find the parent unit element
   private findParentUnitElement(element: Node): HTMLElement | null {
     let current: Node | null = element;
@@ -184,7 +343,9 @@ ngAfterViewInit() {
       moduleId: this.currentCourseId,
       unitId: this.currentUnit.unitId,
       startIndex: this.currentUnit.content.indexOf(this.highlightedText),
-      endIndex: this.currentUnit.content.indexOf(this.highlightedText) + this.highlightedText.length,
+      endIndex:
+        this.currentUnit.content.indexOf(this.highlightedText) +
+        this.highlightedText.length,
     };
 
     // Log the request payload
@@ -202,7 +363,7 @@ ngAfterViewInit() {
           status: error.status,
           statusText: error.statusText,
           message: error.message,
-          error: error.error
+          error: error.error,
         });
 
         let errorMessage = 'Failed to regenerate content. ';
@@ -213,7 +374,7 @@ ngAfterViewInit() {
         }
 
         alert(errorMessage);
-      }
+      },
     });
   }
 
@@ -245,10 +406,6 @@ ngAfterViewInit() {
     unit.isExpanded = !unit.isExpanded; // Toggle expanded state
   }
 
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
-  }
-
   onCourseSelect(course: Course): void {
     this.selectedCourse = course;
     this.viewContentService
@@ -264,96 +421,135 @@ ngAfterViewInit() {
 
   downloadPDF(): void {
     try {
-      // Initialize PDF document
       const pdf = new jsPDF();
-
-      // Set initial variables for formatting
+  
+      // Document dimensions and formatting
       const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 20;
-      const contentWidth = pageWidth - (2 * margin);
+      const contentWidth = pageWidth - 2 * margin;
+  
+      // Set initial position
       let yPosition = 20;
-
-      // Add title with null check
-      pdf.setFontSize(20);
-      pdf.setFont('helvetica', 'bold');
+  
+      // Add document title
       const title = this.courseName || 'Course Content';
+      pdf.setFontSize(32).setFont('Bahnschrift Regular', 'bold');
       pdf.text(title, pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
-
-      // Check if units exist
+  
+      // Reserve a page for the Table of Contents
+      pdf.addPage(); // Add a blank page for the ToC
+      const tocPage = pdf.getNumberOfPages();
+  
+      // Move to the next page for units
+      pdf.addPage();
+      yPosition = 20;
+  
+      // Check if there are any units
       if (!this.units || this.units.length === 0) {
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(14).setFont('helvetica', 'italic');
         pdf.text('No content available', margin, yPosition);
         pdf.save('empty_course.pdf');
         return;
       }
-
+  
+      // Initialize Table of Contents array
+      const tableOfContents: { unitTitle: string; pageNumber: number }[] = [];
+  
       // Process each unit
-      this.units.forEach((unit, index) => {
-        // Check if we need a new page for the unit
-        if (yPosition > 270) {
+      this.units.forEach((unit: { unitName: string; content: string }, index: number) => {
+        if (yPosition + 40 > pageHeight) {
           pdf.addPage();
           yPosition = 20;
         }
-
-        // Add unit header
-        pdf.setFontSize(16);
-        pdf.setFont('helvetica', 'bold');
-        const unitHeader = `Unit ${index + 1}: ${unit.unitName || 'Untitled Unit'}`;
-        pdf.text(unitHeader, margin, yPosition);
-        yPosition += 10;
-
-        // Add unit content with proper text wrapping
-        pdf.setFontSize(12);
-        pdf.setFont('helvetica', 'normal');
-
-        // Handle null or undefined content
+  
+        // Add unit title
+        const unitTitle = `Unit ${index + 1}: ${unit.unitName || 'Untitled Unit'}`;
+        pdf.setFontSize(18).setFont('helvetica', 'bold');
+        pdf.text(unitTitle, margin, yPosition);
+  
+        // Add entry to ToC
+        tableOfContents.push({
+          unitTitle,
+          pageNumber: pdf.getNumberOfPages(),
+        });
+  
+        yPosition += 15;
+  
+        // Add unit content
         const content = unit.content || 'No content available';
-
-        // Split content into paragraphs
         const paragraphs = content.split('\n').filter((p: string) => p.trim());
-
+        pdf.setFontSize(12).setFont('helvetica', 'normal');
+  
         paragraphs.forEach((paragraph: string) => {
-          // Split paragraph into lines that fit the page width
           const lines: string[] = pdf.splitTextToSize(paragraph, contentWidth);
-
+  
           lines.forEach((line: string) => {
-            // Check if we need a new page
-            if (yPosition > 270) {
+            if (yPosition + 10 > pageHeight) {
               pdf.addPage();
               yPosition = 20;
             }
-
-            // Add the line of text
             pdf.text(line, margin, yPosition);
-            yPosition += 7; // Line spacing
+            yPosition += 7;
           });
-
-          yPosition += 5; // Paragraph spacing
+  
+          yPosition += 5; // Space after paragraph
         });
-
-        yPosition += 10; // Space between units
+  
+        yPosition += 10; // Space after unit
       });
-
-      // Generate filename with sanitization
-      const filename = `${(this.courseName || 'course').replace(/[^a-z0-9]/gi, '_').toLowerCase()}_content.pdf`;
-
+  
+      // Populate the Table of Contents
+      pdf.setPage(tocPage);
+      yPosition = 20;
+      pdf.setFontSize(20).setFont('helvetica', 'bold');
+      pdf.text('Table of Contents', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 20;
+  
+      tableOfContents.forEach(({ unitTitle, pageNumber }) => {
+        if (yPosition + 10 > pageHeight) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        pdf.setFontSize(12).setFont('helvetica', 'normal');
+        pdf.text(`${unitTitle} ................ ${pageNumber}`, margin, yPosition);
+        yPosition += 7;
+      });
+  
+      // Add footer with page numbers
+      const pageCount = pdf.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(10).setFont('helvetica', 'italic');
+        pdf.text(
+          `Page ${i} of ${pageCount}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        );
+      }
+  
       // Save the PDF
+      const filename = `${(this.courseName || 'course')
+        .replace(/[^a-z0-9]/gi, '_')
+        .toLowerCase()}_content.pdf`;
       pdf.save(filename);
-
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('There was an error generating the PDF. Please try again.');
     }
   }
+  
+  
+  
 
-  toggleRegeneratePopup(): void {
-    this.showModifyFields = !this.showModifyFields;
+  showRegenerateForm() {
+    this.isRegenerateModalVisible = true;
   }
 
   closePopup(): void {
-    this.showModifyFields = false;  // Close the modal when cancel is clicked
+    this.showModifyFields = false; // Close the modal when cancel is clicked
   }
 
   submitReason(): void {
@@ -369,6 +565,25 @@ ngAfterViewInit() {
   }
 // ///////
 
+  onSubmit() {
+    const requestBody = {
+      unitId: this.selectedUnit,
+      reason: this.reason,
+    };
+
+    this.viewContentService.regenerateUnit(requestBody).subscribe(
+      (response) => {
+        console.log('Unit regeneration successful!', response);
+        this.isModalVisible = false; // Hide modal after success
+        // You can add additional logic to notify the user of success
+      },
+      (error) => {
+        console.error('Error regenerating unit', error);
+        // Add additional error handling logic as needed
+      }
+    );
+  }
+
 regenerateUnit(unit: any) {
   if (!unit.unitId) {
     alert('Unit ID is missing. Cannot regenerate.');
@@ -376,17 +591,17 @@ regenerateUnit(unit: any) {
   }
 
   // Call the service to regenerate content for this unit
-  this.generateContentService.regenerateUnit(unit.unitId).subscribe({
-    next: (updatedUnit) => {
-      // Update the unit content in the UI
-      unit.content = updatedUnit.content;
-      alert('Unit regenerated successfully!');
-    },
-    error: (err) => {
-      console.error('Error regenerating unit:', err);
-      alert('Failed to regenerate unit. Please try again.');
-    }
-  });
+  // this.generateContentService.regenerateUnit(unit.unitId).subscribe({
+  //   next: (updatedUnit) => {
+  //     // Update the unit content in the UI
+  //     unit.content = updatedUnit.content;
+  //     alert('Unit regenerated successfully!');
+  //   },
+  //   error: (err) => {
+  //     console.error('Error regenerating unit:', err);
+  //     alert('Failed to regenerate unit. Please try again.');
+  //   }
+  // });
 }
 }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.geeks4learning.CourseGen.DTOs.HighlightRequestDTO;
 import com.geeks4learning.CourseGen.DTOs.UpdateRequestDTO;
 import com.geeks4learning.CourseGen.DTOs.PromtDTO;
+import com.geeks4learning.CourseGen.DTOs.RegenerationRequestsDTO;
 import com.geeks4learning.CourseGen.Entities.Activity;
 import com.geeks4learning.CourseGen.Entities.Assessment;
 import com.geeks4learning.CourseGen.Entities.CourseModule;
@@ -137,48 +138,50 @@ public class AIController {
     }
 
     private Unit createDetailedUnitContent(CourseModule module, String unitName, String unitDescription,
-            CourseRequest courseRequest) {
-        Unit unit = new Unit();
-        unit.setUnitName(sanitizeText(unitName));
-        unit.setModule(module);
-        unit.setUnitDescription(sanitizeText(unitDescription));
+                                       CourseRequest courseRequest) {
+    Unit unit = new Unit();
+    unit.setUnitId(UUID.randomUUID().toString()); // Assign a unique ID
+    unit.setUnitName(sanitizeText(unitName));
+    unit.setModule(module);
+    unit.setUnitDescription(sanitizeText(unitDescription));
 
-        // Generate detailed content
-        String contentPrompt = String.format(
-                "Create detailed educational content for the unit '%s' in the course '%s'. " +
-                        "The content should be suitable for %s difficulty level and formatted as a textbook. " +
-                        "Please organize the content into the following sections:\n" +
-                        "1. Introduction to key concepts\n" +
-                        "2. Detailed explanation of the theories\n" +
-                        "3. Practical examples\n" +
-                        "4. Key definitions and terminology\n" +
-                        "5. Real-world applications\n" +
-                        "6. Summary and takeaways\n" +
-                        "7. Additional readings or resources",
-                unitName,
-                courseRequest.getCourseTitle(),
-                courseRequest.getDifficulty());
+    // Generate detailed content
+    String contentPrompt = String.format(
+            "Create detailed educational content for the unit '%s' in the course '%s'. " +
+            "The content should be suitable for %s difficulty level and formatted as a textbook. " +
+            "Please organize the content into the following sections:\n" +
+            "1. Introduction to key concepts\n" +
+            "2. Detailed explanation of the theories\n" +
+            "3. Practical examples\n" +
+            "4. Key definitions and terminology\n" +
+            "5. Real-world applications\n" +
+            "6. Summary and takeaways\n" +
+            "7. Additional readings or resources",
+            unitName,
+            courseRequest.getCourseTitle(),
+            courseRequest.getDifficulty());
 
-        String content = respondToPrompt(contentPrompt);
-        unit.setContent(sanitizeText(content));
+    String content = respondToPrompt(contentPrompt);
+    unit.setContent(sanitizeText(content));
 
-        // Generate activities
-        String activityPrompt = String.format(
-                "Create 3 engaging practical activities for '%s' that:\n" +
-                        "1. Reinforce key concepts from the unit\n" +
-                        "2. Promote active learning and interaction\n" +
-                        "3. Are appropriate for %s difficulty level\n" +
-                        "4. Relate to real-world scenarios and applications discussed in the content\n" +
-                        "5. Include instructions and expected outcomes",
-                unitName,
-                courseRequest.getDifficulty());
+    // Generate activities
+    String activityPrompt = String.format(
+            "Create 3 engaging practical activities for '%s' that:\n" +
+            "1. Reinforce key concepts from the unit\n" +
+            "2. Promote active learning and interaction\n" +
+            "3. Are appropriate for %s difficulty level\n" +
+            "4. Relate to real-world scenarios and applications discussed in the content\n" +
+            "5. Include instructions and expected outcomes",
+            unitName,
+            courseRequest.getDifficulty());
 
-        String activityContent = respondToPrompt(activityPrompt);
-        Activity activity = new Activity(sanitizeText(activityContent), unit);
-        unit.setActivityUnits(Collections.singletonList(activity));
+    String activityContent = respondToPrompt(activityPrompt);
+    Activity activity = new Activity(sanitizeText(activityContent), unit);
+    unit.setActivityUnits(Collections.singletonList(activity));
 
-        return unit;
-    }
+    return unit;
+}
+
 
     private String getStructuredOutlinePrompt(CourseRequest courseRequest) {
         return String.format(
@@ -335,29 +338,27 @@ public class AIController {
             Optional<CourseModule> optionalModule = moduleRepository.findById(requestDTO.getModuleId());
             if (optionalModule.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Module not found."));
+                        .body(Map.of("error", "Module not found."));
             }
-            
+
             Optional<Unit> optionalUnit = unitRepository.findById(requestDTO.getUnitId());
             if (optionalUnit.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Unit not found."));
+                        .body(Map.of("error", "Unit not found."));
             }
-            
+
             String prompt = "Rewrite the following content: " + requestDTO.getHighlightedText();
             String regeneratedText = respondToPrompt(prompt);   
             
             return ResponseEntity.ok(Map.of(
-                "regeneratedText", regeneratedText,
-                "startIndex", String.valueOf(requestDTO.getStartIndex()),
-                "endIndex", String.valueOf(requestDTO.getEndIndex())
-            ));
+                    "regeneratedText", regeneratedText,
+                    "startIndex", String.valueOf(requestDTO.getStartIndex()),
+                    "endIndex", String.valueOf(requestDTO.getEndIndex())));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Error regenerating text: " + e.getMessage()));
+                    .body(Map.of("error", "Error regenerating text: " + e.getMessage()));
         }
     }
-
 
     @PostMapping("/confirmUpdate")
     public ResponseEntity<Map<String, String>> confirmUpdate(
@@ -369,18 +370,18 @@ public class AIController {
                 response.put("error", "Unit not found with ID: " + updateDTO.getUnitId());
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
-            
+
             Unit unit = optionalUnit.get();
             String currentContent = unit.getContent();
-            
+
             // Replace only the highlighted portion with regenerated text
             String updatedContent = currentContent.substring(0, updateDTO.getStartIndex()) +
-                                  updateDTO.getRegeneratedText() +
-                                  currentContent.substring(updateDTO.getEndIndex());
-            
+                    updateDTO.getRegeneratedText() +
+                    currentContent.substring(updateDTO.getEndIndex());
+
             unit.setContent(updatedContent);
             unitService.saveUnit(unit);
-            
+
             Map<String, String> response = new HashMap<>();
             response.put("message", "Unit updated successfully.");
             return ResponseEntity.ok(response);
@@ -390,10 +391,56 @@ public class AIController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    
 
+    @PostMapping("/regenerateUnitWithReason")
+    public ResponseEntity<Map<String, String>> regenerateUnitWithReason(
+            @RequestBody RegenerationRequestsDTO requestDTO) {
+        try {
+            // Find the module by its ID (as a String)
+            Optional<CourseModule> optionalModule = moduleRepository.findById(requestDTO.getModuleId());
+            if (optionalModule.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Module not found."));
+            }
 
-    
+            // Find the unit by its ID (as a String)
+            Optional<Unit> optionalUnit = unitRepository.findById(requestDTO.getUnitId());
+            if (optionalUnit.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Unit not found."));
+            }
+
+            // Validate the reason
+            if (requestDTO.getReason() == null || requestDTO.getReason().isBlank()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("error", "Reason for regeneration is required."));
+            }
+
+            // Generate the prompt
+            String prompt = String.format(
+                    "Rewrite the content for the unit '%s' under the module '%s' for the following reason: %s",
+                    optionalUnit.get().getUnitName(),
+                    optionalModule.get().getModuleName(),
+                    requestDTO.getReason());
+
+            // Call ChatGPT to regenerate text
+            String regeneratedText = respondToPrompt(prompt);
+
+            // Save or process the regenerated text as needed
+            Unit unit = optionalUnit.get();
+            unit.setContent(sanitizeText(regeneratedText));
+            unitRepository.save(unit);
+
+            // Return the response
+            return ResponseEntity.ok(Map.of(
+                    "message", "Unit content regenerated successfully.",
+                    "unitId", unit.getUnitId(),
+                    "regeneratedContent", regeneratedText));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error regenerating unit content: " + e.getMessage()));
+        }
+    }
 
     @GetMapping("/getAllModules")
     public List<CourseModule> getAllCourseModules() {
@@ -401,9 +448,10 @@ public class AIController {
     }
 
     @GetMapping("/getModuleById")
-    public Optional<CourseModule> getModuleById(@RequestParam String id){
+    public Optional<CourseModule> getModuleById(@RequestParam String id) {
         return moduleService.findCourseModuleById(id);
     }
+
     @GetMapping("/getAllUnits")
     public List<Unit> getAllUnits() {
         return unitService.getAllUnits();
