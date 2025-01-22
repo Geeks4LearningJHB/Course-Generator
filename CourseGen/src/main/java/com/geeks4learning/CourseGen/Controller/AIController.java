@@ -213,21 +213,6 @@ public class AIController {
                 .orElse("Course Outline");
     }
 
-    // private String findOutlineName(String[] lines) {
-    // for (String line : lines) {
-    // String trimmed = line.trim();
-    // if (trimmed.startsWith("Month") || trimmed.matches(".*: .*")) {
-    // return sanitizeText(trimmed);
-    // }
-    // }
-    // return Arrays.stream(lines)
-    // .map(String::trim)
-    // .filter(line -> !line.isEmpty())
-    // .findFirst()
-    // .map(this::sanitizeText)
-    // .orElse("Course Outline");
-    // }
-
     private List<Map<String, String>> parseUnitLines(String[] lines) {
         List<Map<String, String>> unitDetails = new ArrayList<>();
         StringBuilder currentDescription = new StringBuilder();

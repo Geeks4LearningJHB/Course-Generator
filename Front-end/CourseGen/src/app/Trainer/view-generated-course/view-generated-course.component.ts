@@ -149,17 +149,17 @@ export class ViewGeneratedCourseComponent {
       reason: this.reason,
     };
 
-    this.viewContentService.regenerateUnit(requestBody).subscribe(
-      (response) => {
-        console.log('Unit regeneration successful!', response);
-        this.isModalVisible = false; // Hide modal after success
-        // You can add additional logic to notify the user of success
-      },
-      (error) => {
-        console.error('Error regenerating unit', error);
-        // Add additional error handling logic as needed
-      }
-    );
+    // this.viewContentService.regenerateUnit(requestBody).subscribe(
+    //   (response) => {
+    //     console.log('Unit regeneration successful!', response);
+    //     this.isModalVisible = false; // Hide modal after success
+    //     // You can add additional logic to notify the user of success
+    //   },
+    //   (error) => {
+    //     console.error('Error regenerating unit', error);
+    //     // Add additional error handling logic as needed
+    //   }
+    // );
   }
 
   async toggleUnit(unitTitle: string, index: number): Promise<void> {

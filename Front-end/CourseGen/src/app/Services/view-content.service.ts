@@ -7,7 +7,7 @@ export interface Unit {
   unitName: string;
   unitDescription: string;
   duration: number;
-  content: string;
+  content: string ;
   unitNum: number;
   isExpanded?: boolean;
   isLoaded?: boolean;
@@ -30,6 +30,11 @@ export interface ListItem {
   code?: string;
 }
 
+interface RegenerationRequest {
+  moduleId: string;
+  unitId: string;
+  reason: string;
+}
 
 export interface RegenerateRequest {
   moduleId: string;
@@ -60,9 +65,11 @@ export class ViewContentService {
     return this.http.get<Unit[]>(`${this.apiUrl}/getAllUnits`);
   }
 
-  regenerateUnit(requestBody: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/regenerateUnitWithReason`, requestBody);
+  regenerateUnit(payload: RegenerationRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/regenerateUnitWithReason`, payload);
   }
+  
+  
   // http://localhost:8080/AI/regenerateUnitWithReason
 
   getUnitsByModules(moduleId: string): Observable<Unit[]> {

@@ -12,6 +12,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ContentParserService } from '../../Services/content-parser.service';
 import { GenerateContentService } from '../../Services/generate-content.service';
+import { forkJoin } from 'rxjs';
 
 export interface ListItem {
   text?: string;
@@ -46,14 +47,16 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   details: string = '';
   isCollapsed = true;
   units: Unit[] = [];
+  unit: any[] = [];
   courses: Course[] = [];
-  course: Course | undefined ;
+  course: Course | undefined;
   selectedCourse: Course | null = null;
   generatedData: any;
   courseName: string = '';
   currentCourseId: string = '';
   regenerationReason: string = '';
-  selectedUnit: string = '';
+  selectedUnit: string | null = null;
+  selectedUnits: Unit | null = null;
   reason: string = '';
   generatedCourse: any = null;
   parsedUnits: ParsedUnit[] = [];
@@ -62,6 +65,7 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   currentPage: number = 1;
   itemsPerPage: number = 5; // Number of units displayed per page
   isLoading: { [key: string]: boolean } = {};
+  isRegenerating: boolean = false;
 
   // Variables for highlighted text and floating button
   highlightedText: string = '';
@@ -89,16 +93,20 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     // this.generatedData = nav?.extras.state?.['data'];
   }
 
-  ngAfterViewInit() {
-    const unitElement = document.querySelector('#unit-element');
-    console.log('Unit Element:', unitElement);
-    if (!unitElement) {
-      console.warn('Unit Element is null or undefined.');
+  ngAfterViewInit(): void {
+    const unitElements = document.querySelectorAll('.unit-card');
+    if (unitElements.length === 0) {
+      console.warn('No Unit Elements found.');
     } else {
-      // Logic for adding event listeners or handling unitElement
-      unitElement.addEventListener('click', () => {
-        console.log('Unit Element clicked!');
-        // Show the button or perform other actions
+      unitElements.forEach((unitElement) => {
+        // console.log('Unit Element found:', unitElement);
+        unitElement.addEventListener('click', () => {
+          console.log(
+            'Unit Element clicked!',
+            unitElement.getAttribute('data-unit-id')
+          );
+          // Perform further actions, e.g., showing a modal or expanding content
+        });
       });
     }
   }
@@ -117,10 +125,7 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       (collapsed) => (this.isCollapsed = collapsed)
     );
 
-    // this.getUnits();
-
     // this.generatedCourse = this.courses.moduleName;
-
   }
 
   get paginatedUnits() {
@@ -149,26 +154,6 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     this.currentPage = page;
   }
 
-  // async loadUnitContent(globalIndex: number): Promise<void> {
-  //   try {
-  //     const unit = this.generatedCourse.units[globalIndex];
-  //     if (!unit?.content) return;
-  //     const parsedContent = await this.contentParserService.parseContent(
-  //       unit.content,
-  //       1000 // chunk size
-  //     );
-  //     if (parsedContent.length > 0) {
-  //       this.parsedUnits[globalIndex] = {
-  //         ...this.parsedUnits[globalIndex],
-  //         ...parsedContent[0],
-  //         isLoaded: true,
-  //       };
-  //     }
-  //   } catch (error) {
-  //     console.error('Error loading unit:', error);
-  //   }
-  // }
-
   public parseLinksAndBold(content: string): string {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const boldRegex = /\*\*(.*?)\*\*/g;
@@ -184,40 +169,27 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     return formattedContent;
   }
 
-  // async toggleUnits(unitTitle: string, index: number): Promise<void> {
-  //   this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
-
-  //   // Calculate the global index considering pagination
-  //   const globalIndex = (this.currentPage - 1) * this.itemsPerPage + index;
-
-  //   if (
-  //     this.expandedUnits[unitTitle] &&
-  //     !this.parsedUnits[globalIndex]?.isLoaded
-  //   ) {
-  //     this.isLoading[unitTitle] = true;
-  //     try {
-  //       await this.loadUnitContent(globalIndex);
-  //     } finally {
-  //       this.isLoading[unitTitle] = false;
-  //     }
-  //   }
-  // }
-
   loadCourseContent(courseId: string): void {
-    this.viewCoursesService.getModuleById(courseId).subscribe({
-      next: (course : Course) => {
+    forkJoin({
+      course: this.viewCoursesService.getModuleById(courseId),
+      units: this.viewContentService.getUnitsByModules(courseId),
+    }).subscribe({
+      next: ({ course, units }) => {
         this.courseName = course.moduleName;
         this.selectedCourse = course;
+        this.units = units.map((unit) => ({ ...unit, isExpanded: false }));
       },
-      error: (err) => console.error('Error fetching course details:', err),
+      error: (err) => console.error('Error loading course content:', err),
     });
+  }
 
-    this.viewContentService.getUnitsByModules(courseId).subscribe({
-      next: (data) => {
-        this.units = data.map((unit) => ({ ...unit, isExpanded: false }));
-      },
-      error: (err) => console.error('Error fetching course content:', err),
-    });
+  onUnitClick(unit: any): void {
+    unit.isExpanded = !unit.isExpanded;
+    console.log(
+      `Unit ${unit.isExpanded ? 'expanded' : 'collapsed'}:`,
+      unit.unitName,
+      unit.unitId
+    );
   }
 
   @HostListener('document:click', ['$event'])
@@ -422,30 +394,30 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   downloadPDF(): void {
     try {
       const pdf = new jsPDF();
-  
+
       // Document dimensions and formatting
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 20;
       const contentWidth = pageWidth - 2 * margin;
-  
+
       // Set initial position
       let yPosition = 20;
-  
+
       // Add document title
       const title = this.courseName || 'Course Content';
       pdf.setFontSize(32).setFont('Bahnschrift Regular', 'bold');
       pdf.text(title, pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 20;
-  
+
       // Reserve a page for the Table of Contents
       pdf.addPage(); // Add a blank page for the ToC
       const tocPage = pdf.getNumberOfPages();
-  
+
       // Move to the next page for units
       pdf.addPage();
       yPosition = 20;
-  
+
       // Check if there are any units
       if (!this.units || this.units.length === 0) {
         pdf.setFontSize(14).setFont('helvetica', 'italic');
@@ -453,83 +425,95 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
         pdf.save('empty_course.pdf');
         return;
       }
-  
+
       // Initialize Table of Contents array
       const tableOfContents: { unitTitle: string; pageNumber: number }[] = [];
-  
+
       // Process each unit
-      this.units.forEach((unit: { unitName: string; content: string }, index: number) => {
-        if (yPosition + 40 > pageHeight) {
-          pdf.addPage();
-          yPosition = 20;
-        }
-  
-        // Add unit title
-        const unitTitle = `Unit ${index + 1}: ${unit.unitName || 'Untitled Unit'}`;
-        pdf.setFontSize(18).setFont('helvetica', 'bold');
-        pdf.text(unitTitle, margin, yPosition);
-  
-        // Add entry to ToC
-        tableOfContents.push({
-          unitTitle,
-          pageNumber: pdf.getNumberOfPages(),
-        });
-  
-        yPosition += 15;
-  
-        // Add unit content
-        const content = unit.content || 'No content available';
-        const paragraphs = content.split('\n').filter((p: string) => p.trim());
-        pdf.setFontSize(12).setFont('helvetica', 'normal');
-  
-        paragraphs.forEach((paragraph: string) => {
-          const lines: string[] = pdf.splitTextToSize(paragraph, contentWidth);
-  
-          lines.forEach((line: string) => {
-            if (yPosition + 10 > pageHeight) {
-              pdf.addPage();
-              yPosition = 20;
-            }
-            pdf.text(line, margin, yPosition);
-            yPosition += 7;
+      this.units.forEach(
+        (unit: { unitName: string; content: string }, index: number) => {
+          if (yPosition + 40 > pageHeight) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+
+          // Add unit title
+          const unitTitle = `Unit ${index + 1}: ${
+            unit.unitName || 'Untitled Unit'
+          }`;
+          pdf.setFontSize(18).setFont('helvetica', 'bold');
+          pdf.text(unitTitle, margin, yPosition);
+
+          // Add entry to ToC
+          tableOfContents.push({
+            unitTitle,
+            pageNumber: pdf.getNumberOfPages(),
           });
-  
-          yPosition += 5; // Space after paragraph
-        });
-  
-        yPosition += 10; // Space after unit
-      });
-  
+
+          yPosition += 15;
+
+          // Add unit content
+          const content = unit.content || 'No content available';
+          const paragraphs = content
+            .split('\n')
+            .filter((p: string) => p.trim());
+          pdf.setFontSize(12).setFont('helvetica', 'normal');
+
+          paragraphs.forEach((paragraph: string) => {
+            const lines: string[] = pdf.splitTextToSize(
+              paragraph,
+              contentWidth
+            );
+
+            lines.forEach((line: string) => {
+              if (yPosition + 10 > pageHeight) {
+                pdf.addPage();
+                yPosition = 20;
+              }
+              pdf.text(line, margin, yPosition);
+              yPosition += 7;
+            });
+
+            yPosition += 5; // Space after paragraph
+          });
+
+          yPosition += 10; // Space after unit
+        }
+      );
+
       // Populate the Table of Contents
       pdf.setPage(tocPage);
       yPosition = 20;
       pdf.setFontSize(20).setFont('helvetica', 'bold');
-      pdf.text('Table of Contents', pageWidth / 2, yPosition, { align: 'center' });
+      pdf.text('Table of Contents', pageWidth / 2, yPosition, {
+        align: 'center',
+      });
       yPosition += 20;
-  
+
       tableOfContents.forEach(({ unitTitle, pageNumber }) => {
         if (yPosition + 10 > pageHeight) {
           pdf.addPage();
           yPosition = 20;
         }
         pdf.setFontSize(12).setFont('helvetica', 'normal');
-        pdf.text(`${unitTitle} ................ ${pageNumber}`, margin, yPosition);
+        pdf.text(
+          `${unitTitle} ................ ${pageNumber}`,
+          margin,
+          yPosition
+        );
         yPosition += 7;
       });
-  
+
       // Add footer with page numbers
       const pageCount = pdf.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         pdf.setPage(i);
         pdf.setFontSize(10).setFont('helvetica', 'italic');
-        pdf.text(
-          `Page ${i} of ${pageCount}`,
-          pageWidth / 2,
-          pageHeight - 10,
-          { align: 'center' }
-        );
+        pdf.text(`Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 10, {
+          align: 'center',
+        });
       }
-  
+
       // Save the PDF
       const filename = `${(this.courseName || 'course')
         .replace(/[^a-z0-9]/gi, '_')
@@ -540,13 +524,6 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       alert('There was an error generating the PDF. Please try again.');
     }
   }
-  
-  
-  
-
-  showRegenerateForm() {
-    this.isRegenerateModalVisible = true;
-  }
 
   closePopup(): void {
     this.showModifyFields = false; // Close the modal when cancel is clicked
@@ -556,6 +533,11 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
     if (this.regenerationReason.trim()) {
       console.log('Reason for Re-Generation:', this.regenerationReason);
 
+      // You can pass this reason to a backend service here
+      // Example:
+      // this.viewContentService.submitRegenerationReason(this.regenerationReason).subscribe(response => {
+      //   console.log('Regeneration reason submitted successfully', response);
+      // });
 
       alert('Thank you for providing the reason.');
       this.closePopup();
@@ -563,45 +545,66 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       alert('Please provide a reason before submitting.');
     }
   }
-// ///////
 
-  onSubmit() {
-    const requestBody = {
-      unitId: this.selectedUnit,
-      reason: this.reason,
+  openRegenerateForm(unit: Unit): void {
+    console.log('Opening regenerate form for unit:', unit);
+    this.selectedUnit = unit.unitId;
+    this.selectedUnits = unit;
+    this.regenerationReason = '';
+    this.isRegenerateModalVisible = true;
+    console.log('Modal visibility:', this.isRegenerateModalVisible);
+  }
+
+  closeRegenerateForm(): void {
+    console.log('Closing regenerate form');
+    this.selectedUnit = null;
+    this.selectedUnits = null;
+    this.regenerationReason = '';
+    this.isRegenerateModalVisible = false;
+    console.log('Modal visibility:', this.isRegenerateModalVisible);
+  }
+
+  // view-content.component.ts
+  submitRegenerationForm() {
+    if (!this.selectedUnits || !this.regenerationReason) {
+      alert('Please provide a valid reason for regeneration.');
+      return;
+    }
+  
+    this.isRegenerating = true; // Show loading overlay
+  
+    const payload = {
+      moduleId: this.currentCourseId,
+      unitId: this.selectedUnits.unitId,
+      reason: this.regenerationReason
     };
-
-    this.viewContentService.regenerateUnit(requestBody).subscribe(
-      (response) => {
-        console.log('Unit regeneration successful!', response);
-        this.isModalVisible = false; // Hide modal after success
-        // You can add additional logic to notify the user of success
+  
+    this.viewContentService.regenerateUnit(payload).subscribe({
+      next: (response) => {
+        console.log('Regeneration successful:', response);
+        const unitIndex = this.units.findIndex(u => u.unitId === this.selectedUnits?.unitId);
+        if (unitIndex !== -1) {
+          this.units[unitIndex].content = response.regeneratedContent;
+        }
+        this.isRegenerating = false; // Hide loading overlay
+        alert('Unit regenerated successfully!');
+        this.closeRegenerateForm();
       },
-      (error) => {
-        console.error('Error regenerating unit', error);
-        // Add additional error handling logic as needed
+      error: (error) => {
+        console.error('Full error details:', error);
+        this.isRegenerating = false; // Hide loading overlay
+        let errorMessage = 'Failed to regenerate unit: ';
+        
+        if (error.error?.error) {
+          errorMessage += error.error.error;
+        } else if (error.message) {
+          errorMessage += error.message;
+        } else {
+          errorMessage += 'Unknown error occurred';
+        }
+        
+        alert(errorMessage);
       }
-    );
+    });
   }
-
-regenerateUnit(unit: any) {
-  if (!unit.unitId) {
-    alert('Unit ID is missing. Cannot regenerate.');
-    return;
-  }
-
-  // Call the service to regenerate content for this unit
-  // this.generateContentService.regenerateUnit(unit.unitId).subscribe({
-  //   next: (updatedUnit) => {
-  //     // Update the unit content in the UI
-  //     unit.content = updatedUnit.content;
-  //     alert('Unit regenerated successfully!');
-  //   },
-  //   error: (err) => {
-  //     console.error('Error regenerating unit:', err);
-  //     alert('Failed to regenerate unit. Please try again.');
-  //   }
-  // });
 }
-}
-
