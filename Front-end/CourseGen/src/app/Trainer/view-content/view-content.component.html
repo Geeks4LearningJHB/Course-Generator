@@ -39,7 +39,7 @@
                 </ul>
               </ng-template>
             </li>
-            <button (click)="openRegenerateForm(unit); $event.stopPropagation()" class="re-generate-button">🔄</button>
+            <button title="Regenerate Unit" (click)="openRegenerateForm(unit); $event.stopPropagation()" class="re-generate-button">🔄</button>
           </ul>
         </div>
       </div>
@@ -56,21 +56,46 @@
 
       <!-- Modal for Regeneration Reason -->
       <!-- Move this outside the course-container div but still inside admin-dashboard-container -->
-      <div class="modal" *ngIf="isRegenerateModalVisible">
+      <div class="modal-overlay" *ngIf="isRegenerateModalVisible">
         <div class="modal-content">
           <h3>Regenerate Unit: {{ selectedUnits?.unitName || 'Unknown Unit' }}</h3>
           <form (ngSubmit)="submitRegenerationForm()">
             <label for="reason">Why do you want to regenerate this unit?</label>
-            <textarea id="reason" name="reason" [(ngModel)]="regenerationReason" required
+            <textarea 
+              id="reason" 
+              name="reason" 
+              [(ngModel)]="regenerationReason" 
+              required
               placeholder="Enter your reason">
-      </textarea>
-            <div class="modal-buttons">
-              <button type="button" (click)="closeRegenerateForm()">Cancel</button>
-              <button type="submit" [disabled]="!regenerationReason">Submit</button>
+            </textarea>
+            <div class="modal-actions">
+              <button type="button" class="cancel-button"  (click)="closeRegenerateForm()">Cancel</button>
+              <button 
+                type="submit"
+                class="confirm-button" 
+                [disabled]="!regenerationReason || isRegenerating">
+                {{ isRegenerating ? 'Regenerating...' : 'Submit' }}
+              </button>
             </div>
           </form>
         </div>
       </div>
+    
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" *ngIf="isRegenerating">
+        <div class="loader">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <p class="loading-text">Regenerating content...</p>
+      </div>
+    
+      <!-- Your existing download button -->
+      <button class="download-button" (click)="downloadPDF()" [disabled]="!units || units.length === 0">
+        ⬇️ Download PDF
+      </button>
 
       <ng-template #noUnits>
         <p>No units available for this course.</p>
@@ -78,8 +103,8 @@
     </div>
   </div>
 
-  <button class="download-button" (click)="downloadPDF()" [disabled]="!units || units.length === 0">⬇️ Download
-    PDF</button>
+  <!-- <button class="download-button" (click)="downloadPDF()" [disabled]="!units || units.length === 0">⬇️ Download
+    PDF</button> -->
   <!-- <button class="re-generate-button" (click)="showRegenerateForm()">🔄 Re-Generate Content</button> -->
 
 
