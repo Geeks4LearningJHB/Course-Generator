@@ -43,7 +43,7 @@
     align-items: center;
     justify-content: flex-start; 
     width: 100%;
-    max-width: 2000px; 
+    /* max-width: 2000px;  */
     font-family: Arial, sans-serif;
     min-height: 100vh; 
     text-align: center;
@@ -299,7 +299,6 @@ div.body {
   width: 100%;
   margin-left: 250px;
   height: 45px;
-  /* justify-content: center; */
   align-items: center;
   background-color: #ffffff;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.1);
@@ -308,7 +307,7 @@ div.body {
 
 .sub-header.isCollapsed {
   margin-left: 0px;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 .sub-header.shifted {
@@ -318,16 +317,26 @@ div.body {
 .sub-header sub-heading {
   margin-left: 200px;
 }
+@media (max-width: 768px) {
+  .sub-header {
+    justify-content: center; /* Ensures centering for smaller screens */
+    margin-left: 0; /* Adjusts margins for narrow screens */
+    
+  }
 
+}
 .sub-heading {
   font-family: Arial, sans-serif;
   font-weight: bold;
   font-size: 32px;
-  margin-left: 300px;
+  position: absolute;
+  width: 50vw;
+  left: 25%;
+  /* margin-left: 35%; */
   background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  /* text-align: center; */
+  text-align: center;
 }
 
 .dash-container-1 {
