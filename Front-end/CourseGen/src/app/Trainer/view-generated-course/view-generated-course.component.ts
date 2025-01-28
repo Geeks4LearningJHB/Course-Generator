@@ -4,27 +4,8 @@ import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ContentParserService } from '../../Services/content-parser.service';
 import { Unit, ViewContentService } from '../../Services/view-content.service';
-
-export interface ListItem {
-  text?: string;
-  subItems?: string[];
-  language?: string;
-  code?: string;
-}
-
-export interface ParsedSection {
-  heading: string;
-  content: string | ListItem[];
-}
-
-export interface ParsedUnit {
-  monthNumber: number;
-  title: string;
-  introduction: string;
-  keyConcepts: string[];
-  sections: ParsedSection[];
-  isLoaded?: boolean;
-}
+import { ParsedUnit, UnitWithContent } from '../../interface/unit.interfaces';
+import { UnitMapper } from '../../utils/unit-mapper';
 
 @Component({
   selector: 'app-view-generated-course',
@@ -34,6 +15,7 @@ export interface ParsedUnit {
 export class ViewGeneratedCourseComponent {
   generatedCourse: any = null;
   parsedUnits: ParsedUnit[] = [];
+  units: UnitWithContent[] = [];
   isCollapsed = true;
   expandedUnits: { [key: string]: boolean } = {};
   loadedUnits: Set<number> = new Set();
@@ -42,9 +24,14 @@ export class ViewGeneratedCourseComponent {
   isLoading: { [key: string]: boolean } = {};
   isRegenerateModalVisible: boolean = false;
   isModalVisible: boolean = false;
-  selectedUnit: string = '';
+  // selectedUnit: string = '';
   reason: string = '';
-  units: Unit[] = [];
+  // units: Unit[] = [];
+  regenerationReason: string = '';
+  selectedUnit: string | null = null;
+  selectedUnits: UnitWithContent  | null = null;
+  isRegenerating: boolean = false;
+  currentModuleId: string = '';
 
   constructor(
     private router: Router,
@@ -58,11 +45,19 @@ export class ViewGeneratedCourseComponent {
     this.generatedCourse = this.generateContentService.getGeneratedCourse();
     console.log(this.generatedCourse);
     
+    if (this.generatedCourse?.module?.moduleId) {
+      this.currentModuleId = this.generatedCourse.module.moduleId;
+      console.log('Module ID set:', this.currentModuleId);
+    }
+    
     if (this.generatedCourse?.units) {
-      console.log(this.generatedCourse?.units);
-      // Initialize units with minimal data
       this.parsedUnits = this.generatedCourse.units.map((unit: any, index: number) => ({
-        monthNumber: index + 1,
+        unitId: unit.unitId,
+        unitName: unit.unitName,
+        unitDescription: unit.unitDescription || '',
+        duration: unit.duration || 0,
+        content: unit.content || '',
+        unitNum: index + 1,
         title: unit.unitName,
         introduction: '',
         keyConcepts: [],
@@ -70,7 +65,8 @@ export class ViewGeneratedCourseComponent {
         isLoaded: false
       }));
 
-      // Initialize expansion state
+      this.units = this.parsedUnits.map(unit => UnitMapper.parsedUnitToUnit(unit));
+
       this.generatedCourse.units.forEach((unit: any) => {
         this.expandedUnits[unit.unitName] = false;
       });
@@ -142,25 +138,6 @@ export class ViewGeneratedCourseComponent {
   
     return formattedContent;
   }
-  
-  onSubmit() {
-    const requestBody = {
-      unitId: this.selectedUnit,
-      reason: this.reason,
-    };
-
-    // this.viewContentService.regenerateUnit(requestBody).subscribe(
-    //   (response) => {
-    //     console.log('Unit regeneration successful!', response);
-    //     this.isModalVisible = false; // Hide modal after success
-    //     // You can add additional logic to notify the user of success
-    //   },
-    //   (error) => {
-    //     console.error('Error regenerating unit', error);
-    //     // Add additional error handling logic as needed
-    //   }
-    // );
-  }
 
   async toggleUnit(unitTitle: string, index: number): Promise<void> {
     this.expandedUnits[unitTitle] = !this.expandedUnits[unitTitle];
@@ -195,10 +172,6 @@ export class ViewGeneratedCourseComponent {
           alert('Failed to save course.');
         }
       );
-  }
-
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
   }
 
   @HostListener('document:click', ['$event'])
@@ -255,5 +228,83 @@ export class ViewGeneratedCourseComponent {
       return content;
     }
     return JSON.stringify(content);
+  }
+
+  openRegenerateForm(unit: ParsedUnit | UnitWithContent): void {
+    const unitWithContent = 'unitId' in unit 
+      ? unit as UnitWithContent 
+      : UnitMapper.parsedUnitToUnit(unit);
+      
+    console.log('Opening regenerate form for unit:', unitWithContent);
+    this.selectedUnit = unitWithContent.unitId;
+    this.selectedUnits = unitWithContent;
+    this.regenerationReason = '';
+    this.isRegenerateModalVisible = true;
+    console.log('Modal visibility:', this.isRegenerateModalVisible);
+  }
+
+  closeRegenerateForm(): void {
+    console.log('Closing regenerate form');
+    this.selectedUnit = null;
+    this.selectedUnits = null;
+    this.regenerationReason = '';
+    this.isRegenerateModalVisible = false;
+    console.log('Modal visibility:', this.isRegenerateModalVisible);
+  }
+
+  // view-content.component.ts
+  submitRegenerationForm() {
+    if (!this.selectedUnits || !this.regenerationReason || !this.currentModuleId) {
+      alert('Please provide a valid reason for regeneration.');
+      return;
+    }
+  
+    this.isRegenerating = true;
+  
+    const payload = {
+      moduleId: this.currentModuleId,
+      unitId: this.selectedUnits.unitId,
+      reason: this.regenerationReason
+    };
+  
+    console.log('Regeneration payload:', payload);
+
+    this.viewContentService.regenerateUnit(payload).subscribe({
+      next: (response) => {
+        console.log('Regeneration successful:', response);
+        if (response.regeneratedContent) {
+          const unitIndex = this.units.findIndex(u => u.unitId === this.selectedUnits?.unitId);
+          if (unitIndex !== -1) {
+            this.units[unitIndex].content = response.regeneratedContent;
+            // Also update the parsed units if needed
+            this.parsedUnits[unitIndex] = {
+              ...this.parsedUnits[unitIndex],
+              ...UnitMapper.unitToParsedUnit(this.units[unitIndex])
+            };
+          }
+        }
+        this.isRegenerating = false;
+        alert('Unit regenerated successfully!');
+        this.closeRegenerateForm();
+      },
+      error: (error) => {
+        console.error('Full error details:', error);
+        this.isRegenerating = false;
+        let errorMessage = 'Failed to regenerate unit: ';
+        
+        if (error.error?.error) {
+          errorMessage += error.error.error;
+        } else if (error.message) {
+          errorMessage += error.message;
+        } else {
+          errorMessage += 'Unknown error occurred';
+        }
+        
+        alert(errorMessage);
+      },
+      complete: () => {
+        this.isRegenerating = false;
+      }
+    });
   }
 }

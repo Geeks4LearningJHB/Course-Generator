@@ -47,9 +47,10 @@
                     <h5>{{ section.heading }}</h5>
 
                     <!-- Regular content -->
-                    <div *ngIf="isString(section.content)" [innerHTML]="sanitizeContent(parseLinksAndBold(section.content))">
+                    <div *ngIf="isString(section.content);">
+                      <p [innerHTML]="parseLinksAndBold(section.content)">{{ section.content }}</p>
                     </div>
-
+                    <!-- section.content -->
                     <!-- List content -->
                     <ul *ngIf="isArray(section.content)">
                       <ng-container *ngFor="let item of asArray(section.content)">
@@ -62,17 +63,25 @@
                         <li *ngIf="!isCodeBlock(item) && isString(item)">{{ item }}</li>
 
                         <!-- List item with sub-items -->
-                        <li *ngIf="!isCodeBlock(item) && hasSubItems(item)">
-                          {{ item.text }}
-                          <ul *ngIf="item.subItems?.length">
-                            <li *ngFor="let subItem of item.subItems">{{ subItem }}</li>
-                          </ul>
-                        </li>
+                        <ng-template #subItems>
+                          <ng-container *ngIf="!isCodeBlock(item) && hasSubItems(item); ">
+                            <strong>{{ item.text }}</strong>
+                            <ul>
+                              <li *ngFor="let subItem of item.subItems">{{ subItem }}</li>
+                            </ul>
+                          </ng-container>
+                          <ng-template #plainText>
+                            <span>{{ item }}</span>
+                          </ng-template>
+                        </ng-template>
                       </ng-container>
                     </ul>
                   </div>
                 </ng-container>
+              <button title="Regenerate Unit" (click)="openRegenerateForm(unit); $event.stopPropagation()" class="re-generate-button">🔄</button>
+
               </div>
+              <!-- <button title="Regenerate Unit" (click)="openRegenerateForm(unit); $event.stopPropagation()" class="re-generate-button">🔄</button> -->
             </div>
           </div>
           <ng-template #noUnits>
@@ -98,48 +107,39 @@
         <button class="save-btn" (click)="saveCourse()">Save Course</button>
       </div>
 
+      <div class="modal-overlay" *ngIf="isRegenerateModalVisible">
+        <div class="modal-content">
+          <h3>Regenerate Unit: {{ selectedUnits?.unitName || 'Unknown Unit' }}</h3>
+          <form (ngSubmit)="submitRegenerationForm()">
+            <label for="reason">Why do you want to regenerate this unit?</label>
+            <textarea 
+              id="reason" 
+              name="reason" 
+              [(ngModel)]="regenerationReason" 
+              required
+              placeholder="Enter your reason">
+            </textarea>
+            <div class="modal-actions">
+              <button type="button" class="cancel-button"  (click)="closeRegenerateForm()">Cancel</button>
+              <button 
+                type="submit"
+                class="confirm-button" 
+                [disabled]="!regenerationReason || isRegenerating">
+                {{ isRegenerating ? 'Regenerating...' : 'Submit' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" *ngIf="isRegenerating">
+        <div class="loader">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <p class="loading-text">Regenerating content...</p>
+      </div>
 
-      <!-- Modal for Regeneration Form -->
- <!-- view-generated-course.component.html -->
-<div>
-  <!-- Trigger Button -->
-  <button (click)="isModalVisible = true" class="regenerate-btn">
-    Regenerate Unit
-  </button>
-
-  <!-- Modal for Regeneration Form -->
-  <div class="modal" *ngIf="isModalVisible">
-    <div class="modal-content">
-      <span class="close" (click)="isModalVisible = false">&times;</span>
-      <h2>Regenerate Unit</h2>
-      <form (ngSubmit)="onSubmit()">
-        <!-- Dropdown for Units -->
-        <label for="unit-select">Select Unit:</label>
-        <select
-          id="unit-select"
-          [(ngModel)]="selectedUnit"
-          name="selectedUnit"
-          required
-        >
-          <option *ngFor="let unit of parsedUnits" [value]="unit.title">
-            {{ unit.title }}
-          </option>
-        </select>
-
-        <!-- Text Area for Reason -->
-        <label for="reason">Reason:</label>
-        <textarea
-          id="reason"
-          [(ngModel)]="reason"
-          name="reason"
-          rows="4"
-          placeholder="Enter your reason for regeneration..."
-          required
-        ></textarea>
-
-        <!-- Submit Button -->
-        <button type="submit" class="submit-btn">Submit</button>
-      </form>
-    </div>
-  </div>
-</div>

@@ -147,33 +147,49 @@ public class AIController {
 
     // Generate detailed content
     String contentPrompt = String.format(
-            "Create detailed educational content for the unit '%s' in the course '%s'. " +
-            "The content should be suitable for %s difficulty level and formatted as a textbook. " +
-            "Please organize the content into the following sections:\n" +
-            "1. Introduction to key concepts\n" +
-            "2. Detailed explanation of the theories\n" +
-            "3. Practical examples\n" +
-            "4. Key definitions and terminology\n" +
-            "5. Real-world applications\n" +
-            "6. Summary and takeaways\n" +
-            "7. Additional readings or resources",
-            unitName,
-            courseRequest.getCourseTitle(),
-            courseRequest.getDifficulty());
+        "Create **detailed educational content** for the unit '%s' in the course '%s'. " +
+        "This unit is part of a %s-level course and should provide content suitable for learners to master the topic within 1 month. " +
+        "The content should be structured in a textbook format and organized into the following **detailed sections**:\n\n" +
+        "1. **Introduction**:\n" +
+        "- Provide a thorough overview of the topic and explain why it is important in the context of the course.\n" +
+        "2. **Detailed Explanation of Theories**:\n" +
+        "- Include in-depth explanations of core concepts, supported by examples and diagrams where relevant.\n" +
+        "3. **Practical Examples**:\n" +
+        "- Include at least 3 real-world examples or case studies related to the unit topic.\n" +
+        "4. **Key Definitions and Terminology**:\n" +
+        "- Include a glossary of at least 10 key terms with definitions.\n" +
+        "5. **Real-World Applications**:\n" +
+        "- Discuss how the topic is applied in real-life scenarios, including any historical or current applications.\n" +
+        "6. **Summary and Takeaways**:\n" +
+        "- Summarize the key learning points and explain their importance for future units.\n" +
+        "7. **Additional Readings and Resources**:\n" +
+        "- Provide at least 3 suggestions for further reading, including books, articles, or online materials.\n\n" +
+        "Please ensure the content is detailed, engaging, and suitable for self-paced learning over a 1-month period.",
+        unitName,
+        courseRequest.getCourseTitle(),
+        courseRequest.getDifficulty()
+);
+
 
     String content = respondToPrompt(contentPrompt);
     unit.setContent(sanitizeText(content));
 
     // Generate activities
     String activityPrompt = String.format(
-            "Create 3 engaging practical activities for '%s' that:\n" +
-            "1. Reinforce key concepts from the unit\n" +
-            "2. Promote active learning and interaction\n" +
-            "3. Are appropriate for %s difficulty level\n" +
-            "4. Relate to real-world scenarios and applications discussed in the content\n" +
-            "5. Include instructions and expected outcomes",
-            unitName,
-            courseRequest.getDifficulty());
+        "Create 3 **engaging and detailed practical activities** for the unit '%s' that align with the following goals:\n" +
+        "1. Reinforce key concepts from the unit content.\n" +
+        "2. Promote critical thinking and interaction.\n" +
+        "3. Relate to real-world scenarios discussed in the content.\n" +
+        "4. Encourage active problem-solving and collaboration.\n\n" +
+        "Each activity should:\n" +
+        "- Include a clear title and description.\n" +
+        "- Provide step-by-step instructions.\n" +
+        "- Specify the estimated time to complete (e.g., 1-2 hours).\n" +
+        "- Outline expected learning outcomes.\n" +
+        "- Include reflection questions to assess understanding after the activity.\n",
+        unitName
+);
+
 
     String activityContent = respondToPrompt(activityPrompt);
     Activity activity = new Activity(sanitizeText(activityContent), unit);
@@ -184,18 +200,25 @@ public class AIController {
 
 
     private String getStructuredOutlinePrompt(CourseRequest courseRequest) {
-        return String.format(
-                "Create a detailed course outline for: '%s'\n" +
-                        "Duration: %d months\n" +
-                        "Difficulty: %s\n\n" +
-                        "Format the outline with:\n" +
-                        "1. Monthly topics\n" +
-                        "2. Weekly subtopics under each month\n" +
-                        "3. Key learning objectives for each week\n" +
-                        "Please ensure the outline follows a textbook-like structure with clear headings and logical progression.",
-                courseRequest.getCourseTitle(),
-                courseRequest.getDuration(),
-                courseRequest.getDifficulty());
+        
+            return String.format(
+                    "Create a **comprehensive and detailed course outline** for: '%s'.\n" +
+                            "Course Duration: %d months\n" +
+                            "Difficulty: %s\n\n" +
+                            "The outline should include:\n" +
+                            "1. **Monthly Topics**:\n" +
+                            "- A detailed description of the key focus areas for each month.\n" +
+                            "2. **Weekly Subtopics**:\n" +
+                            "- Break each month into weekly modules with subtopics.\n" +
+                            "3. **Learning Objectives**:\n" +
+                            "- Define 3-5 key objectives for each week that are specific and measurable.\n" +
+                            "4. **Activities and Assessments**:\n" +
+                            "- Provide at least 1 practical activity or assessment per week to reinforce learning.\n\n" +
+                            "Ensure the outline is designed for a self-paced learner and is structured like a detailed textbook, with clear progression and real-world applications.",
+                    courseRequest.getCourseTitle(),
+                    courseRequest.getDuration(),
+                    courseRequest.getDifficulty()
+            );  
     }
 
     private String findOutlineName(String[] lines) {

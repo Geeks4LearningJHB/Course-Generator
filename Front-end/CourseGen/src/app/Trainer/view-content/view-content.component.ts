@@ -122,8 +122,11 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
       }
     });
     this.toggleService.isCollapsed$.subscribe(
-      (collapsed) => (this.isCollapsed = collapsed)
+      (collapsed: boolean) => {
+        this.isCollapsed = collapsed; // Ensure this is only being assigned a boolean
+      }
     );
+    
 
     // this.generatedCourse = this.courses.moduleName;
   }
