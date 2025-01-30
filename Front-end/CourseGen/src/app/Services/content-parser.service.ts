@@ -56,37 +56,28 @@ export class ContentParserService {
     return chunks;
   }
 
-  private parseSections(content: string): any[] {
+  private async parseSections(content: string): Promise<any[]> {
     const sections: any[] = [];
-    const sectionRegex = /\d+\.\s+([^\n]+)/g;
+    const sectionRegex = /(?<=^|\n)(\d+\.)\s+(.*?)(?=\n\d+\.|\n?$)/gs;
+  
     let match;
-
     while ((match = sectionRegex.exec(content)) !== null) {
-      const sectionTitle = match[1];
-      const sectionStart = match.index;
-      const nextSection = sectionRegex.exec(content);
-      const sectionEnd = nextSection ? nextSection.index : content.length;
-
-      // Reset regex to not skip next iteration
-      if (nextSection) {
-        sectionRegex.lastIndex = match.index + match[0].length;
-      }
-
-      const sectionContent = content
-        .substring(sectionStart + match[0].length, sectionEnd)
-        .trim();
-
-      // Parse section content based on type
-      const parsedContent = this.parseSectionContent(sectionContent);
-
+      const [_, sectionNumber, sectionTitle] = match;
+      const sectionContent = match.input.slice(
+        match.index + match[0].length,
+        sectionRegex.lastIndex
+      );
+  
+      await new Promise((resolve) => setTimeout(resolve, this.CHUNK_DELAY)); // Delay for async parsing
       sections.push({
-        heading: sectionTitle,
-        content: parsedContent,
+        heading: `${sectionNumber} ${sectionTitle}`.trim(),
+        content: await this.parseContentSafely(sectionContent.trim()),
       });
     }
-
+  
     return sections;
   }
+  
 
   private splitIntoMajorSections(content: string): string[] {
     // Split content at major section boundaries (e.g., months or units)
@@ -164,7 +155,7 @@ export class ContentParserService {
           .substring(sectionStart + match[0].length, sectionEnd)
           .trim();
 
-        const parsedContent = await this.parseSectionContentSafely(
+        const parsedContent = await this.parseContentSafely(
           sectionContent
         );
 
@@ -180,54 +171,51 @@ export class ContentParserService {
     return sections;
   }
 
-  private async parseSectionContentSafely(
-    content: string
-  ): Promise<string | any[]> {
+  private async parseContentSafely(content: string): Promise<string | any[]> {
     try {
       // Check content type and parse accordingly
       if (content.includes('```')) {
         return this.parseCodeBlocks(content);
-      }
-
-      if (content.includes('- ') || content.match(/\d+\./)) {
+      } else if (content.match(/^\d+\./) || content.includes('- ')) {
         return this.parseStructuredContent(content);
-      }
-
-      if (content.includes('**')) {
+      } else if (content.includes('**')) {
         return this.parseBoldText(content);
+      } else if (content.match(/https?:\/\//)) {
+        return this.parseLinks(content);
       }
-
-      return content.trim();
+  
+      return content.trim(); // Default case
     } catch (error) {
-      console.error('Error parsing section content:', error);
+      console.error('Error parsing content:', error);
       return content.trim();
     }
   }
+  
 
-  private parseSectionContent(content: string): string | any[] {
-    // Check if content contains lists
-    if (content.includes('- ') || content.match(/\d+\./)) {
-      return this.parseStructuredContent(content);
-    }
+  // private parseSectionContent(content: string): string | any[] {
+  //   // Check if content contains lists
+  //   if (content.includes('- ') || content.match(/\d+\./)) {
+  //     return this.parseStructuredContent(content);
+  //   }
 
-    // Handle code blocks
-    if (content.includes('```')) {
-      return this.parseCodeBlocks(content);
-    }
+  //   // Handle code blocks
+  //   if (content.includes('```')) {
+  //     return this.parseCodeBlocks(content);
+  //   }
 
-    // Handle bold text
-    if (content.includes('**')) {
-      content = this.parseBoldText(content);
-    }
+  //   // Handle bold text
+  //   if (content.includes('**')) {
+  //     content = this.parseBoldText(content);
+  //   }
 
-    // Handle links
-    if (content.match(/https?:\/\//)) {
-      content = this.parseLinks(content);
-    }
+  //   // Handle links
+  //   if (content.match(/https?:\/\//)) {
+  //     content = this.parseLinks(content);
+  //   }
 
-    // If no special parsing is needed, return trimmed content
-    return content.trim();
-  }
+  //   // If no special parsing is needed, return trimmed content
+  //   return content.trim();
+  // }
 
   private parseLinks(content: string): string {
     // Regex to match URLs

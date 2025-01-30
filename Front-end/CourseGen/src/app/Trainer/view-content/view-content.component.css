@@ -127,9 +127,9 @@ input, textarea {
   color: #333;
 }
 
-.topic:hover {
+/* .topic:hover {
   color: #007bff;
-}
+} */
 
 .sub-topic {
   margin-left: 40px;
@@ -361,6 +361,7 @@ margin-top: 1rem;
 background: #f8f9fa;
 border-radius: 6px;
 margin-bottom: 1rem;
+padding: 0.5rem;
 }
 
 @media (max-width: 768px) {
@@ -382,6 +383,7 @@ cursor: pointer;
 display: flex;
 justify-content: space-between;
 align-items: center;
+border-radius: 15px;
 }
 
 .unit-header h4 {
@@ -396,6 +398,7 @@ border-top: 1px solid #eee;
 line-height: 1.6; /* Improves text readability */
 font-family: 'Arial', sans-serif; /* Use a clean font */
 white-space: pre-line; /* Preserves formatting like newlines */
+border-radius: 15px;
 }
 
 
