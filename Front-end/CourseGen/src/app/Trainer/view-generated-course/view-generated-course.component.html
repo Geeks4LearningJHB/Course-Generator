@@ -151,39 +151,5 @@
     Regenerate Unit
   </button> -->
 
-  <!-- Modal for Regeneration Form -->
-  <div class="modal" *ngIf="isModalVisible">
-    <div class="modal-content">
-      <span class="close" (click)="isModalVisible = false">&times;</span>
-      <h2>Regenerate Unit</h2>
-      <form (ngSubmit)="onSubmit()">
-        <!-- Dropdown for Units -->
-        <label for="unit-select">Select Unit:</label>
-        <select
-          id="unit-select"
-          [(ngModel)]="selectedUnit"
-          name="selectedUnit"
-          required
-        >
-          <option *ngFor="let unit of parsedUnits" [value]="unit.title">
-            {{ unit.title }}
-          </option>
-        </select>
 
-        <!-- Text Area for Reason -->
-        <label for="reason">Reason:</label>
-        <textarea
-          id="reason"
-          [(ngModel)]="reason"
-          name="reason"
-          rows="4"
-          placeholder="Enter your reason for regeneration..."
-          required
-        ></textarea>
-
-        <!-- Submit Button -->
-        <!-- <button type="submit" class="submit-btn">Submit</button> -->
-      </form>
-    </div>
-  </div>
 </div>

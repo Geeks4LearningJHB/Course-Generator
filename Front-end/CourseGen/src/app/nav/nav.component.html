@@ -23,7 +23,7 @@
       </li>
       <li *ngIf="userRole === 'Administrator' || userRole === 'Trainer'">
         <i class="icon fas fa-file-alt"></i>
-        <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
+        <span *ngIf="!isCollapsed" routerLink="/view-courses">View Content</span>
       </li>
       <li *ngIf="userRole === 'Administrator'">
         <i class="icon fas fa-user-check"></i>
