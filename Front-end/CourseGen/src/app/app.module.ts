@@ -23,13 +23,15 @@ import { UserManagementComponent } from './Admin/admin-dashboard/user-management
 import { ViewUsersComponent } from './Admin/view-users/view-users.component';
 
 import { AdminViewCoursesComponent } from './Admin/admin-view-courses/admin-view-courses.component';
-import { NavComponent } from './nav/nav.component';
+import { NavComponent } from './side-panel/nav/nav.component';
 import { CourseSaveComponent } from './Trainer/course-save-component/course-save-component.component';
 import { ViewGeneratedCourseComponent } from './Trainer/view-generated-course/view-generated-course.component';
 import { ContentParserService } from './Services/content-parser.service';
 // import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
 // import { TextRegenerationComponent } from './text-regeneration/text-regeneration.component';
 import { AuthService } from './Services/auth.service';
+import { SidePanelComponent } from './side-panel/side-panel.component';
+import { UserLogComponent } from './side-panel/user-log/user-log.component';
 
 @NgModule({
   declarations: [
@@ -51,9 +53,11 @@ import { AuthService } from './Services/auth.service';
     AdminGenerateContentComponent,
     AdminViewContentComponent,
     AdminViewCoursesComponent,
-    NavComponent,
     CourseSaveComponent,
     ViewGeneratedCourseComponent,
+    SidePanelComponent,
+    UserLogComponent,
+    // NavComponent,
    
   ],
   imports: [

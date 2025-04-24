@@ -10,8 +10,11 @@
 </div>
 
 <div class="body">
-  <div class="sidebar" [class.collapsed]="isCollapsed">
-    <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+  <div class="btns">
+    <div class="sidebar" [class.collapsed]="isCollapsed">
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+      <button class="log-btn" (click)="logUserAction('Clicked the log button')">Log Activity</button>
+    </div>
     <ul>
       <li>
         <i class="icon fa fa-home"></i>
