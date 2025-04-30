@@ -221,6 +221,24 @@
   .toggle-btn:hover {
     background-color: #11627d;
   }
+  
+  .log-btn {
+    background-color: #145570;
+    border: none;
+    color: white;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+
+    position:absolute;
+    z-index: 1110;
+    left: 70px;
+  }
+  
+  .log-btn:hover {
+    background-color: #11627d;
+  }
 
 .top-nav {
   display: flex;
@@ -297,7 +315,7 @@ div.body {
   position: fixed;
   z-index: 1000;
   width: 100%;
-  margin-left: 250px;
+  /* margin-left: 250px; */
   height: 45px;
   align-items: center;
   background-color: #ffffff;
@@ -306,12 +324,13 @@ div.body {
 }
 
 .sub-header.isCollapsed {
-  margin-left: 0px;
+  margin-left: 250px;
   /* justify-content: center; */
 }
 
 .sub-header.shifted {
   margin-left: 70px;
+  top:80px;
 }
 
 .sub-header sub-heading {

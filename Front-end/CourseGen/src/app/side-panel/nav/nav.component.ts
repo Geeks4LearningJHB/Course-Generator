@@ -2,8 +2,8 @@ import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { AuthService } from '../Services/auth.service';
-import { ToggleService } from '../Services/toggle.service';
+import { AuthService } from '../../Services/auth.service';
+import { ToggleService } from '../../Services/toggle.service';
 import { Location } from '@angular/common';
 
 @Component({

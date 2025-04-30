@@ -57,7 +57,7 @@ import { UserLogComponent } from './side-panel/user-log/user-log.component';
     ViewGeneratedCourseComponent,
     SidePanelComponent,
     UserLogComponent,
-    // NavComponent,
+    NavComponent,
    
   ],
   imports: [
