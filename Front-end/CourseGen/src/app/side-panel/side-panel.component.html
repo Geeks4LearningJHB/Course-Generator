@@ -15,7 +15,7 @@
             <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
             <button class="log-btn" (click)="logUserAction()">Log</button>
         </div>
-        <ul>
+        <!-- <ul>
             <li>
                 <i class="icon fa fa-home"></i>
                 <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
@@ -41,7 +41,7 @@
                 <i class="icon fas fa-sign-out-alt"></i>
                 <span class="logout-link" *ngIf="!isCollapsed" routerLink="/landing-page">Logout</span>
             </li>
-        </ul>
+        </ul> -->
 
         <div class="sub-header" [class.shifted]="isCollapsed">
             <h3 class="sub-heading">{{ headerTitle }}</h3>

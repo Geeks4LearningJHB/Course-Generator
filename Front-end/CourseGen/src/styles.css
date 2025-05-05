@@ -315,8 +315,9 @@ div.body {
   position: fixed;
   z-index: 1000;
   width: 100%;
-  /* margin-left: 250px; */
+  margin-left: 150px;
   height: 45px;
+  top:80px;
   align-items: center;
   background-color: #ffffff;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.1);
