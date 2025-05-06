@@ -1,0 +1,28 @@
+.toggle-btn {
+    background-color: #145570;
+    border: none;
+    color: white;
+    width: 70px;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.toggle-btn:hover,
+.log-btn:hover {
+    background-color: #11627d;
+}
+
+.log-btn {
+    background-color: #145570;
+    border: none;
+    color: white;
+    width: 70px;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+
+    position: absolute;
+    z-index: 1110;
+    left: 70px;
+}

@@ -137,7 +137,7 @@
     -webkit-text-fill-color: transparent;
 } */
 
-   .sidebar {
+   /* .sidebar {
     width: 250px;
     height: 100vh;
     background-color: #ffffff;
@@ -206,13 +206,13 @@
     height: 1px;
     background-color: #555;
     margin: 10px 0;
-  }
+  } */
 
-  .toggle-btn {
+  /* .toggle-btn {
     background-color: #145570;
     border: none;
     color: white;
-    width: 100%;
+    width: 70px;
     text-align: center;
     padding: 10px;
     cursor: pointer;
@@ -226,7 +226,7 @@
     background-color: #145570;
     border: none;
     color: white;
-    width: 100%;
+    width: 70px;
     text-align: center;
     padding: 10px;
     cursor: pointer;
@@ -238,7 +238,7 @@
   
   .log-btn:hover {
     background-color: #11627d;
-  }
+  } */
 
 .top-nav {
   display: flex;

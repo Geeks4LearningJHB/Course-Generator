@@ -76,10 +76,10 @@ export class NavComponent implements OnInit {
     this.authService.logout();
   }
 
-  toggleSidebar(): void {
-    this.isCollapsed = !this.isCollapsed;
-    this.toggleService.toggleSidebar();
-  }
+  // toggleSidebar(): void {
+  //   this.isCollapsed = !this.isCollapsed;
+  //   this.toggleService.toggleSidebar();
+  // }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {

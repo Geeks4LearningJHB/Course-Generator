@@ -12,6 +12,7 @@ import { Location } from '@angular/common';
   styleUrl: './side-panel.component.css'
 })
 export class SidePanelComponent implements OnInit {
+  showingNav = true;
   faHome = faHome;
   // isCollapsed = true;
   @Input() isCollapsed: boolean = true;
@@ -76,14 +77,24 @@ export class SidePanelComponent implements OnInit {
     this.authService.logout();
   }
 
-  toggleSidebar(): void {
+  toggleNav(): void {
     this.isCollapsed = !this.isCollapsed;
-    this.toggleService.toggleSidebar();
+    this.toggleService.toggleNav();
   }
 
-  logUserAction(): void {
-    
+  toggleLog(): void {
+    this.isCollapsed = !this.isCollapsed;
+    this.toggleService.toggleLog();
   }
+
+  showNav() {
+    this.showingNav = true;
+  }
+
+  showLog() {
+    this.showingNav = false;
+  }
+
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {

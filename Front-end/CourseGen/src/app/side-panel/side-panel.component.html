@@ -12,16 +12,20 @@
 <div class="body">
     <div class="btns">
         <div class="sidebar" [class.collapsed]="isCollapsed">
-            <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+            <button class="toggle-btn" (click)="toggleNav()">☰</button>
             <!-- <button class="log-btn" (click)="logUserAction()">Log</button> -->
-            <button class="log-btn" (click)="logUserAction()"><i class="fas fa-history"></i></button>
+            <button class="log-btn" (click)="toggleLog()"><i class="fas fa-history"></i></button>
         </div>
- 
-        <!-- <app-nav></app-nav> -->
+
+
         <div class="sub-header" [class.shifted]="isCollapsed">
             <h3 class="sub-heading">{{ headerTitle }}</h3>
             <button *ngIf="showBackButton" class="back-button" (click)="goBack()">
                 <span class="icon fas fa-arrow-left"></span> Back </button>
         </div>
     </div>
+
+    <app-nav *ngIf="showingNav"></app-nav>
+    <app-user-log *ngIf="!showingNav"></app-user-log>
+
 </div>
