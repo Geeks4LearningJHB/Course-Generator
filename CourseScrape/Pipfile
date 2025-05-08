@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+django-rest-framework = "*"
+python-dotenv = "*"
+psycopg2-binary = "*"
+pymongo = "*"
+transformers = "*"
+torch = "*"
+markdown = "*"
+beautifulsoup4 = "*"
+requests = "*"
+huggingface-hub = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.13"

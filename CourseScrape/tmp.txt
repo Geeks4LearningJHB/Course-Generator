@@ -1,0 +1,2 @@
+python manage.py course_builder --use_db
+python manage.py check_mongo

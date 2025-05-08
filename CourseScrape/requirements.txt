@@ -1,0 +1,9 @@
+pymongo
+transformers
+torch
+markdown
+django-rest-framework
+python-dotenv
+psycopg2-binary
+beatifulsoup4
+requests
