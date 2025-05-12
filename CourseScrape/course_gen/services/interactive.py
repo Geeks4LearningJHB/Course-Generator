@@ -1,5 +1,5 @@
 from course_gen.core.globals import (
-    List, Dict, logger, Optional, asyncio, json, os
+    List, Dict, logger, Optional, asyncio, json, os, traceback
 )
 
 from .course_generator import CourseGenerator
@@ -53,8 +53,7 @@ class CourseBuilderInterface:
         """Update the knowledge base"""
         self.generator.knowledge = value
         
-    async def interactive_mode_async(self):
-        """Async version of the main interactive loop"""
+    def interactive_mode(self):
         print("\n" + "="*60)
         print("AI COURSE BUILDER".center(60))
         print("="*60)
@@ -64,11 +63,11 @@ class CourseBuilderInterface:
             choice = input("\nEnter your choice (1-7): ").strip()
             
             if choice == "1":
-                await self._handle_course_creation_async()
+                self._handle_course_creation()
             elif choice == "2":
                 self._update_knowledge_base()
             elif choice == "3":
-                self._search_web_for_knowledge_async()
+                self._search_web_for_knowledge()
             elif choice == "4":
                 self._list_topics()
             elif choice == "5":
@@ -80,10 +79,6 @@ class CourseBuilderInterface:
                 break
             else:
                 print("\nInvalid choice. Please try again.")
-
-    def interactive_mode(self):
-        """Sync wrapper for the async interactive mode"""
-        asyncio.run(self.interactive_mode_async())
 
     # Menu Handlers
     def _display_main_menu(self):
@@ -100,7 +95,7 @@ class CourseBuilderInterface:
         print("7. Exit")
         print("-"*60)
 
-    def _search_web_for_knowledge_async(self):
+    async def _search_web_for_knowledge_async(self):
         """Async version of web search with Playwright support"""
         print("\nSearch Web for Knowledge")
         print("------------------------")
@@ -118,12 +113,19 @@ class CourseBuilderInterface:
             max_results = 5
             
         print(f"\nSearching for '{query}'...")
+        print("This might take a few minutes. Please be patient.")
+        
         try:
-            # Store search results temporarily
-            self._search_results = self.scraper_sync.search_and_scrape(query, max_results)
+            # Determine which scraper to use
+            if isinstance(self.scraper_async, PlaywrightScraper):
+                # Use async method directly
+                self._search_results = await self.scraper_async.search_and_scrape_async(query, max_results)
+            else:
+                # Use sync method for StandardScraper
+                self._search_results = self.scraper_async.search_and_scrape(query, max_results)
             
             if not self._search_results:
-                print("No quality content found (many sites have paywalls)")
+                print("No quality content found (many sites have paywalls or restrictive robots.txt)")
                 return
                 
             print(f"\nFound {len(self._search_results)} good resources:")
@@ -157,7 +159,8 @@ class CourseBuilderInterface:
                 
         except Exception as e:
             logger.error(f"Web search failed: {str(e)}")
-            print("\nFailed to search web. Check logs for details.")
+            print(f"\nFailed to search web: {str(e)}")
+            traceback.print_exc()  # Print full traceback for debugging
     
     def _search_web_for_knowledge(self):
         """Sync wrapper for async web search"""
@@ -179,7 +182,7 @@ class CourseBuilderInterface:
         # Offer to search web for additional knowledge
         if input("\nSearch web for additional content on this topic? [y/N]: ").lower() == 'y':
             try:
-                search_results = await self.scraper_async.search_and_scrape(f"{topic} {level} course")
+                search_results = await self.scraper_async.search_and_scrape_async(f"{topic} {level} course")
                 if search_results:
                     print(f"\nFound {len(search_results)} additional resources:")
                     for i, item in enumerate(search_results, 1):

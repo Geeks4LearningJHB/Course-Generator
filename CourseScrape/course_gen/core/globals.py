@@ -20,6 +20,7 @@ import asyncio
 import nest_asyncio
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from copy import copy
 
 # Third-Party Libraries (Direct imports - medium weight)
 import requests
@@ -66,9 +67,9 @@ class LazyImporter:
         elif name == 'np':
             import numpy as np
             self._cache[name] = np
-        elif name == 'async_playwright':
-            from playwright.async_api import async_playwright
-            self._cache[name] = async_playwright
+        #elif name == 'async_playwright':
+            #from playwright.async_api import async_playwright
+            #self._cache[name] = lambda: async_playwright()
         else:
             raise AttributeError(f"No lazy import available for {name}")
 
@@ -81,8 +82,10 @@ if TYPE_CHECKING:
     import torch
     import transformers
     import numpy as np
+    #from playwright.async_api import async_playwright
 else:
     # These won't be imported at runtime
     torch = None
     transformers = None
     np = None
+    #async_playwright = None
