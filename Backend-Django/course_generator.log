@@ -1,0 +1,35 @@
+2025-05-12 14:08:15,344 - django.request - WARNING - Not Found: /
+2025-05-12 14:12:35,933 - django.utils.autoreload - INFO - C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\promptreceiver_project\urls.py changed, reloading.
+2025-05-12 14:18:31,216 - django.utils.autoreload - INFO - C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\promptreceiver_project\urls.py changed, reloading.
+2025-05-12 14:18:44,652 - django.request - ERROR - Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: index.html
+2025-05-12 14:22:11,846 - django.request - ERROR - Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\core\handlers\base.py", line 220, in _get_response
+    response = response.render()
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\response.py", line 114, in render
+    self.content = self.rendered_content
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\venv\lib\site-packages\django\template\loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: index.html
+2025-05-12 14:23:08,301 - django.utils.autoreload - INFO - C:\Users\Geeks3 D17\Desktop\Course-Generator\Backend-Django\promptreceiver_project\urls.py changed, reloading.
+2025-05-12 14:23:47,945 - django.request - WARNING - Not Found: /
