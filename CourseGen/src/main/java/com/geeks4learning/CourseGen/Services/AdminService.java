@@ -28,32 +28,35 @@ public class AdminService {
 
     @Autowired
     private RoleRepository roleRepository;
-
-public Message createAdmin(AdminDTO adminDTO) {
-    Message message = new Message();
-    try {
-        AdminEntity admin = new AdminEntity();
-        admin.setName(adminDTO.getName());
-        admin.setSurname(adminDTO.getSurname());
-        admin.setEmail(adminDTO.getEmail());
-        admin.setPassword(adminDTO.getPassword());
-
-        // Assign roles to admin
-        Role adminRole = roleRepository.findByRoleName("Administrator")
-                                       .orElseThrow(() -> new RuntimeException("Role not found"));
-        admin.getRoles().add(adminRole);
-
-        adminRepository.save(admin);
-        message.setMessage("Admin created successfully");
-        message.setResponse("Success");
-
-    } catch (Exception e) {
-        message.setMessage("Error creating admin");
-        message.setResponse("Failed");
-        e.printStackTrace();
+    public Message createAdmin(AdminDTO adminDTO) {
+        Message message = new Message();
+        try {
+            AdminEntity admin = new AdminEntity();
+            admin.setName(adminDTO.getName());
+            admin.setSurname(adminDTO.getSurname());
+            
+            // Convert email to lowercase to ensure case-insensitivity
+            admin.setEmail(adminDTO.getEmail().toLowerCase());
+            
+            admin.setPassword(adminDTO.getPassword());
+    
+            // Assign roles to admin
+            Role adminRole = roleRepository.findByRoleName("Administrator")
+                                           .orElseThrow(() -> new RuntimeException("Role not found"));
+            admin.getRoles().add(adminRole);
+    
+            adminRepository.save(admin);
+            message.setMessage("Admin created successfully");
+            message.setResponse("Success");
+    
+        } catch (Exception e) {
+            message.setMessage("Error creating admin");
+            message.setResponse("Failed");
+            e.printStackTrace();
+        }
+        return message;
     }
-    return message;
-}
+    
 
 
 

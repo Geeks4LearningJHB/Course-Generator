@@ -8,24 +8,33 @@
   height: 40px;
   border-radius: 50%;
   margin-right: 10px;
-  }
+}
 
 .button-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-} 
+}
+
+.card {
+  margin: 20px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(105%);
+  box-shadow: 0 8px 12px #145570;
   
-  .card {
-    margin: 20px;
-    text-align: center;
-  }
-  
+
+}
+
 .card img {
-  height: 140px; /* Ensure consistent image height */
+  height: 140px;
+  /* Ensure consistent image height */
   object-fit: cover;
 }
-  
+
 /* .body {
   margin-top: 79px;
   background-color: #e4e9ef;
@@ -58,7 +67,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 150px; /* Match image height */
+  height: 150px;
+  /* Match image height */
   position: relative;
 }
 
@@ -68,7 +78,8 @@
   height: 90px;
   position: relative;
   transform-origin: center;
-  perspective: 1000px; /* Adds 3D depth */
+  perspective: 1000px;
+  /* Adds 3D depth */
 }
 
 /* Pages */
@@ -86,15 +97,21 @@
 
 /* Corrected Flip Animation */
 @keyframes flip {
-  0%, 20% {
+
+  0%,
+  20% {
     transform: rotateY(0deg);
   }
+
   50% {
-    transform: rotateY(-120deg); /* Flips the page */
+    transform: rotateY(-120deg);
+    /* Flips the page */
   }
+
   100% {
-    transform: rotateY(0deg); /* Returns to the initial position */
-}
+    transform: rotateY(0deg);
+    /* Returns to the initial position */
+  }
 }
 
 /* Page Styling */
@@ -119,7 +136,8 @@
   justify-content: center;
   background-color: rgb(116, 170, 156);
   align-items: center;
-  height: 150px; /* Match image height */
+  height: 150px;
+  /* Match image height */
   position: relative;
   overflow: hidden;
 }
@@ -138,17 +156,19 @@
     transform: rotate(0deg);
     animation-timing-function: ease-in;
   }
+
   30% {
     transform: rotate(180deg);
     animation-timing-function: ease-out;
   }
+
   60% {
     transform: rotate(360deg);
     animation-timing-function: ease-in;
   }
+
   100% {
     transform: rotate(720deg);
     animation-timing-function: ease-out;
   }
 }
-

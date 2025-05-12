@@ -18,14 +18,14 @@
               <div *ngIf="isString(unit?.content); ">
                 <p [innerHTML]="formatContent(parseLinksAndBold(unit.content))">{{ unit?.content }}</p>
               </div>
-              
+
                 <ul *ngIf="isArray(unit?.content)">
                   <ng-container *ngFor="let item of asArray(unit?.content)">
                     <li *ngIf="isCodeBlock(item); else subItems" class="code-block">
                       <pre><code [class]="'language-' + item.language">{{ item.code }}</code></pre>
                     </li>
 
-                    <li *ngIf="!isCodeBlock(item) && isString(item)">{{ item }}</li> 
+                    <li *ngIf="!isCodeBlock(item) && isString(item)">{{ item }}</li>
 
                     <ng-template #subItems>
                       <ng-container *ngIf="!isCodeBlock(item) && hasSubItems(item); ">
@@ -40,7 +40,7 @@
                     </ng-template>
                   </ng-container>
                 </ul>
-              
+
             </li>
             <button title="Regenerate Unit" (click)="openRegenerateForm(unit); $event.stopPropagation()" class="re-generate-button">🔄</button>
           </ul>
@@ -64,18 +64,18 @@
           <h3>Regenerate Unit: {{ selectedUnits?.unitName || 'Unknown Unit' }}</h3>
           <form (ngSubmit)="submitRegenerationForm()">
             <label for="reason">Why do you want to regenerate this unit?</label>
-            <textarea 
-              id="reason" 
-              name="reason" 
-              [(ngModel)]="regenerationReason" 
+            <textarea
+              id="reason"
+              name="reason"
+              [(ngModel)]="regenerationReason"
               required
               placeholder="Enter your reason">
             </textarea>
             <div class="modal-actions">
               <button type="button" class="cancel-button"  (click)="closeRegenerateForm()">Cancel</button>
-              <button 
+              <button
                 type="submit"
-                class="confirm-button" 
+                class="confirm-button"
                 [disabled]="!regenerationReason || isRegenerating">
                 {{ isRegenerating ? 'Regenerating...' : 'Submit' }}
               </button>
@@ -83,7 +83,7 @@
           </form>
         </div>
       </div>
-    
+
       <!-- Loading Overlay -->
       <div class="loading-overlay" *ngIf="isRegenerating">
         <div class="loader">
@@ -94,7 +94,7 @@
         </div>
         <p class="loading-text">Regenerating content...</p>
       </div>
-    
+
       <!-- Your existing download button -->
       <button class="download-button" (click)="downloadPDF()" [disabled]="!units || units.length === 0">
         ⬇️ Download PDF
@@ -118,6 +118,7 @@
       Regenerate
     </button>
   </div>
+  
   <div class="modal-overlay" *ngIf="isModalVisible">
     <div class="modal-content">
       <h3 class="modal-title">Review Generated Text</h3>

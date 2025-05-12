@@ -354,28 +354,35 @@ export class ViewContentComponent implements OnInit, AfterViewInit {
   }
 
   confirmUpdate() {
-    if (!this.currentUnit) return;
-
-    const request = {
-      unitId: this.currentUnit.unitId,
-      regeneratedText: this.regeneratedText,
-      startIndex: this.currentUnit.content.indexOf(this.selectedText),
-      endIndex:
-        this.currentUnit.content.indexOf(this.selectedText) +
-        this.selectedText.length,
-    };
-
-    this.viewContentService.confirmUpdate(request).subscribe({
-      next: () => {
-        this.isModalVisible = false;
-        this.loadCourseContent(this.currentCourseId);
-      },
-      error: (error) => {
-        console.error('Error updating unit:', error);
-        alert('Failed to update content.');
-      },
-    });
+    if (!this.currentUnit || !this.highlightedText || !this.regeneratedText) {
+      alert('Something went wrong. Please try again.');
+      return;
+    }
+  
+    // Find the start index of the highlighted text
+    const startIndex = this.currentUnit.content.indexOf(this.highlightedText);
+    if (startIndex === -1) {
+      alert('Selected text not found in the unit content.');
+      return;
+    }
+  
+    // Replace the old text with the regenerated text
+    const newContent =
+      this.currentUnit.content.substring(0, startIndex) +
+      this.regeneratedText +
+      this.currentUnit.content.substring(startIndex + this.highlightedText.length);
+  
+    // Update the unit's content
+    this.currentUnit.content = newContent;
+  
+    // Hide modal and clear highlighted text
+    this.isModalVisible = false;
+    this.highlightedText = '';
+    this.regeneratedText = '';
+  
+    alert('Text updated successfully!');
   }
+  
 
   toggleUnit(unit: any): void {
     unit.isExpanded = !unit.isExpanded; // Toggle expanded state

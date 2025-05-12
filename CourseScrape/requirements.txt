@@ -1,0 +1,12 @@
+pymongo
+transformers
+torch
+markdown
+django-rest-framework
+python-dotenv
+psycopg2-binary
+bs4
+requests
+django
+duckduckgo_search
+playwright

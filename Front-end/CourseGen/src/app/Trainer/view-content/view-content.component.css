@@ -4,8 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #12324d;
-  position: relative;
+  background-color: #e4e9ef;
 }
 
 .form-container {
@@ -278,39 +277,39 @@ input, textarea {
 .generated-course-container {
   background-color: #ffffff;
   width: 70%;
-  padding: 20px; 
-  padding-bottom: 60px; 
-  box-sizing: border-box; 
-  border-radius: 8px; 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  padding: 20px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin: auto;
   margin-top: 150px;
 }
 
 .button-container {
-  display: flex; 
-  justify-content: center; 
-  margin-top: 20px; 
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 
 .back-btn, .save-btn {
-  background-color: #12324d; 
-  color: white; 
-  border: none; 
-  padding: 10px 20px; 
-  border-radius: 5px; 
-  font-size: 16px; 
-  cursor: pointer; 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
-  margin-right: 10px; 
-  transition: background-color 0.3s ease; 
+  background-color: #12324d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
 }
 
 
 
 button:last-child {
-  margin-right: 0; 
+  margin-right: 0;
 }
 
 .back-btn:hover, .save-btn:hover{

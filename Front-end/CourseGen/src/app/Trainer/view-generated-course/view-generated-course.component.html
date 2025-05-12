@@ -103,7 +103,7 @@
       </div>
 
       <div class="action-buttons">
-        <button class="edit-btn" (click)="onEditCourse()">🔄 Re-Generate Content</button>
+        <!-- <button class="edit-btn" (click)="onEditCourse()">🔄 Re-Generate Content</button> -->
         <button class="save-btn" (click)="saveCourse()">Save Course</button>
       </div>
 
@@ -112,18 +112,18 @@
           <h3>Regenerate Unit: {{ selectedUnits?.unitName || 'Unknown Unit' }}</h3>
           <form (ngSubmit)="submitRegenerationForm()">
             <label for="reason">Why do you want to regenerate this unit?</label>
-            <textarea 
-              id="reason" 
-              name="reason" 
-              [(ngModel)]="regenerationReason" 
+            <textarea
+              id="reason"
+              name="reason"
+              [(ngModel)]="regenerationReason"
               required
               placeholder="Enter your reason">
             </textarea>
             <div class="modal-actions">
               <button type="button" class="cancel-button"  (click)="closeRegenerateForm()">Cancel</button>
-              <button 
+              <button
                 type="submit"
-                class="confirm-button" 
+                class="confirm-button"
                 [disabled]="!regenerationReason || isRegenerating">
                 {{ isRegenerating ? 'Regenerating...' : 'Submit' }}
               </button>
@@ -131,7 +131,7 @@
           </form>
         </div>
       </div>
-    
+
       <!-- Loading Overlay -->
       <div class="loading-overlay" *ngIf="isRegenerating">
         <div class="loader">
@@ -143,3 +143,13 @@
         <p class="loading-text">Regenerating content...</p>
       </div>
 
+      <!-- Modal for Regeneration Form -->
+ <!-- view-generated-course.component.html -->
+<div>
+  <!-- Trigger Button -->
+  <!-- <button (click)="isModalVisible = true" class="regenerate-btn">
+    Regenerate Unit
+  </button> -->
+
+
+</div>

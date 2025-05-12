@@ -53,7 +53,7 @@ public class TrainerService {
             TrainerEntity trainer = new TrainerEntity();
             trainer.setName(trainerDTO.getName());
             trainer.setSurname(trainerDTO.getSurname());
-            trainer.setEmail(trainerDTO.getEmail());
+            trainer.setEmail(trainerDTO.getEmail().toLowerCase());
             trainer.setPassword(trainerDTO.getPassword());
             trainer.setUserType("Trainer");  // Set default user type
     
@@ -79,9 +79,5 @@ public class TrainerService {
     public List<TrainerViewDTO> getTrainerDetails() {
         return trainerRepository.findAllTrainer();
     }
-    // //Get all accepted trainers
-    // public List<TrainerEntity> getAcceptedTrainers() {
-    // return trainerRepository.findByStatus();
-    // }
-
+   
 }

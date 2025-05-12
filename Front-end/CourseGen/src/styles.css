@@ -41,16 +41,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     width: 100%;
-    max-width: 2000px; 
+    /* max-width: 2000px;  */
     font-family: Arial, sans-serif;
-    min-height: 100vh; 
+    min-height: 100vh;
     text-align: center;
     box-sizing: border-box;
     background-color: #e4e9ef;
   }
-  
+
 
   .dashboard-title {
     font-size: 30px;
@@ -66,12 +66,12 @@
     width: 100%;
     padding: 10px 0;
   }
-  
+
   .logo {
     height: 60px;
     width: auto;
   }
-  
+
   .profile-icon {
     width: 40px;
     height: 40px;
@@ -79,7 +79,7 @@
     margin-right: 10px;
   }
 
-    
+
   .form-box {
     background-color: #fff;
     padding: 40px;
@@ -89,18 +89,18 @@
     max-height: 80%;
     overflow-y: auto;
   }
-  
+
   .form-group {
     margin-bottom: 15px;
   }
-  
+
   label {
     /* display: block; */
     margin-bottom: 5px;
     font-weight: bold;
     color: #333;
   }
-  
+
   input,
   select {
     width: 100%;
@@ -114,18 +114,18 @@
     justify-content: space-between;
     padding: 20px;
 }
-  
+
 .logo-1 {
     height: 50px;
 }
-  
+
 .profile-icon1 {
     height: 40px;
     border-radius: 50%;
     cursor: pointer;
     margin-right: 10px;
 }
-  
+
 .title-1 {
     margin-top: 0px;
     text-align: center;
@@ -150,17 +150,17 @@
     box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
     overflow: hidden;
   }
-  
+
   .sidebar.collapsed {
     width: 70px;
   }
-  
+
   .sidebar ul {
     list-style: none;
     padding: 0;
     margin: 8px;
   }
-  
+
   .sidebar ul li {
     display: flex;
     align-items: center;
@@ -170,44 +170,44 @@
     transition: background-color 0.3s ease, color 0.3s ease;
     border-radius: 25px;
   }
-  
+
   .sidebar ul li:hover {
     background-color: #133B50;
     opacity: 0.85;
   }
-  
+
   .sidebar ul li .icon {
     font-size: 20px;
     color: #333;
     margin-right: 10px;
     transition: color 0.3s ease;
   }
-  
+
   .sidebar ul li:hover .icon {
     color: white;
   }
-  
+
   .sidebar ul li span {
     font-size: 16px;
     color: #333;
     transition: color 0.3s ease;
   }
-  
+
   .sidebar ul li:hover span {
     color: white;
   }
-  
+
   .sidebar.collapsed ul li span {
     display: none;
   }
-  
+
   .divider {
     border: 0;
     height: 1px;
     background-color: #555;
     margin: 10px 0;
   }
-  
+
   .toggle-btn {
     background-color: #145570;
     border: none;
@@ -217,7 +217,7 @@
     padding: 10px;
     cursor: pointer;
   }
-  
+
   .toggle-btn:hover {
     background-color: #11627d;
   }
@@ -299,7 +299,6 @@ div.body {
   width: 100%;
   margin-left: 250px;
   height: 45px;
-  /* justify-content: center; */
   align-items: center;
   background-color: #ffffff;
   box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.1);
@@ -308,7 +307,7 @@ div.body {
 
 .sub-header.isCollapsed {
   margin-left: 0px;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 .sub-header.shifted {
@@ -318,16 +317,26 @@ div.body {
 .sub-header sub-heading {
   margin-left: 200px;
 }
+@media (max-width: 768px) {
+  .sub-header {
+    justify-content: center; /* Ensures centering for smaller screens */
+    margin-left: 0; /* Adjusts margins for narrow screens */
 
+  }
+
+}
 .sub-heading {
   font-family: Arial, sans-serif;
   font-weight: bold;
   font-size: 32px;
-  margin-left: 300px;
+  position: absolute;
+  width: 50vw;
+  left: 25%;
+  /* margin-left: 35%; */
   background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  /* text-align: center; */
+  text-align: center;
 }
 
 .dash-container-1 {
