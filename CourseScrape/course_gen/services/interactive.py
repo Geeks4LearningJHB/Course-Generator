@@ -1,19 +1,23 @@
 from course_gen.core.globals import (
-    List, Dict, logger, Optional
+    List, Dict, logger, Optional, asyncio, json, os, traceback
 )
 
-from typing import Optional
 from .course_generator import CourseGenerator
-from .knowledge_scraper import KnowledgeScraper
+from .knowledge_scraper import StandardScraper, PlaywrightScraper, URLManager, ContentCleaner, ContentExtractor, BaseDetector, BaseScraper
 
 class CourseBuilderInterface:
     """
-    Interactive interface for AI Course Builder with these features:
+    Interactive interface for AI Course Builder with these enhanced features:
     - Course generation from scraped knowledge
+    - Web search integration with Playwright for JavaScript-heavy sites
     - Interactive menu system
     - Database integration (optional)
     - Markdown export
     """
+    url_manager = URLManager(scraped_urls_file="scraped_urls.json", bad_urls_file="bad_urls.json")
+    content_cleaner = ContentCleaner()
+    extractor = ContentExtractor(content_cleaner)
+    detector = BaseDetector()
     
     def __init__(self, db_manager=None):
         """
@@ -23,9 +27,21 @@ class CourseBuilderInterface:
             db_manager: Database manager instance (optional)
         """
         self.generator = CourseGenerator()
-        self.scraper = KnowledgeScraper()
+        self.scraper_async = PlaywrightScraper(
+            url_manager=self.url_manager,
+            content_cleaner=self.content_cleaner,
+            extractor=self.extractor,
+            detector=self.detector
+        )
+        self.scraper_sync = StandardScraper(
+            url_manager=self.url_manager,
+            content_cleaner=self.content_cleaner,
+            extractor=self.extractor,
+            detector=self.detector
+        )
         self.db_manager = db_manager
         self._current_page = 0  # For pagination
+        self._search_results = []  # Store temporary search results
         
     @property
     def knowledge(self) -> List[Dict]:
@@ -38,28 +54,27 @@ class CourseBuilderInterface:
         self.generator.knowledge = value
         
     def interactive_mode(self):
-        logger.info("Interactive mode loop triggered")
-
-        """Main interactive loop"""
         print("\n" + "="*60)
         print("AI COURSE BUILDER".center(60))
         print("="*60)
         
         while True:
             self._display_main_menu()
-            choice = input("\nEnter your choice (1-6): ").strip()
+            choice = input("\nEnter your choice (1-7): ").strip()
             
             if choice == "1":
                 self._handle_course_creation()
             elif choice == "2":
                 self._update_knowledge_base()
             elif choice == "3":
-                self._list_topics()
+                self._search_web_for_knowledge()
             elif choice == "4":
-                self._browse_courses()
+                self._list_topics()
             elif choice == "5":
-                self._search_courses()
+                self._browse_courses()
             elif choice == "6":
+                self._search_courses()
+            elif choice == "7":
                 print("\nThank you for using AI Course Generator!")
                 break
             else:
@@ -67,20 +82,92 @@ class CourseBuilderInterface:
 
     # Menu Handlers
     def _display_main_menu(self):
-        """Display the main menu options"""
+        """Display the enhanced main menu options"""
         print("\n" + "-"*60)
         print("MAIN MENU".center(60))
         print("-"*60)
         print("1. Create New Course")
-        print("2. Update Knowledge Base")
-        print("3. List Available Topics")
-        print("4. Browse Saved Courses")
-        print("5. Search Courses")
-        print("6. Exit")
+        print("2. Update Knowledge Base (Configured Sources)")
+        print("3. Search Web for Additional Knowledge")
+        print("4. List Available Topics")
+        print("5. Browse Saved Courses")
+        print("6. Search Courses")
+        print("7. Exit")
         print("-"*60)
 
-    def _handle_course_creation(self):
-        """Handle course creation workflow"""
+    async def _search_web_for_knowledge_async(self):
+        """Async version of web search with Playwright support"""
+        print("\nSearch Web for Knowledge")
+        print("------------------------")
+        
+        query = input("Enter search query: ").strip()
+        if not query:
+            print("No query entered. Returning to main menu.")
+            return
+            
+        try:
+            max_results = int(input("Max results to fetch (default 5): ") or 5)
+            if max_results <= 0:
+                max_results = 5
+        except ValueError:
+            max_results = 5
+            
+        print(f"\nSearching for '{query}'...")
+        print("This might take a few minutes. Please be patient.")
+        
+        try:
+            # Determine which scraper to use
+            if isinstance(self.scraper_async, PlaywrightScraper):
+                # Use async method directly
+                self._search_results = await self.scraper_async.search_and_scrape_async(query, max_results)
+            else:
+                # Use sync method for StandardScraper
+                self._search_results = self.scraper_async.search_and_scrape(query, max_results)
+            
+            if not self._search_results:
+                print("No quality content found (many sites have paywalls or restrictive robots.txt)")
+                return
+                
+            print(f"\nFound {len(self._search_results)} good resources:")
+            for i, item in enumerate(self._search_results, 1):
+                print(f"{i}. {item['title']} ({item['source']})")
+                
+            # Always extend knowledge and save to file
+            self.knowledge.extend(self._search_results)
+            self.generator.load_knowledge()
+            print(f"Added {len(self._search_results)} items to in-memory knowledge base.")
+                    
+            # Save to JSON file
+            file_path = "knowledge_base.json"
+            existing_knowledge = []
+            if os.path.exists(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    try:
+                        existing_knowledge = json.load(f)
+                    except json.JSONDecodeError:
+                        existing_knowledge = []
+
+            all_knowledge = existing_knowledge + self._search_results
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(all_knowledge, f, ensure_ascii=False, indent=4)
+            print(f"Saved to '{file_path}'.")
+
+            # Optional DB save
+            if self.db_manager and input("Also save to database? [y/N]: ").lower() == 'y':
+                self.db_manager.store_knowledge(self._search_results)
+                print("Saved to database.")
+                
+        except Exception as e:
+            logger.error(f"Web search failed: {str(e)}")
+            print(f"\nFailed to search web: {str(e)}")
+            traceback.print_exc()  # Print full traceback for debugging
+    
+    def _search_web_for_knowledge(self):
+        """Sync wrapper for async web search"""
+        asyncio.run(self._search_web_for_knowledge_async())
+
+    async def _handle_course_creation_async(self):
+        """Async version of course creation with web search"""
         print("\nCreate New Course")
         print("-----------------")
         
@@ -91,6 +178,22 @@ class CourseBuilderInterface:
             
         level = input("Enter level (beginner/intermediate/advanced): ").strip().lower()
         level = level if level in ["beginner", "intermediate", "advanced"] else "beginner"
+        
+        # Offer to search web for additional knowledge
+        if input("\nSearch web for additional content on this topic? [y/N]: ").lower() == 'y':
+            try:
+                search_results = await self.scraper_async.search_and_scrape_async(f"{topic} {level} course")
+                if search_results:
+                    print(f"\nFound {len(search_results)} additional resources:")
+                    for i, item in enumerate(search_results, 1):
+                        print(f"{i}. {item['title']} ({item['source']})")
+                        
+                    if input("\nAdd to knowledge base? [y/N]: ").lower() == 'y':
+                        self.knowledge.extend(search_results)
+                        self.generator.load_knowledge()
+            except Exception as e:
+                logger.error(f"Web search during course creation failed: {str(e)}")
+                print("Web search failed, continuing with existing knowledge...")
         
         print(f"\nGenerating {level} course for '{topic}'...")
         course = self.generator.generate_course(topic, level)
@@ -104,13 +207,38 @@ class CourseBuilderInterface:
         print(f"Modules: {len(course['modules'])}")
         
         self._handle_course_save(course)
+    
+    def _handle_course_creation(self):
+        """Sync wrapper for async course creation"""
+        asyncio.run(self._handle_course_creation_async())
 
     def _update_knowledge_base(self):
         """Update the knowledge base by scraping"""
         print("\nUpdating knowledge base...")
         try:
-            self.knowledge = self.scraper.scrape_knowledge_base()
+            self.knowledge = self.scraper_sync.scrape_configured_sources()
             self.generator.load_knowledge()
+            
+            # Always extend knowledge and save to file
+            self.knowledge.extend(self._search_results)
+            self.generator.load_knowledge()
+            print(f"Added {len(self._search_results)} items to in-memory knowledge base.")
+                    
+            # Save to JSON file
+            file_path = "knowledge_base.json"
+            existing_knowledge = []
+            if os.path.exists(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    try:
+                        existing_knowledge = json.load(f)
+                    except json.JSONDecodeError:
+                        existing_knowledge = []
+
+            all_knowledge = existing_knowledge + self._search_results
+            with open(file_path, "w", encoding="utf-8") as f:
+                json.dump(all_knowledge, f, ensure_ascii=False, indent=4)
+            print(f"Saved to '{file_path}'.")
+            
             print("\nKnowledge base updated successfully!")
         except Exception as e:
             logger.error(f"Failed to update knowledge: {str(e)}")

@@ -20,6 +20,11 @@ staticfiles/
 model_cache/
 ~/.cache/huggingface/
 
+# Scraper files
+bad_urls.json
+scraped_urls.json
+knowledge_base.json
+
 # If using Django's collectstatic
 /static/
 
