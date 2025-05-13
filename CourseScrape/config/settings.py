@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'course_gen',
+    'drf_yasg',  # ✅ For Swagger
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
