@@ -21,6 +21,8 @@ import nest_asyncio
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from copy import copy
+import sys
+from rest_framework import serializers
 
 # Third-Party Libraries (Direct imports - medium weight)
 import requests
@@ -35,11 +37,16 @@ import aiohttp
 MONGO_CLIENT = pymongo.MongoClient("mongodb://localhost:27017/") if pymongo else None
 
 # Logger Setup (Instantiated immediately)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+)
+
 logger = logging.getLogger(__name__)
 
+
 # Lazy Importer for Heavy Libraries
-class LazyImporter:
+class LazyLoader:
     """
     Lazy loader for heavy machine learning libraries.
     Caches imported modules to avoid multiple imports.
@@ -67,7 +74,7 @@ class LazyImporter:
         elif name == 'np':
             import numpy as np
             self._cache[name] = np
-        #elif name == 'async_playwright':
+        #elif name == 'async_playwright': # Call using async with lazy.playwright()() as p
             #from playwright.async_api import async_playwright
             #self._cache[name] = lambda: async_playwright()
         else:
@@ -75,7 +82,8 @@ class LazyImporter:
 
         return self._cache[name]
 
-lazy = LazyImporter()
+lazy = LazyLoader()
+
 
 # Type hints for autocompletion (only active during type checking)
 if TYPE_CHECKING:

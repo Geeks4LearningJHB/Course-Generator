@@ -1,21 +1,26 @@
 from course_gen.core.globals import (
     requests, logger, urljoin, urlparse, BeautifulSoup, time, json, logging,
-    ABC, dataclass, field, re, random, copy,
+    ABC, dataclass, field, re, random, copy, random, sys,
     Dict, List, Optional, Set, Tuple, Union, os, DDGS, asyncio
 )
 
 from playwright.async_api import async_playwright
+from course_gen.core import ScrapedContent, SourceConfig
+from course_gen.core import USER_AGENTS, BASE_HEADERS, CODE_SELECTORS, ADVANCED_INDICATORS, BASIC_INDICATORS, ELEMENTS_TO_REMOVE, NON_CONTENT_CASES, PAYWALL_PATTERNS, CONSENT_SELECTORS, MODAL_SELECTORS, COMMON_CONTENT_SELECTORS
+
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, 
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("knowledge_scraper")
 
-# Header to use throughout
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Accept-Language": "en-US,en;q=0.9"
-}
+# Windows fixes for python3.11+ and playwright 
+if sys.platform == "win32":
+    # Required for Playwright subprocess handling
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    
+    # Disable Windows-specific memory protections
+    os.environ['PLAYWRIGHT_DISABLE_ISOLATED_HEAP'] = '1'
+    os.environ['PLAYWRIGHT_NO_PROXY'] = '1'
+
 
 # Custom exceptions for better error handling
 class ScraperException(Exception):
@@ -38,41 +43,14 @@ class ContentExtractionError(ScraperException):
     """Raised when content cannot be extracted"""
     pass
 
-@dataclass
-class ScrapedContent:
-    """Data class for storing scraped content"""
-    title: str = ""
-    text: str = ""
-    code: List[str] = field(default_factory=list)
-    url: str = ""
-    topic: str = ""
-    source: str = ""
-    level: str = "intermediate"
-    
-    def to_dict(self) -> Dict:
-        """Convert to dictionary format"""
+# Global headers function
+def get_random_headers():
+        """Return headers with a random user agent"""
         return {
-            "topic": self.topic,
-            "title": self.title,
-            "content": self.text,
-            "code_examples": self.code,
-            "source": self.source,
-            "url": self.url,
-            "level": self.level
+            **BASE_HEADERS,
+            "User-Agent": random.choice(USER_AGENTS)
         }
-    
-    def is_valid(self) -> bool:
-        """More lenient validation"""
-        return bool(self.text.strip())
 
-@dataclass
-class SourceConfig:
-    """Configuration for a specific content source"""
-    base_url: str
-    topics: Dict[str, Dict[str, Union[str, int]]]
-    content_selectors: List[str]
-    code_selectors: List[str]
-    avoid_urls: List[str]
 
 class URLManager:
     """Manages URL processing, storage and retrieval"""
@@ -256,48 +234,11 @@ class ContentExtractor:
     
     def __init__(self, cleaner: ContentCleaner):
         self.cleaner = cleaner
-        
-        # Look for code blocks in pre and code tags
-        self.code_selectors = [
-            "pre code", "pre", "code", ".code", "#code",
-            ".highlight", ".syntax", ".codeblock", ".code-block",
-            "[class*='code']", "[class*='syntax']", "[class*='highlight']"
-        ]
-        
-        # Advanced topics
-        self.advanced_indicators = [
-            "advanced", "expert", "complex", "optimization", 
-            "architecture", "design pattern", "algorithm", "data structure",
-            "scalability", "performance", "concurrency", "threading", 
-            "distributed", "microservice", "asynchronous"
-        ]
-        
-        # Basic topics
-        self.basic_indicators = [
-            "introduction", "beginner", "basics", "fundamental", "101", 
-            "getting started", "learn", "tutorial", "first steps"
-        ]
-        
-        # Elements to remove from main content
-        self.elements_to_remove = [
-            'script', 'style', 'iframe', 'nav', 'footer', 
-            'aside', 'form', 'button', 'input', 'select',
-            'textarea', 'label', 'fieldset', 'legend',
-            'noscript', 'svg', 'figure', 'img', 'video',
-            'audio', 'source', 'track', 'canvas', 'map',
-            'area', 'pre', 'code', 'header', 'menu',
-            'dialog', 'datalist', 'output', 'progress',
-            'meter', 'details', 'summary', 'template'
-        ]
-        # Classes/IDs that typically indicate non-content
-        self.non_content_cases = [
-            'ad', 'ads', 'advert', 'banner', 'sidebar',
-            'navbar', 'menu', 'footer', 'header', 'modal',
-            'popup', 'lightbox', 'cookie', 'consent',
-            'notification', 'promo', 'sponsor', 'affiliate',
-            'recommendation', 'related', 'comments', 'social',
-            'share', 'login', 'signup', 'newsletter', 'pagination'
-        ]
+        self.code_selectors = CODE_SELECTORS
+        self.advanced_indicators = ADVANCED_INDICATORS
+        self.basic_indicators = BASIC_INDICATORS
+        self.elements_to_remove = ELEMENTS_TO_REMOVE
+        self.non_content_cases = NON_CONTENT_CASES
     
     def get_title(self, soup: BeautifulSoup) -> str:
         """Extract page title"""
@@ -360,18 +301,13 @@ class ContentExtractor:
         code_examples = []
         
         try:
-            # Look for code blocks in pre and code tags
-            code_selectors = [
-                "pre code", "pre", "code", ".code", "#code",
-                ".highlight", ".syntax", ".codeblock", ".code-block",
-                "[class*='code']", "[class*='syntax']", "[class*='highlight']"
-            ]
-            
-            for selector in code_selectors:
+            # Look for code blocks in pre and code tags 
+            for selector in self.code_selectors:
                 for code_block in soup.select(selector):
-                    code = self.cleaner.clean_code(code_block.get_text())
-                    if code and len(code.strip()) > 10:  # Ignore very short snippets
+                    code = self.cleaner.clean_code(code_block.get_text(strip=True))
+                    if code:
                         code_examples.append(code)
+                        
         except Exception as e:
             logger.error(f"Error extracting code examples: {e}")
             
@@ -396,11 +332,11 @@ class ContentExtractor:
                         content["text"] += f"\n{text}"
             
             # Try all code selectors (from original soup)
-            for selector in code_selectors:
+            for selector in self.code_selectors:
                 code_blocks = soup.select(selector)
                 for block in code_blocks:
                     code = self.cleaner.clean_code(block.get_text())
-                    if code and len(code.strip()) > 10:
+                    if code:
                         content["code"].append(code)
         except Exception as e:
             logger.error(f"Error extracting content with selectors: {e}")
@@ -488,20 +424,14 @@ class BaseDetector:
     
     def __init__(self):
         # Paywall detection patterns
-        self.paywall_patterns = [
-            "subscribe", "subscription", "sign in to continue", 
-            "continue reading", "create an account", "premium content",
-            "paid member", "unlock", "free trial", "register to read",
-            "remaining free articles", "remaining articles", "for full access",
-            "join now", "become a member", "sign up today"
-        ]
+        self.paywall_patterns = PAYWALL_PATTERNS
 
 class StandardDetector(BaseDetector):
     """Standard detector using regular HTTP requests"""
     
     def __init__(self):
         super().__init__()
-        self.headers = HEADERS
+        self.headers = get_random_headers()
     
     def is_login_required(self, url: str) -> bool:
         """Check if a URL requires login"""
@@ -574,27 +504,12 @@ class BaseScraper(ABC):
         self.extractor = extractor
         self.detector = detector
         
-        self.headers = HEADERS
+        self.headers = get_random_headers()
         
-        # Common consent button selectors
-        self.consent_selectors = [
-            "button[id*='cookie']", "button[class*='cookie']",
-            "button:has-text('Accept')", "button:has-text('Agree')",
-            "button:has-text('Accept all')", "a:has-text('Accept cookies')",
-            "[id*='cookie'] button", "[class*='cookie'] button",
-            "button:has-text('OK')", "button:has-text('Got it')"
-        ]
-        
-        self.modal_selectors = [
-            ".paywall", "[id*='paywall']", 
-            "[id*='subscribe-wall']", "[class*='paywall']"
-        ]
-        
-        self.common_content_selectors = [
-            "article", ".article", ".post", ".content", "#content", 
-            "main", "#main", ".main-content", ".post-content", 
-            ".entry-content", ".article-content", ".tutorial-content"
-        ]
+        self.code_selectors = CODE_SELECTORS
+        self.consent_selectors = CONSENT_SELECTORS
+        self.modal_selectors = MODAL_SELECTORS
+        self.common_content_selectors = COMMON_CONTENT_SELECTORS
         
         # Sources configuration
         self.sources = {}
@@ -672,7 +587,6 @@ class StandardScraper(BaseScraper):
                             code=main_content.get("code", []),
                             url=base_url,
                             topic=topic,
-                            source=source_name,
                             level=self.extractor.determine_level(main_content["text"], base_url)
                         )
                         
@@ -713,6 +627,12 @@ class PlaywrightScraper(BaseScraper):
                  extractor: ContentExtractor, detector: BaseDetector):
         super().__init__(url_manager, content_cleaner, extractor, detector)
         
+        self.headers = get_random_headers()
+        
+        self.last_search_time = 0
+        self.search_delay = (3, 6)  # Random delay between 3-6 seconds
+        self.max_retries = 3
+        
         self.visited_urls = set()  # Track visited URLs
         self.current_domain = None  # Track current domain being scraped
         
@@ -721,7 +641,7 @@ class PlaywrightScraper(BaseScraper):
             "a:has-text('Continue')", ".next a", 
             ".pagination a:last-child", "#nextbtn"
         ]
-        
+    
     async def _handle_cookie_popups(self, page) -> bool:
         """Handle cookie consent popups""" 
         for selector in self.consent_selectors:
@@ -757,7 +677,11 @@ class PlaywrightScraper(BaseScraper):
                 browser = await p.chromium.launch(headless=True)
                 context = await browser.new_context(
                     viewport={"width": 1280, "height": 800},
-                    user_agent=self.headers["User-Agent"]
+                    user_agent=get_random_headers()["User-Agent"],
+                    extra_http_headers={
+                        k: v for k, v in self.headers.items() 
+                        if k.lower() not in ['user-agent']
+                    }
                 )
 
                 # Avoid detection
@@ -824,6 +748,8 @@ class PlaywrightScraper(BaseScraper):
     
     async def scrape_page_async(self, url: str, topic: str = "", depth=0, max_depth=5) -> Optional[ScrapedContent]:
         """Scrape content from a JavaScript-heavy page using Playwright and return ScrapedContent"""
+        self.headers = get_random_headers()
+        
         # Initialize domain tracking if this is the first page
         if depth == 0:
             self.current_domain = urlparse(url).netloc
@@ -971,9 +897,7 @@ class PlaywrightScraper(BaseScraper):
                         any(tech in url.lower() for tech in ["python", "javascript", "java", "sql", "code"]) and 
                         not code_examples):
                         
-                        code_selectors = ["pre", "code", ".highlight", ".code", ".syntax", 
-                                        ".codehilite", ".sourceCode"]
-                        for selector in code_selectors:
+                        for selector in self.code_selectors:
                             try:
                                 elements = soup.select(selector)
                                 if elements:
@@ -989,7 +913,6 @@ class PlaywrightScraper(BaseScraper):
                         code=code_examples,
                         url=url,
                         topic=topic,
-                        source="web_search",
                         level=self.extractor.determine_level(text, url)
                     )
                     
@@ -1081,17 +1004,40 @@ class PlaywrightScraper(BaseScraper):
         """Async implementation of search and scrape"""
         knowledge = []
         try:
-            enhanced_query = f"{query} course OR tutorial OR guide OR learn"
+            # Implement delay between searches to prevent ratelimiting
+            current_time = time.time()
+            time_since_last = current_time - self.last_search_time
+            if time_since_last < random.uniform(*self.search_delay):
+                delay = random.uniform(*self.search_delay) - time_since_last
+                await asyncio.sleep(delay)
             
-            try:
-                results = DDGS().text(enhanced_query, max_results=max_results * 2)
-                results_list = list(results)
-                
-            except Exception as search_error:
-                logger.error(f"Search engine error: {str(search_error)}")
-                # Fall back to a simplified query
-                results = DDGS().text(query, max_results=max_results * 3)
-                results_list = list(results)
+            enhanced_query = f"{query} course OR tutorial OR guide OR learn"
+            results_list = []
+            
+            # Retry mechanism
+            for attempt in range(self.max_retries):
+                try:
+                    results = DDGS(headers=get_random_headers()).text(enhanced_query, max_results=max_results * 2)
+                    results_list = list(results)
+                    self.last_search_time = time.time()
+                    break
+                except Exception as search_error:
+                    if "Ratelimit" in str(search_error) or "429" in str(search_error):
+                        wait_time = (attempt + 1) * 5  # Exponential backoff
+                        logger.warning(f"Hit rate limit, waiting {wait_time} seconds (attempt {attempt + 1})")
+                        await asyncio.sleep(wait_time)
+                        continue
+                    logger.error(f"Search engine error: {str(search_error)}")
+                    # Fall back to a simplified query on final attempt
+                    if attempt == self.max_retries - 1:
+                        try:
+                            results = DDGS(headers=get_random_headers()).text(enhanced_query, max_results=max_results * 3)
+                            results_list = list(results)
+                            self.last_search_time = time.time()
+                        except Exception as fallback_error:
+                            logger.error(f"Fallback search failed: {str(fallback_error)}")
+                            return knowledge
+                    continue
                 
             # Sort results to prioritize educational sites
             def domain_priority(url):

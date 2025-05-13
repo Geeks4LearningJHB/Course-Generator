@@ -43,6 +43,7 @@ venv/
 ENV/
 env/
 *.venv/
+.scrape_env
 
 # pipenv
 Pipfile.lock

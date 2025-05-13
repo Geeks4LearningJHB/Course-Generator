@@ -3,7 +3,9 @@ from course_gen.core.globals import (
 )
 
 from .course_generator import CourseGenerator
+from .database_manager import DatabaseManager
 from .knowledge_scraper import StandardScraper, PlaywrightScraper, URLManager, ContentCleaner, ContentExtractor, BaseDetector, BaseScraper
+
 
 class CourseBuilderInterface:
     """
@@ -39,7 +41,7 @@ class CourseBuilderInterface:
             extractor=self.extractor,
             detector=self.detector
         )
-        self.db_manager = db_manager
+        self.db_manager = DatabaseManager()
         self._current_page = 0  # For pagination
         self._search_results = []  # Store temporary search results
         
