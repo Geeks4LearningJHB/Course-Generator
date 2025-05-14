@@ -5,9 +5,16 @@
 }
 
 /* Logo styling */
-.logo {
-  height: 50px;
-  cursor: pointer;
+.logo h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.logo .tagline {
+  font-size: 14px;
+  margin: 0;
+  color: #666;
 }
 
 /* Profile Icon styling */
@@ -19,27 +26,29 @@
 }
 
 /* Login Container Styling */
+/* Layout improvements */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 80px); /* Adjust height to account for the header */
+  min-height: calc(100vh - 120px);
   background-color: #f5f5f5;
+  padding: 20px;
 }
 
 .login-box {
   display: flex;
-  width: 70%;
-  max-width: 900px;
-  border-radius: 10px;
+  width: 90%;
+  max-width: 1000px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .left-panel {
   flex: 1;
-  background-color: #e0e0e0;
-  padding: 40px;
+  background-color: white;
+  padding: 50px;
 }
 
 .right-panel {
@@ -50,50 +59,145 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 40px;
+  padding: 50px;
+  text-align: center;
+}
+
+.right-panel h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 /* Global Button Styles */
+/* Button improvements */
 button {
   border: none;
   cursor: pointer;
   font-size: 16px;
-  border-radius: 5px;
-  padding: 10px 20px;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  border-radius: 4px;
+  padding: 12px 20px;
+  transition: all 0.3s ease;
   text-transform: uppercase;
   width: 100%;
   text-align: center;
 }
 
-/* Sign In Button */
 .btn-signin {
-  background-color: black;
+  background-color: #133B50;
   color: white;
+  margin-top: 10px;
 }
 
 .btn-signin:hover {
-  background-color: #333;
+  background-color: #0d2a3a;
+  transform: translateY(-1px);
 }
 
-/* Sign Up Button */
 .btn-signup {
-  background-color: black;
-  color: white;
+  background-color: white;
+  color: #133B50;
+  border: 2px solid white;
+  margin-top: 20px;
 }
 
 .btn-signup:hover {
-  background-color: #4a8287;
+  background-color: transparent;
+  color: white;
 }
 
 /* Form Group Styling */
+/* Update form styling */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 input {
   width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  padding: 12px 15px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #133B50;
+  box-shadow: 0 0 0 2px rgba(19, 59, 80, 0.2);
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Password toggle styling */
+.password-input {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  width: auto;
+  padding: 0;
+  color: #666;
+}
+
+.toggle-password:hover {
+  color: #133B50;
+  background: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .login-box {
+    flex-direction: column;
+    width: 95%;
+  }
+  
+  .left-panel, .right-panel {
+    padding: 30px;
+  }
+  
+  .right-panel {
+    order: -1;
+    padding-bottom: 20px;
+  }
+}
+
+/* Add subtle animations */
+.login-box {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group {
+  transition: all 0.3s ease;
+}
+
+.form-group:focus-within {
+  transform: translateX(5px);
 }
