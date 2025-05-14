@@ -1,13 +1,17 @@
 from course_gen.core.globals import (
     requests, logger, urljoin, urlparse, BeautifulSoup, time, json, logging,
-    ABC, dataclass, field, re, random, copy, random, sys,
-    Dict, List, Optional, Set, Tuple, Union, os, DDGS, asyncio
+    ABC, re, random, copy, random, sys,
+    Dict, List, Optional, Set, Tuple, os, DDGS, asyncio
 )
 
 from playwright.async_api import async_playwright
-from course_gen.core import ScrapedContent, SourceConfig
-from course_gen.core import USER_AGENTS, BASE_HEADERS, CODE_SELECTORS, ADVANCED_INDICATORS, BASIC_INDICATORS, ELEMENTS_TO_REMOVE, NON_CONTENT_CASES, PAYWALL_PATTERNS, CONSENT_SELECTORS, MODAL_SELECTORS, COMMON_CONTENT_SELECTORS
-
+from course_gen.core import ScrapedContent
+from course_gen.core import (
+    USER_AGENTS, BASE_HEADERS, CODE_SELECTORS, ADVANCED_INDICATORS, 
+    BASIC_INDICATORS, ELEMENTS_TO_REMOVE, NON_CONTENT_CASES, PAYWALL_PATTERNS, 
+    CONSENT_SELECTORS, MODAL_SELECTORS, COMMON_CONTENT_SELECTORS
+)
+from course_gen.utils.file_manager import FileManager
 
 # Configure logging
 logger = logging.getLogger("knowledge_scraper")
@@ -96,26 +100,13 @@ class URLManager:
         ]
     
     def _load_urls_file(self, file_path: str) -> Set[str]:
-        """Load URLs from JSON file into a set with error handling"""
-        if os.path.exists(file_path):
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    return set(json.load(f))
-            except json.JSONDecodeError:
-                logger.warning(f"Could not parse {file_path}. Creating a new file.")
-                return set()
-            except Exception as e:
-                logger.error(f"Error loading {file_path}: {str(e)}")
-                return set()
-        return set()
-
-    def save_urls_file(self, file_path: str, urls: Set[str]) -> None:
-        """Save URLs set to JSON file with error handling"""
+        """Load URLs from JSON file using the generic loader."""
         try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(list(urls), f, indent=2)
-        except Exception as e:
-            logger.error(f"Error saving to {file_path}: {str(e)}")
+            data = FileManager.load_json(file_path)
+            return set(data) if isinstance(data, list) else set()
+        except Exception:
+            logger.warning(f"Falling back to empty set for {file_path}")
+            return set()
     
     def extract_domain(self, url: str) -> str:
         """Extract domain from URL safely"""
@@ -171,14 +162,32 @@ class URLManager:
     
     def mark_as_scraped(self, url: str) -> None:
         """Mark URL as successfully scraped"""
-        self.scraped_urls.add(url)
-        self.save_urls_file(self.scraped_urls_file, self.scraped_urls)
+        try:
+            self.scraped_urls.add(url)
+            
+            if not isinstance(self.scraped_urls_file, (str, os.PathLike)):
+                logger.error(f"Invalid output_file: {self.scraped_urls_file}")
+                raise ValueError("Scraped urls output path must be a string")
+            
+            FileManager.save_json(self.scraped_urls, self.scraped_urls_file)
+        except Exception as e:
+            logger.error(f"Scraped urls save failed: {e}")
+            raise
     
     def mark_as_bad(self, url: str) -> None:
         """Mark URL or domain as bad"""
-        domain = self.extract_domain(url)
-        self.bad_urls.add(domain)
-        self.save_urls_file(self.bad_urls_file, self.bad_urls)
+        try:
+            domain = self.extract_domain(url)
+            self.bad_urls.add(domain)
+            
+            if not isinstance(self.bad_urls_file, (str, os.PathLike)):
+                logger.error(f"Invalid output_file: {self.bad_urls_file}")
+                raise ValueError("Bad urls output path must be a string")
+            
+            FileManager.save_json(self.bad_urls, self.bad_urls_file)
+        except Exception as e:
+            logger.error(f"Bad urls save failed: {e}")
+            raise
 
 class ContentCleaner:
     """Handles cleaning and normalization of scraped content"""
@@ -392,7 +401,7 @@ class ContentExtractor:
                 return "intermediate"
         except Exception as e:
             logger.error(f"Error determining level: {e}")
-            return "intermediate"
+            return "beginner"
         
     def _clean_content(self, soup: BeautifulSoup) -> BeautifulSoup:
         """Remove non-content elements from the soup"""

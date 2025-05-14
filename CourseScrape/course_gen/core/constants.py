@@ -1,4 +1,6 @@
-# Header to use throughout
+#################################################################################
+# Used in knowledge_scraper.py
+# Header to use throughout searching
 USER_AGENTS = [
     # Chrome on Windows
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
@@ -175,3 +177,163 @@ COMMON_CONTENT_SELECTORS = [
     ".article-body", ".body-content", ".section-content", ".educational-content",
     ".lesson-content", ".course-content", ".study-material", ".exam-content"
 ]
+
+#################################################################################
+# Used in course_gen.py
+
+# Course templates with placeholders for AI-enhanced content
+COURSE_TEMPLATE = { 
+    'course': {
+        'introduction': (
+            "# {title}\n\n"
+            "## Course Overview\n\n"
+            "{ai_enhanced_description}\n\n"
+            "### Course Objectives\n\n"
+            "{learning_objectives}\n\n"
+            "### Prerequisites\n\n"
+            "{prerequisites}\n\n"
+            "### Target Audience\n\n"
+            "This {level} course on {topic} is designed for {audience}.\n\n"
+            "### Course Structure\n\n"
+            "{structure_overview}\n\n"
+            "### Learning Path\n\n"
+            "{learning_path}"
+        ),
+        'conclusion': (
+            "# Course Conclusion\n\n"
+            "## Congratulations!\n\n"
+            "You've completed the {level} course on {topic}! Let's recap what you've learned:\n\n"
+            "{key_learnings}\n\n"
+            "## Next Steps\n\n"
+            "{next_steps}\n\n"
+            "## Certificate\n\n"
+            "Complete the final assessment to receive your certificate of completion.\n\n"
+            "## Connect & Continue Learning\n\n"
+            "{community_resources}"
+        )
+    },
+    'module': {
+        'introduction': (
+            "# Module {module_num}: {title}\n\n"
+            "## Overview\n\n"
+            "{ai_enhanced_overview}\n\n"
+            "## Learning Objectives\n\n"
+            "{learning_objectives}\n\n"
+            "## Module Outline\n\n"
+            "{module_outline}\n\n"
+            "## Estimated Time: {estimated_time}\n\n"
+            "## Key Concepts\n\n"
+            "{key_concepts}"
+        ),
+        'section': {
+            'explanation': (
+                "## {title}\n\n"
+                "{ai_enhanced_explanation}\n\n"
+                "### Key Points\n\n"
+                "{key_points}\n\n"
+                "### Real-world Application\n\n"
+                "{real_world_application}\n\n"
+                "### Conceptual Model\n\n"
+                "{conceptual_model}\n\n"
+                "### Common Misconceptions\n\n"
+                "{misconceptions}"
+            ),
+            'example': (
+                "### Example: {title}\n\n"
+                "#### Problem Statement\n\n"
+                "{problem_statement}\n\n"
+                "#### Solution Approach\n\n"
+                "{solution_approach}\n\n"
+                "```{language}\n{code}\n```\n\n"
+                "#### Explanation\n\n"
+                "{ai_enhanced_explanation}\n\n"
+                "#### Alternative Approaches\n\n"
+                "{alternative_approaches}\n\n"
+                "#### Practice Variation\n\n"
+                "{practice_variation}"
+            ),
+            'exercise': (
+                "## Exercise: {title}\n\n"
+                "### Objective\n\n"
+                "{objective}\n\n"
+                "### Context\n\n"
+                "{context}\n\n"
+                "### Requirements\n\n"
+                "{requirements}\n\n"
+                "### Scaffold (Starting Point)\n\n"
+                "```{language}\n{scaffold_code}\n```\n\n"
+                "### Steps to Solve\n\n"
+                "{steps}\n\n"
+                "### Hints\n\n"
+                "{hints}\n\n"
+                "### Assessment Criteria\n\n"
+                "{assessment_criteria}"
+            ),
+            'case_study': (
+                "## Case Study: {title}\n\n"
+                "### Background\n\n"
+                "{background}\n\n"
+                "### Challenge\n\n"
+                "{challenge}\n\n"
+                "### Analysis\n\n"
+                "{analysis}\n\n"
+                "### Solution\n\n"
+                "{solution}\n\n"
+                "### Lessons Learned\n\n"
+                "{lessons_learned}\n\n"
+                "### Discussion Questions\n\n"
+                "{discussion_questions}"
+            ),
+            'quiz': (
+                "## Knowledge Check: {title}\n\n"
+                "{introduction}\n\n"
+                "{questions}\n\n"
+                "### Answer Key\n\n"
+                "{answer_key}"
+            )
+        },
+        'summary': (
+            "## Module {module_num} Summary\n\n"
+            "### Key Takeaways\n\n"
+            "{key_takeaways}\n\n"
+            "### Skills Acquired\n\n"
+            "{skills_acquired}\n\n"
+            "### Module Assessment\n\n"
+            "{assessment_description}\n\n"
+            "### Further Reading\n\n"
+            "{further_reading}\n\n"
+            "### Next Module Preview\n\n"
+            "{next_module_preview}"
+        )
+    }
+}
+
+LEVEL_MAP = {
+    "beginner": {"order": 1, "prerequisites": []},
+    "intermediate": {"order": 2, "prerequisites": ["beginner"]},
+    "advanced": {"order": 3, "prerequisites": ["intermediate"]},
+    "expert": {"order": 4, "prerequisites": ["advanced"]}
+}
+
+
+################################################################################
+# Used in content_enhancer.py
+SPECIAL_TOKENS = {
+                    'explanation': '<|explanation|>',
+                    'example': '<|example|>',
+                    'exercise': '<|exercise|>',
+                    'summary': '<|summary|>',
+                    'description': '<|description|>',
+                    'objectives': '<|objectives|>',
+                    'prerequisites': '<|prerequisites|>',
+                    'structure': '<|structure|>',
+                    'learning_path': '<|learning_path|>',
+                    'key_learnings': '<|key_learnings|>',
+                    'next_steps': '<|next_steps|>',
+                    'beginner': '<|beginner|>',
+                    'intermediate': '<|intermediate|>',
+                    'advanced': '<|advanced|>',
+                    'expert': '<|expert|>',
+                    
+                    'title': '<|title|>'
+}

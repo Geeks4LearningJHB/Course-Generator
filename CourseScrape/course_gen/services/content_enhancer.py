@@ -1,7 +1,9 @@
 from course_gen.core.globals import (
-    logger, re, List, os, traceback, Tuple, logging, lazy
+    logger, re, List, os, traceback, Tuple, lazy
 )
-    
+
+from course_gen.core.constants import SPECIAL_TOKENS
+
 class AIContentEnhancer:
     """Advanced AI content generation using GPT-2 with enhancements and improved error handling"""
     def __init__(self, model_name: str = "gpt2-large", cache_dir: str = "model_cache"):
@@ -58,15 +60,10 @@ class AIContentEnhancer:
                 self.model.eval()
 
                 # Add educational special tokens
-                self.special_tokens = {
-                    'explanation': '<|explanation|>',
-                    'example': '<|example|>',
-                    'exercise': '<|exercise|>',
-                    'summary': '<|summary|>',
-                    'beginner': '<|beginner|>',
-                    'intermediate': '<|intermediate|>',
-                    'advanced': '<|advanced|>'
-                }
+                self.special_tokens = SPECIAL_TOKENS
+                
+                # Set the pad token to eos_token (GPT-2 has no pad token by default)
+                self.tokenizer.pad_token = self.tokenizer.eos_token
 
                 # Add special tokens to tokenizer
                 special_tokens_dict = {'additional_special_tokens': list(self.special_tokens.values())}
@@ -122,7 +119,7 @@ class AIContentEnhancer:
                 content_type = 'explanation'
 
             # Add special token to prompt
-            prompt_with_token = f"{self.special_tokens[content_type]}{prompt}"
+            prompt_with_token = f"{self.special_tokens[content_type]} {prompt}"
 
             # Ensure prompt isn't too long - truncate if needed to avoid sequence length errors
             tokens = self.tokenizer.encode(prompt_with_token)
@@ -134,17 +131,21 @@ class AIContentEnhancer:
                 tokens = head + tail
                 prompt_with_token = self.tokenizer.decode(tokens)  # Optional: only if you use the string later
 
-            # ALWAYS assign encoded_prompt
-            encoded_prompt = lazy.torch.tensor([tokens]).to(self.device)
-            input_len = encoded_prompt.size(1)
+            # Tokenize input with padding/truncation and return PyTorch tensors
+            encoded = self.tokenizer(prompt_with_token, return_tensors="pt", padding=True, truncation=True).to(self.device)
+
+            input_ids = encoded["input_ids"]
+            attention_mask = (input_ids != self.tokenizer.pad_token_id).long()
+            
+            max_input_length = self.model.config.n_positions  # usually 1024 for GPT-2
+            input_len = input_ids.shape[1]
 
             # Prepare input for model
             try:
-                encoded_prompt = self.tokenizer.encode(prompt_with_token, return_tensors="pt").to(self.device)
-                input_len = encoded_prompt.size(1)
-
                 # Check if encoded input is too long
-                if input_len > 900:  # Another safety check
+                generation_max_length = min(input_len + max_length, 1024)
+                
+                if input_len > max_input_length - generation_max_length:
                     logger.warning(f"Encoded prompt too long ({input_len} tokens), using rule-based generation")
                     return self._rule_based_generation(prompt, content_type)
 
@@ -154,36 +155,48 @@ class AIContentEnhancer:
 
             # Set generation parameters based on content type
             if content_type == 'explanation':
-                temperature = min(temperature, 0.7)  # More factual
-                repetition_penalty = 1.3  # Prevent repetition
+                temperature = min(temperature, 0.7)
+                repetition_penalty = 1.3
             elif content_type == 'example':
-                temperature = min(temperature, 0.6)  # More structured
-                top_p = 0.92  # Slightly more focused
+                temperature = min(temperature, 0.6)
+                top_p = 0.92
             elif content_type == 'exercise':
-                temperature = min(temperature, 0.8)  # Allow some creativity
+                temperature = min(temperature, 0.8)
+            elif content_type in {'description', 'objectives', 'prerequisites'}:
+                temperature = min(temperature, 0.7)
+                repetition_penalty = 1.2
+            elif content_type in {'structure', 'learning_path'}:
+                temperature = 0.6
+                top_p = 0.9
+            elif content_type in {'key_learnings', 'next_steps'}:
+                temperature = 0.7
+                top_p = 0.95
+            elif content_type in {'beginner', 'intermediate', 'advanced', 'expert', 'title'}:
+                temperature = 0.75
+                repetition_penalty = 1.1
 
             # Memory optimization
             with lazy.torch.no_grad():
                 try:
-                    generation_max_length = min(input_len + max_length, 1024)
-
                     # Generate text with improved parameters
                     outputs = self.model.generate(
-                        encoded_prompt,
+                        input_ids=input_ids,
+                        attention_mask=attention_mask,
                         max_length=generation_max_length,
                         do_sample=True,
                         top_k=50,
                         top_p=top_p,
                         temperature=temperature,
                         num_return_sequences=1,
-                        pad_token_id=self.tokenizer.eos_token_id,
+                        pad_token_id=self.tokenizer.eos_token_id,  # use EOS if PAD is undefined for GPT-2
                         no_repeat_ngram_size=3,
                         repetition_penalty=repetition_penalty,
                     )
 
                     # Decode the generated text
                     generated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-
+                    
+                    generated_text = generated_text.strip()
                     # Extract only the newly generated text
                     if prompt_with_token in generated_text:
                         generated_text = generated_text[generated_text.find(prompt_with_token) + len(prompt_with_token):]
@@ -203,26 +216,64 @@ class AIContentEnhancer:
 
     def _rule_based_generation(self, prompt: str, content_type: str) -> str:
         """Fallback method for generating content without GPT-2"""
-        # Extract important keywords from prompt
+
+        # Extract keywords from prompt
         words = re.findall(r'\b\w{4,}\b', prompt.lower())
         keywords = [word for word in words if word not in ['this', 'that', 'with', 'from', 'about', 'what', 'where', 'when', 'which']]
-        keywords = keywords[:5] if keywords else ["this topic"]  # Just use top 5 keywords or default
+        keywords = keywords[:5] if keywords else ["this topic"]
+        joined_keywords = ', '.join(keywords)
 
+        # Rule-based responses per content type
         if content_type == 'explanation':
-            return f"This section explains important concepts about {', '.join(keywords)}. Understanding these fundamentals is critical for mastering this topic. You'll learn how these concepts relate to each other and how they're applied in real-world scenarios."
+            return f"This section explains important concepts about {joined_keywords}. Understanding these fundamentals is essential for mastering this topic."
 
         elif content_type == 'example':
-            return f"Here's an example that demonstrates how {', '.join(keywords)} work together. This practical implementation shows the concepts in action and gives you a reference for your own projects."
+            return f"Here's a practical example involving {joined_keywords}. Use it as a reference to understand how the concepts are applied."
 
         elif content_type == 'exercise':
-            return f"Practice what you've learned about {', '.join(keywords)} with this exercise. Try to implement the solution on your own before checking the hints. This will reinforce your understanding of the key concepts."
+            return f"Try this exercise based on {joined_keywords}. It will help you reinforce your understanding through practice."
 
         elif content_type == 'summary':
-            return f"To summarize what we've covered about {', '.join(keywords)}: these concepts form the foundation of this topic. Review these points regularly and practice implementing them to build your expertise."
+            return f"Here’s a brief summary of the main points about {joined_keywords}. Keep these in mind as you continue learning."
 
+        elif content_type == 'description':
+            return f"This describes the topic of {joined_keywords} in detail, outlining the key ideas and scope involved."
+
+        elif content_type == 'objectives':
+            return f"After studying {joined_keywords}, you should be able to understand the core concepts and apply them effectively."
+
+        elif content_type == 'prerequisites':
+            return f"To fully grasp {joined_keywords}, you should already understand basic concepts related to the subject."
+
+        elif content_type == 'structure':
+            return f"This content is structured to guide you through {joined_keywords} in a logical sequence of learning."
+
+        elif content_type == 'learning_path':
+            return f"The recommended learning path starts with foundational topics and builds up to more advanced ideas related to {joined_keywords}."
+
+        elif content_type == 'key_learnings':
+            return f"Key takeaways from this section on {joined_keywords} include core definitions, use cases, and examples."
+
+        elif content_type == 'next_steps':
+            return f"Next, you should explore advanced topics related to {joined_keywords}, practice coding, and apply the concepts in projects."
+
+        elif content_type == 'beginner':
+            return f"This beginner-friendly section covers the basics of {joined_keywords}. No prior experience is required."
+
+        elif content_type == 'intermediate':
+            return f"This intermediate-level content builds on basic knowledge and dives deeper into the principles behind {joined_keywords}."
+
+        elif content_type == 'advanced':
+            return f"This advanced content explores the complex aspects of {joined_keywords}, suited for learners with strong foundational knowledge."
+        
+        elif content_type == 'expert':
+            return f"This expert-level content delves into the intricate and specialized areas of {joined_keywords}, intended for professionals or learners seeking mastery and cutting-edge insights."
+
+
+        # Fallback
         else:
-            return f"Content related to {', '.join(keywords)} would be presented here. Continue exploring these topics to deepen your understanding."
-
+            return f"Content related to {joined_keywords} would be presented here. Continue exploring these topics to deepen your understanding."
+        
     def _post_process(self, text: str, content_type: str) -> str:
         """Clean and format generated text
 

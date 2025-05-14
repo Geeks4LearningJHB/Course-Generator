@@ -24,6 +24,8 @@ model_cache/
 bad_urls.json
 scraped_urls.json
 knowledge_base.json
+# Saved markdown files
+*.md
 
 # If using Django's collectstatic
 /static/
