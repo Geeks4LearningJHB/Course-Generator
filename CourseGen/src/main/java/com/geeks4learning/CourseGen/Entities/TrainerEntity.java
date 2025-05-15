@@ -1,41 +1,41 @@
 package com.geeks4learning.CourseGen.Entities;
 
-//import Trainer.Status;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "Trainer")
-public class TrainerEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "UserId")
-    private long UserId;
- 
-    @Column(name = "Name")
-    private String Name;
- 
-    @Column(name = "Surname")
-    private String Surname;
- 
-    @Column(name = "Email")
-    private String email;
- 
-    @Column(name = "Password")
-    private String password;
- 
+public class TrainerEntity extends BaseUser {
+
+    @Column(name = "Name", nullable = false)
+    private String name;
+
+    @Column(name = "Surname", nullable = false)
+    private String surname;
+
     @Column(nullable = false)
     private String status = "pending";
+
+    @Column(nullable = false, updatable = false)
+    private String userType = "Trainer";  
+
+    @Override
+    public String getUserType() {
+        return this.userType;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "trainer_roles",
+        joinColumns = @JoinColumn(name = "userId"),
+        inverseJoinColumns = @JoinColumn(name = "roleId")
+    )
+    private Set<Role> roles = new HashSet<>();
 }

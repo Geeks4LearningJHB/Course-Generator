@@ -14,4 +14,5 @@ export class TrainerLoginService {
     return this.http.post(this.apiUrl, { email, password }, { responseType: 'text' });
   }
   
+  
 }

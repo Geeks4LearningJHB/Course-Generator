@@ -6,6 +6,8 @@ export interface Course {
   moduleId: string;
   moduleName: string;
   description: string;
+  unitId : string;
+
 }
 
 @Injectable({
@@ -18,6 +20,12 @@ export class ViewCoursesService {
 
   getCourses(): Observable<Course[]> {
     return this.http.get<Course[]>(this.apiUrl + '/getAllModules');
+  }
+
+  // http://localhost:8080/AI/getModuleById?id=67515e271f4a723ec0b0dea9
+
+  getModuleById(moduleId:string): Observable<Course>{
+  return this.http.get<Course>(`${this.apiUrl}/getModuleById?id=${moduleId}`)
   }
 
   

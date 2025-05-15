@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoginService } from '../../Services/adminLogin.service';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-admin-login',
@@ -11,10 +12,10 @@ export class AdminLoginComponent {
   email: string = '';
   password: string = '';
   loginError: string = '';
-  isLoading: boolean = false;
-    successMessage: string = '';
+  LoggingIn: boolean = false;
+  successMessage: string = '';
 
-  constructor(private router: Router, private loginService: LoginService) {}
+  constructor(private router: Router, private loginService: LoginService, private authService: AuthService ) {}
 
   onLogin() {
     // Reset the error message
@@ -33,16 +34,19 @@ export class AdminLoginComponent {
 
         if (response.response === "Success") {
           // Show loading overlay with success message
-          this.isLoading = true;
+          this.LoggingIn = true;
           this.successMessage = 'Sign in successfully';
-        
-        setTimeout(() => {
-          this.isLoading = false;
-          this.router.navigate(['/admin-dashboard']);
-        }, 1000); 
-      } else {
-        this.loginError = 'Invalid credentials!';
-      }
+
+          // Set the user role as Administrator
+          this.authService.setUserRole('Administrator');
+
+          setTimeout(() => {
+            this.LoggingIn = false;
+            this.router.navigate(['/dashboard']);
+          }, 1000); 
+        } else {
+          this.loginError = 'Invalid credentials!';
+        }
 
       },
       (error) => {

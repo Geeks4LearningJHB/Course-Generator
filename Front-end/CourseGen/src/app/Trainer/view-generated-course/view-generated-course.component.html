@@ -1,67 +1,155 @@
-<div class="admin-dashboard-container" style="background-color: #e4e9ef;">
+<div class="admin-dashboard-container">
 
-  <div class="top-nav">
-    <div class="logo">
-      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
-    </div>
-    <div class="nav-right">
-      <button class="profile-btn">
-        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
-      </button>
-    </div>
-  </div>
-
-  <div class="body">
-    <div class="sidebar" [class.collapsed]="isCollapsed">
-      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-      <ul>
-        <li>
-          <i class="icon fa fa-home"></i>
-          <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
-        </li>
-        <li>
-          <i class="icon fas fa-book"></i>
-          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-          <i class="icon fas fa-file-alt"></i>
-          <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
-        </li>
-        <hr class="divider" />
-        <li>
-          <i class="icon fas fa-sign-out-alt"></i>
-          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-        </li>
-      </ul>
-    </div>
-
-    <div class="sub-header" [class.shifted]="isCollapsed">
-      <h3 class="sub-heading">GENERATE CONTENT</h3>
-      <button class="back-button" routerLink="/dashboard">
-        <span class="icon"></span> Back
-      </button>
-    </div>
-
-    <div class="generated-course-container">
-      <h2>{{ generatedCourse?.courseTitle }}</h2>
-      <p><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</p>
-      <p><strong>Duration:</strong> {{ generatedCourse?.duration }} hours</p>
-
-      <h3>Course Outline:</h3>
-      <ul>
-        <li *ngFor="let item of generatedCourse?.outline">{{ item }}</li>
-      </ul>
-
-      <h3>Units:</h3>
-      <div *ngFor="let unit of generatedCourse?.units">
-        <h4>{{ unit.unitName }}</h4>
-        <p>{{ unit.content }}</p>
+    <div class="course-container">
+      <div class="course-header">
+        <h2>{{ generatedCourse?.module?.moduleName }}</h2>
+        <!-- <div class="course-meta">
+          <span><strong>Difficulty:</strong> {{ generatedCourse?.difficulty }}</span>
+          <span><strong>Duration:</strong> {{ generatedCourse?.duration }} months</span>
+        </div> -->
       </div>
 
-      <div class="button-container">
-        <button class="back-btn" (click)="goBack()">Back</button>
+      <div class="outline-section">
+        <h3>Course Outline</h3>
+        <div class="unit-list">
+          <div *ngIf="paginatedUnits.length; else noUnits">
+            <div *ngFor="let unit of paginatedUnits; let i = index" class="unit-card">
+              <div class="unit-header" (click)="toggleUnit(unit.title, i)">
+                <h4>{{ unit.title }}</h4>
+                <i class="fas" [class.fa-chevron-down]="!expandedUnits[unit.title]"
+                  [class.fa-chevron-up]="expandedUnits[unit.title]"></i>
+              </div>
+
+              <div class="unit-content" *ngIf="expandedUnits[unit.title]">
+                <!-- Loading spinner -->
+                <div *ngIf="isLoading[unit.title]" class="loading-spinner">
+                  Loading content...
+                </div>
+
+                <!-- Loaded content -->
+                <ng-container *ngIf="!isLoading[unit.title] && unit.isLoaded">
+
+                  <div class="content-section">
+                    <h5>Introduction:</h5>
+                    <p>{{ unit.introduction }}</p>
+                  </div>
+
+                  <!-- Key Concepts -->
+                  <div class="content-section">
+                    <h5>Key Concepts:</h5>
+                    <ul>
+                      <li *ngFor="let concept of unit.keyConcepts">{{ concept }}</li>
+                    </ul>
+                  </div>
+
+                  <!-- Sections -->
+                  <div *ngFor="let section of unit.sections" class="content-section">
+                    <h5>{{ section.heading }}</h5>
+
+                    <!-- Regular content -->
+                    <div *ngIf="isString(section.content);">
+                      <p [innerHTML]="parseLinksAndBold(section.content)">{{ section.content }}</p>
+                    </div>
+                    <!-- section.content -->
+                    <!-- List content -->
+                    <ul *ngIf="isArray(section.content)">
+                      <ng-container *ngFor="let item of asArray(section.content)">
+                        <!-- Code block -->
+                        <li *ngIf="isCodeBlock(item)" class="code-block">
+                          <pre><code [class]="'language-' + item.language">{{ item.code }}</code></pre>
+                        </li>
+
+                        <!-- Regular list item -->
+                        <li *ngIf="!isCodeBlock(item) && isString(item)">{{ item }}</li>
+
+                        <!-- List item with sub-items -->
+                        <ng-template #subItems>
+                          <ng-container *ngIf="!isCodeBlock(item) && hasSubItems(item); ">
+                            <strong>{{ item.text }}</strong>
+                            <ul>
+                              <li *ngFor="let subItem of item.subItems">{{ subItem }}</li>
+                            </ul>
+                          </ng-container>
+                          <ng-template #plainText>
+                            <span>{{ item }}</span>
+                          </ng-template>
+                        </ng-template>
+                      </ng-container>
+                    </ul>
+                  </div>
+                </ng-container>
+              <button title="Regenerate Unit" (click)="openRegenerateForm(unit); $event.stopPropagation()" class="re-generate-button">🔄</button>
+
+              </div>
+              <!-- <button title="Regenerate Unit" (click)="openRegenerateForm(unit); $event.stopPropagation()" class="re-generate-button">🔄</button> -->
+            </div>
+          </div>
+          <ng-template #noUnits>
+            <p>No units available for this course.</p>
+          </ng-template>
+        </div>
+
+        <div class="pagination">
+          <button [disabled]="currentPage === 1" (click)="previousPage()" class="pagination-btn">
+            Previous
+          </button>
+          <span class="page-info">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+          <button [disabled]="currentPage === totalPages" (click)="nextPage()" class="pagination-btn">
+            Next
+          </button>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <!-- <button class="edit-btn" (click)="onEditCourse()">🔄 Re-Generate Content</button> -->
         <button class="save-btn" (click)="saveCourse()">Save Course</button>
       </div>
-    </div>
-  </div>
+
+      <div class="modal-overlay" *ngIf="isRegenerateModalVisible">
+        <div class="modal-content">
+          <h3>Regenerate Unit: {{ selectedUnits?.unitName || 'Unknown Unit' }}</h3>
+          <form (ngSubmit)="submitRegenerationForm()">
+            <label for="reason">Why do you want to regenerate this unit?</label>
+            <textarea
+              id="reason"
+              name="reason"
+              [(ngModel)]="regenerationReason"
+              required
+              placeholder="Enter your reason">
+            </textarea>
+            <div class="modal-actions">
+              <button type="button" class="cancel-button"  (click)="closeRegenerateForm()">Cancel</button>
+              <button
+                type="submit"
+                class="confirm-button"
+                [disabled]="!regenerationReason || isRegenerating">
+                {{ isRegenerating ? 'Regenerating...' : 'Submit' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay" *ngIf="isRegenerating">
+        <div class="loader">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+        <p class="loading-text">Regenerating content...</p>
+      </div>
+
+      <!-- Modal for Regeneration Form -->
+ <!-- view-generated-course.component.html -->
+<div>
+  <!-- Trigger Button -->
+  <!-- <button (click)="isModalVisible = true" class="regenerate-btn">
+    Regenerate Unit
+  </button> -->
+
+
 </div>

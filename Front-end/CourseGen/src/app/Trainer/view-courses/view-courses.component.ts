@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ViewCoursesService } from '../../Services/view-courses.service';
+import { ToggleService } from '../../Services/toggle.service';
 
 
 @Component({
@@ -14,10 +15,16 @@ export class ViewCoursesComponent implements OnInit {
   
   courses: any[] = [];
 
-  constructor(private router: Router, private viewCoursesService: ViewCoursesService) {} // Inject Angular Router
+  constructor(
+    private router: Router,
+    private viewCoursesService: ViewCoursesService,
+    private toggleService: ToggleService) {} // Inject Angular Router
 
   ngOnInit(): void {
     this.loadCourses();
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
   }
 
   loadCourses(): void {
@@ -33,9 +40,9 @@ export class ViewCoursesComponent implements OnInit {
 
   
   viewCourse(courseId: number) {
-    // Navigate to view-content and pass the courseId via query parameters
     this.router.navigate(['/view-content'], { queryParams: { id: courseId } });
   }
+  
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;

@@ -1,87 +1,93 @@
-<div class="admin-dashboard-container" style="background-color: #e4e9ef;">
+<div class="admin-dashboard-container">
+  <!-- Top Navigation -->
 
-  <div class="top-nav">
-    <div class="logo">
-      <img src="assets/Word-logo.png" alt="Logo" class="logo-img" />
-    </div>
-    <div class="nav-right">
-      <button class="profile-btn">
-        <img src="assets/userIcon.png" alt="Profile" class="profile-img" />
-      </button>
-    </div>
-  </div>
-
-  <div class="body">
-    <div class="sidebar" [class.collapsed]="isCollapsed">
-      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
-      <ul>
-        <li>
-          <i class="icon fa fa-home"></i>
-          <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
-        </li>
-        <li>
-          <i class="icon fas fa-book"></i>
-          <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
-        </li>
-        <li>
-          <i class="icon fas fa-file-alt"></i>
-          <span *ngIf="!isCollapsed" routerLink="/view-content">View Content</span>
-        </li>
-        <hr class="divider" />
-        <li>
-          <i class="icon fas fa-sign-out-alt"></i>
-          <span class="logout-link" *ngIf="!isCollapsed">Logout</span>
-        </li>
-      </ul>
-    </div>
-
-    <div class="sub-header" [class.shifted]="isCollapsed">
-      <h3 class="sub-heading">GENERATE CONTENT</h3>
-      <button class="back-button" routerLink="/dashboard">
-        <span class="icon"></span> Back
-      </button>
-    </div>
-
-    <div class="dash-container-1" [class.shifted]="isCollapsed">
-      <div class="form-box" *ngIf="!isLoading">
-        <form (ngSubmit)="onGenerateCourse()">
-          <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" id="title" [(ngModel)]="courseTitle" name="title" placeholder="Enter course title"
-              required />
-          </div>
-
-          <div class="form-group">
-            <label for="difficulty">Difficulty</label>
-            <select id="difficulty" [(ngModel)]="difficulty" name="difficulty" required>
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="duration">Duration</label>
-            <input type="number" id="duration" [(ngModel)]="duration" name="duration" placeholder="Enter duration"
-              required />
-          </div>
-
-          <div class="gen-content">
-            <button type="submit" class="generate-btn">
-              <span>📋</span> Generate Course
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading-box" *ngIf="isLoading">
-        <p>Generating course... Please wait.</p>
-        <div class="progress-bar">
-          <div class="progress" [style.width]="progress + '%'"></div>
+  <!-- Main Content -->
+  <div class="dash-container-1" [class.shifted]="isCollapsed">
+    <div class="form-box" *ngIf="!isLoading">
+      <form (ngSubmit)="onGenerateCourse()">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" [(ngModel)]="courseTitle" name="title" placeholder="Enter course title"
+            required />
         </div>
-      </div>
 
+        <div class="form-group">
+          <label for="difficulty">Difficulty</label>
+          <select id="difficulty" [(ngModel)]="difficulty" name="difficulty" required>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="duration">Duration</label>
+          <input type="number" id="duration" [(ngModel)]="duration" name="duration"
+            placeholder="Enter duration in months" required />
+        </div>
+
+        <div class="gen-content">
+          <button type="submit" class="generate-btn" [disabled]="isLoading">
+            <span>📋</span>
+            {{ isLoading ? 'Generating...' : 'Generate Course' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-box" *ngIf="isLoading">
+      <p>Generating course... Please wait.</p>
+      <!-- From Uiverse.io by Nawsome -->
+      <div class="loader">
+        <div>
+          <ul>
+            <li>
+              <svg fill="currentColor" viewBox="0 0 90 120">
+                <path
+                  d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                </path>
+              </svg>
+            </li>
+            <li>
+              <svg fill="currentColor" viewBox="0 0 90 120">
+                <path
+                  d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                </path>
+              </svg>
+            </li>
+            <li>
+              <svg fill="currentColor" viewBox="0 0 90 120">
+                <path
+                  d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                </path>
+              </svg>
+            </li>
+            <li>
+              <svg fill="currentColor" viewBox="0 0 90 120">
+                <path
+                  d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                </path>
+              </svg>
+            </li>
+            <li>
+              <svg fill="currentColor" viewBox="0 0 90 120">
+                <path
+                  d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                </path>
+              </svg>
+            </li>
+            <li>
+              <svg fill="currentColor" viewBox="0 0 90 120">
+                <path
+                  d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                </path>
+              </svg>
+            </li>
+          </ul>
+        </div><span>Loading</span>
+      </div>
     </div>
   </div>
 </div>
+<!-- </div> -->

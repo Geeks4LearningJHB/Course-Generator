@@ -16,10 +16,12 @@ public interface TrainerRepository extends JpaRepository<TrainerEntity, Long> {
 
     List<TrainerEntity> findByStatus(String status);
 
-   
     Optional<TrainerEntity> findByEmail(String email);
 
-    @Query("SELECT new com.geeks4learning.CourseGen.DTOs.TrainerViewDTO(t.Name, t.Surname,t.email, t.status) FROM TrainerEntity t")
-    List<TrainerViewDTO> findAllTrainerDetails();
+    @Query("SELECT new com.geeks4learning.CourseGen.DTOs.TrainerViewDTO(t.name, t.surname, t.email, t.status) FROM TrainerEntity t")
+    List<TrainerViewDTO> findAllTrainer();
+
+    @Query("SELECT t FROM TrainerEntity t")
+    List<TrainerEntity> findAllTrainers();
 
 }

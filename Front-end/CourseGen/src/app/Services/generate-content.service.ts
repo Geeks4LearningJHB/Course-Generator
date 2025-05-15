@@ -1,51 +1,71 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GenerateContentService {
-  saveCourse(generatedCourse: any) {
-    throw new Error('Method not implemented.');
-  }
-
-  private apiUrl = 'http://localhost:8080/AI/generateCourse';
-  private generatedCourse: any; // Temporary storage for the generated course
+  private apiUrl = 'http://localhost:8080/AI/';
+  private generatedCourse: any;
 
   constructor(private http: HttpClient) {}
 
+  // Method to generate the course
   generateCourse(data: { courseTitle: string; difficulty: string; duration: number }): Observable<any> {
-    // Access difficulty and duration from the data object to construct the URL
     const { difficulty, duration } = data;
+    return this.http.post(`${this.apiUrl}generateCourse`, data);
+  }
+ 
 
-    // Use query parameters in the URL and send 'data' as the request body
-    return this.http.post(`http://localhost:8080/AI/generateCourse`, data);
+  saveGeneratedCourse(generatedCourseData: any): Observable<any> {
+    const courseId = generatedCourseData.courseId || generatedCourseData.id;
+    const params = new HttpParams().set('courseId', courseId);
+
+    // Assuming units are part of the generatedCourseData
+    const units = this.getUnitsFromMemory();
+
+    return this.http.post(`http://localhost:8080/AI/saveGeneratedCourse`, { 
+      courseId: courseId,
+      units: units  // Include the units from memory
+    }, { 
+      params: params,
+      responseType: 'text'
+    }).pipe(
+      catchError(this.handleError)
+    );
   }
 
-
-
-  getOutline(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, data); // Update with your backend endpoint
-  }
-  // http://localhost:8080/AI/saveGeneratedCourse
-
-  saveGeneratedCourse(courseData: any): Observable<any> {
-    return this.http.post('http://localhost:8080/AI/saveGeneratedCourse', courseData);
-  }
-  
-  // Set the generated course
+  // Method to set the generated course, including units
   setGeneratedCourse(course: any): void {
     this.generatedCourse = course;
   }
 
-  // Get the generated course
+  // Method to get the generated course
   getGeneratedCourse(): any {
     return this.generatedCourse;
   }
 
-  // Clear the stored course
+  // Method to get the units from the generated course stored in memory
+  getUnitsFromMemory(): any[] {
+    return this.generatedCourse?.units || [];
+  }
+
+  // Clear the stored course and its units from memory
   clearGeneratedCourse(): void {
     this.generatedCourse = null;
+  }
+
+  // Error handling method
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'An error occurred';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = error.error.message;
+    } else {
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.error(errorMessage);
+    return throwError(() => new Error(errorMessage));
   }
 }

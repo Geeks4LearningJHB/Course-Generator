@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #12324d;
+  background-color: #e4e9ef;
 }
 
 .form-container {
@@ -45,11 +45,11 @@
 .re-generate-button:hover, .download-button:hover {
   background-color: #5a6268;
 }
- 
+
 .modify-container {
   margin-top: 20px;
 }
- 
+
 .form-group {
   margin-bottom: 1px;
   text-align: left;
@@ -59,7 +59,7 @@ label {
   margin-bottom: 5px;
   font-weight: bold;
 }
- 
+
 input, textarea {
   width: 100%;
   padding: 10px;
@@ -84,7 +84,20 @@ input, textarea {
 .module-container {
   margin-bottom: 15px;
 }
- 
+
+.dash-container-2 {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-top: 46px;
+  width: 80vw;
+  background-color: #e4e9ef;
+  flex-grow: 1;
+  transition: margin-left 0.3s ease;
+  margin-left: 250px;
+}
+
 .module-header {
   cursor: pointer;
   padding: 10px;
@@ -98,7 +111,7 @@ input, textarea {
 .module-header:hover {
   background-color: #0056b3;
 }
- 
+
 .module-header.collapsed {
   background-color: #5a6268;
 }
@@ -113,14 +126,430 @@ input, textarea {
   cursor: pointer;
   color: #333;
 }
- 
-.topic:hover {
+
+/* .topic:hover {
   color: #007bff;
-}
- 
+} */
+
 .sub-topic {
   margin-left: 40px;
   list-style: square;
 }
 
+.floating-button button{
+  margin-bottom: 50%;
+}
 
+
+/*  */
+
+/* .floating-button button{
+  background-color: #133B50;
+
+} */
+
+/* .back-button{
+  position: fixed;
+  right: 36px;
+  background-color: #145570;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  height: 30px;
+} */
+
+.floating-button button{
+  position: absolute;
+  z-index: 2000;
+  background-color: #133B50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s;
+}
+
+.floating-button:hover button{
+  background-color: #1c5472;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.modal-content {
+  background-color: rgb(219, 219, 219);
+  padding: 24px;
+  border-radius: 8px;
+  opacity: 100%;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* max-height: 80vh;  Add this line to limit the height of the modal */
+  /* overflow-y: auto;  Add this line to enable vertical scrolling when content overflows */
+}
+
+.modal-title {
+  margin: 0 0 16px 0;
+  color: #133B50;
+}
+
+.text-section {
+  margin-bottom: 16px;
+}
+
+.text-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.text-content {
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;  /* Prevents text from overflowing */
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cancel-button,
+.confirm-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.cancel-button {
+  background-color: #e0e0e0;
+  color: #666;
+}
+
+.confirm-button {
+  background-color: #133B50;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #d0d0d0;
+}
+
+.confirm-button:hover {
+  background-color: #1c5472;
+}
+
+@media (max-width: 768px) {
+  .floating-button {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+
+
+
+
+
+.generated-course-container {
+  background-color: #ffffff;
+  width: 70%;
+  padding: 20px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: auto;
+  margin-top: 150px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
+.back-btn, .save-btn {
+  background-color: #12324d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+
+
+button:last-child {
+  margin-right: 0;
+}
+
+.back-btn:hover, .save-btn:hover{
+  background-color: #0b1f2f;
+}
+
+/* Main Content Styles */
+.main-content {
+margin-left: 250px;
+padding: 2rem;
+transition: margin-left 0.3s;
+}
+
+.main-content.shifted {
+margin-left: 80px;
+}
+
+.course-container {
+background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  margin-left: 50%;
+  margin-right: 50%;
+  /* margin-bottom: 50%; */
+  margin-top: 10%;
+}
+
+.course-header {
+margin-bottom: 2rem;
+border-bottom: 2px solid #f0f0f0;
+padding-bottom: 1rem;
+}
+
+.course-meta {
+display: flex;
+gap: 2rem;
+color: #666;
+margin-top: 1rem;
+}
+
+.unit-card {
+background: #f8f9fa;
+border-radius: 6px;
+margin-bottom: 1rem;
+padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+.course-container {
+  width: 90%;
+  margin-left: 5%;
+  padding: 1rem;
+}
+
+.unit-header h4 {
+  font-size: 1rem;
+}
+}
+
+.unit-header {
+padding: 1rem;
+background: #f0f0f0;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-radius: 15px;
+}
+
+.unit-header h4 {
+margin: 0;
+color: #333;
+}
+
+.unit-content {
+padding: 1.5rem;
+background: #fafafa;
+border-top: 1px solid #eee;
+line-height: 1.6; /* Improves text readability */
+font-family: 'Arial', sans-serif; /* Use a clean font */
+white-space: pre-line; /* Preserves formatting like newlines */
+border-radius: 15px;
+}
+
+
+.content-section, .activities-section {
+margin-bottom: 1.5rem;
+text-align: left;
+}
+
+.content-section h5, .activities-section h5 {
+color: #444;
+margin-bottom: 1rem;
+}
+
+.activity {
+background: #f8f9fa;
+padding: 1rem;
+border-radius: 4px;
+margin-bottom: 1rem;
+}
+
+.action-buttons {
+display: flex;
+gap: 1rem;
+margin-top: 2rem;
+justify-content: flex-end;
+}
+
+.edit-btn {
+background: #f0f0f0;
+color: #333;
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.save-btn {
+background: #007bff;
+color: white;
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.loading-spinner {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 2rem;
+color: #666;
+}
+
+.loading-spinner::after {
+content: '';
+width: 20px;
+height: 20px;
+margin-left: 10px;
+border: 2px solid #f3f3f3;
+border-top: 2px solid #133B50;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+.pagination {
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 20px 0;
+}
+
+.pagination button {
+background-color: #133B50;
+color: white;
+border: none;
+padding: 8px 12px;
+margin: 0 5px;
+cursor: pointer;
+border-radius: 4px;
+}
+
+.pagination button[disabled] {
+background-color: #ccc;
+cursor: not-allowed;
+}
+
+.pagination span {
+font-size: 1rem;
+margin: 0 10px;
+}
+
+/* view-generated-course.component.css */
+.unit-header.disabled {
+opacity: 0.7;
+cursor: not-allowed;
+}
+
+.loading-indicator {
+font-size: 0.8em;
+color: #666;
+margin-right: 10px;
+}
+
+.error-message {
+color: #dc3545;
+padding: 10px;
+margin: 5px 0;
+background-color: #f8d7da;
+border-radius: 4px;
+}
+
+.error-message button {
+margin-left: 10px;
+padding: 2px 8px;
+background-color: #dc3545;
+color: white;
+border: none;
+border-radius: 3px;
+cursor: pointer;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-text {
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Your existing loader CSS */
+.loader {
+  --dim: 3rem;
+  width: var(--dim);
+  height: var(--dim);
+  position: relative;
+  animation: spin988 2s linear infinite;
+}
