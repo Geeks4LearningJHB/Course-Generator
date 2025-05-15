@@ -6,6 +6,14 @@ load_dotenv()
 
 class DatabaseManager:
     """MongoDB database manager for storing full course documents"""
+    _instance = None
+    _initialized = False
+
+    # Singleton pattern for multiple DatabaseManager class initializations
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(DatabaseManager, cls).__new__(cls)
+        return cls._instance
 
     def __init__(self, connection_string: str = "mongodb://localhost:27017/"):
         print("MONGODB_COLLECTION_NAME:", os.getenv("MONGODB_COLLECTION_NAME"))
@@ -19,9 +27,13 @@ class DatabaseManager:
             self.db = self.client[db_name]
             self.courses = self.db[collection_name]
             self.courses.create_index("title")
-            logging.info("Connected to MongoDB successfully")
+            
+            if not self.__class__._initialized:
+                logging.info("Connected to MongoDB successfully")
+                self.__class__._initialized = True
         except Exception as e:
             logging.error(f"MongoDB connection error: {str(e)}")
+            self.__class__._initialized = False
             raise
 
     def store_course(self, course_data: Dict) -> str:

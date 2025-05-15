@@ -5,7 +5,7 @@
     3. Batch content generation.
 '''
 from course_gen.core.globals import (
-    logger, re, Dict, List, defaultdict, Optional, uuid, datetime, np
+    lazy, logger, re, Dict, List, defaultdict, Optional, uuid, datetime, Lock, traceback
 )
 
 from .content_enhancer import AIContentEnhancer
@@ -20,12 +20,19 @@ class CourseGenerator:
         self.knowledge = FileManager.load_knowledge(knowledge_file)
         self.ai_enhancer = AIContentEnhancer()
         self.db_manager = DatabaseManager()
-        
         # Course difficulty levels mapping with progressive learning paths
         self.level_map = LEVEL_MAP
-        
         # Load course templates
         self.templates = COURSE_TEMPLATE
+        
+        self._module_num_lock = Lock()
+        self._current_module_num = 1
+        
+    def get_next_module_num(self) -> int:
+        with self._module_num_lock:
+            current_num = self._current_module_num
+            self._current_module_num += 1
+            return current_num
 
     def generate_course(self, topic: str, level: str = "beginner", 
                          modules_count: int = 5,
@@ -85,7 +92,7 @@ class CourseGenerator:
             for i, module_content in enumerate(organized_modules, 1):
                 try:
                     logger.info(f"Generating module {i} of {len(organized_modules)}")
-                    module = self._create_module(module_content, i, topic, level)
+                    module = self._create_module(module_content, topic, level)
                     module["order"] = i
                     course["modules"].append(module)
                     if "resources" in module:
@@ -93,7 +100,7 @@ class CourseGenerator:
                 except Exception as module_error:
                     logger.error(f"Error creating module {i}: {str(module_error)}")
                     # Add a fallback module
-                    course["modules"].append(self._create_minimal_module(i, topic, level))
+                    course["modules"].append(self._create_minimal_module(topic, level))
             
             # Generate course conclusion
             course["conclusion"] = self._generate_course_conclusion(topic, level, course["modules"])
@@ -112,7 +119,7 @@ class CourseGenerator:
             logger.error(f"Error generating course: {str(e)}")
             # Add a minimal module as fallback
             if not course["modules"]:
-                course["modules"].append(self._create_minimal_module(1, topic, level))
+                course["modules"].append(self._create_minimal_module(topic, level))
 
         # Save to database if requested
         if save_to_db and self.db_manager:
@@ -375,13 +382,13 @@ class CourseGenerator:
                 }]
                 
                 # Create module
-                module = self._create_module(module_content, i, topic, level)
+                module = self._create_module(module_content, topic, level)
                 module["order"] = i
                 course["modules"].append(module)
                 
             except Exception as module_error:
                 logger.error(f"Error creating synthetic module {i}: {str(module_error)}")
-                course["modules"].append(self._create_minimal_module(i, topic, level))
+                course["modules"].append(self._create_minimal_module(topic, level))
         
         # Generate course conclusion
         course["conclusion"] = self._generate_course_conclusion(topic, level, course["modules"])
@@ -407,13 +414,15 @@ class CourseGenerator:
             "description": f"Introduction to {topic} for {level} learners",
             "topic": topic,
             "level": level,
-            "modules": [self._create_minimal_module(1, topic, level)],
+            "modules": [self._create_minimal_module(topic, level)],
             "resources": []
         }
         return course
 
-    def _create_minimal_module(self, module_num: int, topic: str, level: str) -> Dict:
+    def _create_minimal_module(self, topic: str, level: str) -> Dict:
         """Create a minimal module when errors occur"""
+        module_num = self.get_next_module_num()  # Get the next available number
+        
         module = {
             "title": f"Module {module_num}: Introduction to {topic.title()}",
             "introduction": self.templates['module']['introduction'].format(topic=topic, level=level),
@@ -499,7 +508,7 @@ class CourseGenerator:
                 group_difficulties.append(avg_difficulty)
                 
             # Sort groups by difficulty score (easier topics first)
-            sorted_indices = np.argsort(group_difficulties)
+            sorted_indices = lazy.np.argsort(group_difficulties)
             for idx in sorted_indices:
                 sorted_groups.append(groups[idx])
                 
@@ -537,19 +546,20 @@ class CourseGenerator:
                 return sorted_groups
             
         except Exception as e:
-            logger.error(f"Error creating module: {str(e)}")
+            logger.error(f"Error creating module: {str(e)}\n{traceback.format_exc()}")
             return [content] if content else [[]]
         
-    def _create_module(self, content: List[Dict], module_num: int, topic: str, level: str) -> Dict:
+    def _create_module(self, content: List[Dict], topic: str, level: str) -> Dict:
         """Create an AI-enhanced learning module with improved error handling"""
+        module_num = self.get_next_module_num()  # Get the next available number
+        
         # Ensure we have content to work with
         if not content:
-            return self._create_minimal_module(module_num, topic, level)
+            return self._create_minimal_module(topic, level)
 
         try:
             # Determine a better module title
-            common_words = self._find_common_words([item["title"] for item in content]) if content else []
-            module_title = f"Module {module_num}: {' '.join(common_words).title()}" if common_words else f"Module {module_num}: {content[0]['title'] if content else 'Introduction'}"
+            module_title = self._generate_module_title(content, topic)
 
             module = {
                 "title": module_title,
@@ -559,9 +569,12 @@ class CourseGenerator:
             }
 
             # Module introduction
-            module["introduction"] = self.templates['module']['introduction'].format(
-                topic=topic,
-                level=level
+            module["introduction"] = self.templates['module']['introduction'].format_map(
+                defaultdict(str, {
+                    "topic": topic,
+                    "level": level,
+                    "module_num": module_num
+                })
             )
 
             # Add sections for each content item
@@ -592,38 +605,49 @@ class CourseGenerator:
                     module["units"].extend(self._create_units_from_section(minimal_section))
 
             # Module summary
-            module["summary"] = self.templates['module']['summary'].format(
-                topic=topic,
-                level=level
+            module["summary"] = self.templates['module']['summary'].format_map(
+                defaultdict(str, {
+                    "topic": topic,
+                    "level": level,
+                    "module_num": module_num
+                })
             )
-
             return module
         except Exception as e:
-            logger.error(f"Error creating module: {str(e)}")
-            return self._create_minimal_module(module_num, topic, level)
-
+            logger.error(f"Error creating module: {str(e)}\n{traceback.format_exc()}")
+            return self._create_minimal_module(topic, level)
     
-
     def _find_common_words(self, titles: List[str]) -> List[str]:
-        """Find common significant words across titles"""
+        """Find common meaningful words across titles"""
         if not titles:
             return []
 
-        # Extract words and count frequencies
-        word_freq = defaultdict(int)
-        stop_words = {'and', 'the', 'in', 'on', 'of', 'for', 'with', 'a', 'to', 'from', 'by'}
+        # Filter out empty or None titles
+        titles = [title for title in titles if title]
+        if not titles:
+            return []
+
+        word_counter = {}
+        stop_words = {'and', 'the', 'to', 'of', 'in', 'for', 'with', 'on', 'at', 'from', 'by', 'a', 'an'}
 
         for title in titles:
-            words = re.findall(r'\b\w{3,}\b', title.lower())
+            # Extract words and clean punctuation
+            words = [word.strip('.,!?:;()[]{}"-\'').lower() for word in title.split()]
+            # Filter short and stop words
+            words = [word for word in words if word and word not in stop_words and len(word) > 2]
+
             for word in words:
-                if word not in stop_words:
-                    word_freq[word] += 1
+                word_counter[word] = word_counter.get(word, 0) + 1
 
-        # Find words that appear in at least half of titles
-        threshold = max(1, len(titles) // 2)
-        common = [word for word, freq in word_freq.items() if freq >= threshold]
+        # Find words that appear in multiple titles
+        common_words = [word for word, count in word_counter.items() if count > 1]
 
-        return common[:3]  # Return top 3 common words
+        # If no common words found, fallback to top N frequent words
+        if not common_words and word_counter:
+            sorted_words = sorted(word_counter.items(), key=lambda x: x[1], reverse=True)
+            common_words = [word for word, _ in sorted_words[:min(2, len(sorted_words))]]
+
+        return common_words
 
     def _create_units_from_section(self, section: Dict) -> List[Dict]:
         """Create database units from a section"""
@@ -650,8 +674,10 @@ class CourseGenerator:
 
         return units
     
-    def _generate_module_title(self, content: List[Dict], module_num: int, topic: str) -> str:
+    def _generate_module_title(self, content: List[Dict], topic: str) -> str:
         """Generate an appropriate module title based on content"""
+        module_num = self._current_module_num
+        
         try:
             # Try to extract common words across content items
             common_words = self._find_common_words([item.get("title", "") for item in content]) if content else []
