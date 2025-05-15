@@ -1,8 +1,4 @@
-from course_gen.core.globals import (logging)
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from asgiref.sync import async_to_sync
+from course_gen.core.globals import (logging, APIView, Response, status, async_to_sync)
 
 from .serializer import WebScrapeRequestSerializer
 from course_gen.services.course_generator import CourseGenerator

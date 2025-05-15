@@ -216,7 +216,7 @@ COURSE_TEMPLATE = {
             "## Module Outline\n\n"
             "{module_outline}\n\n"
         ),
-        'section': {
+        'unit': {
             'explanation': (
                 "## {title}\n\n"
                 "{ai_enhanced_explanation}\n\n"

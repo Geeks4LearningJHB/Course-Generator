@@ -53,7 +53,7 @@ class FileManager:
                 return []
 
     @staticmethod
-    def export_markdown(course: Dict, filename: Optional[str] = None) -> str:
+    def export_markdown(course: Dict, filename: Optional[str] = None):
         """Export course structure to Markdown file."""
         if not filename:
             filename = f"{course['title'].strip().replace(' ', '_')}.md"
@@ -63,7 +63,6 @@ class FileManager:
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(md_content)
             logger.info(f"Markdown saved to {filename}")
-            return md_content
         except Exception as e:
             logger.error(f"Markdown export failed: {str(e)}")
             raise
