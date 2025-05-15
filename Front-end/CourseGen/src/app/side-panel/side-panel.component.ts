@@ -4,7 +4,6 @@ import { filter } from 'rxjs';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from '../Services/auth.service';
 import { ToggleService } from '../Services/toggle.service';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-side-panel',
@@ -12,6 +11,7 @@ import { Location } from '@angular/common';
   styleUrl: './side-panel.component.css'
 })
 export class SidePanelComponent implements OnInit {
+  isCollapsedFromService = true;
   showingNav = true;
   faHome = faHome;
   // isCollapsed = true;
@@ -23,7 +23,7 @@ export class SidePanelComponent implements OnInit {
   private currentUrl: string | null = null;
 
   constructor( private authService: AuthService,
-               private toggleService: ToggleService,
+               public toggleService: ToggleService,
                private router: Router,
                private activatedRoute: ActivatedRoute,
               //  private location: Location
@@ -31,6 +31,9 @@ export class SidePanelComponent implements OnInit {
     this.toggleService.isCollapsed$.subscribe(
       (collapsed) => (this.isCollapsed = collapsed)
     );
+    this.toggleService.activePanel$.subscribe((panel) => {
+      this.showingNav = panel === 'nav';
+    });
    }
 
   ngOnInit(): void {
@@ -54,6 +57,10 @@ export class SidePanelComponent implements OnInit {
       this.previousUrl = this.currentUrl;
       this.currentUrl = event.url;
     });
+
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsedFromService = collapsed)
+    );
     }
 
     
@@ -77,22 +84,36 @@ export class SidePanelComponent implements OnInit {
     this.authService.logout();
   }
 
-  toggleNav(): void {
-    this.isCollapsed = !this.isCollapsed;
-    this.toggleService.toggleNav();
-  }
+  // toggleNav(): void {
+  //   this.isCollapsed = !this.isCollapsed;
+  //   this.toggleService.toggleNav();
+  // }
 
-  toggleLog(): void {
+  // toggleLog(): void {
+  //   this.isCollapsed = !this.isCollapsed;
+  //   this.toggleService.toggleLog();
+  // }
+
+  // showNav() {
+  //   this.showingNav = true;
+  // }
+
+  togglePanel(panel: 'nav' | 'log'): void {
     this.isCollapsed = !this.isCollapsed;
+    panel === 'nav' ?
+    this.toggleService.toggleNav():
     this.toggleService.toggleLog();
-  }
-
-  showNav() {
-    this.showingNav = true;
   }
 
   showLog() {
     this.showingNav = false;
+  }
+
+  showNav(): void {
+    this.showingNav = true;
+  }
+  showPanel(panel: 'nav' | 'log'): void {
+    this.showingNav = panel === 'nav';
   }
 
 

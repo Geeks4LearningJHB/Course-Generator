@@ -12,9 +12,12 @@
 <div class="body">
     <div class="btns">
         <div class="sidebar" [class.collapsed]="isCollapsed">
-            <button class="toggle-btn" (click)="toggleNav()">☰</button>
+            <!-- <button class="toggle-btn" (click)="toggleNav()">☰</button> -->
+            <button class="toggle-btn" (click)="toggleService.showNav()">☰</button>
             <!-- <button class="log-btn" (click)="logUserAction()">Log</button> -->
-            <button class="log-btn" (click)="toggleLog()"><i class="fas fa-history"></i></button>
+            <!-- <button class="log-btn" (click)="toggleLog()"><i class="fas fa-history"></i></button> -->
+            <button class="log-btn" (click)="toggleService.showLog()"><i class="fas fa-history"></i></button>
+      
         </div>
 
 

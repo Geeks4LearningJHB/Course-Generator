@@ -8,11 +8,18 @@ export class ToggleService {
   private collapsed = new BehaviorSubject<boolean>(true);
   isCollapsed$ = this.collapsed.asObservable();
 
-  toggleNav(): void {
+  private activePanel = new BehaviorSubject<'nav' | 'log'>('nav');
+  activePanel$ = this.activePanel.asObservable();
+
+  toggleCollapse(): void {
     this.collapsed.next(!this.collapsed.value);
   }
 
-  toggleLog(): void {
-    this.collapsed.next(!this.collapsed.value);
+  showNav(): void {
+    this.activePanel.next('nav');
+  }
+
+  showLog(): void {
+    this.activePanel.next('log');
   }
 }
