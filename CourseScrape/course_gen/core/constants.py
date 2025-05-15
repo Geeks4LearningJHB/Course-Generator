@@ -192,8 +192,6 @@ COURSE_TEMPLATE = {
             "{learning_objectives}\n\n"
             "### Prerequisites\n\n"
             "{prerequisites}\n\n"
-            "### Target Audience\n\n"
-            "This {level} course on {topic} is designed for {audience}.\n\n"
             "### Course Structure\n\n"
             "{structure_overview}\n\n"
             "### Learning Path\n\n"
@@ -206,10 +204,6 @@ COURSE_TEMPLATE = {
             "{key_learnings}\n\n"
             "## Next Steps\n\n"
             "{next_steps}\n\n"
-            "## Certificate\n\n"
-            "Complete the final assessment to receive your certificate of completion.\n\n"
-            "## Connect & Continue Learning\n\n"
-            "{community_resources}"
         )
     },
     'module': {
@@ -221,9 +215,6 @@ COURSE_TEMPLATE = {
             "{learning_objectives}\n\n"
             "## Module Outline\n\n"
             "{module_outline}\n\n"
-            "## Estimated Time: {estimated_time}\n\n"
-            "## Key Concepts\n\n"
-            "{key_concepts}"
         ),
         'section': {
             'explanation': (
@@ -252,23 +243,6 @@ COURSE_TEMPLATE = {
                 "#### Practice Variation\n\n"
                 "{practice_variation}"
             ),
-            'exercise': (
-                "## Exercise: {title}\n\n"
-                "### Objective\n\n"
-                "{objective}\n\n"
-                "### Context\n\n"
-                "{context}\n\n"
-                "### Requirements\n\n"
-                "{requirements}\n\n"
-                "### Scaffold (Starting Point)\n\n"
-                "```{language}\n{scaffold_code}\n```\n\n"
-                "### Steps to Solve\n\n"
-                "{steps}\n\n"
-                "### Hints\n\n"
-                "{hints}\n\n"
-                "### Assessment Criteria\n\n"
-                "{assessment_criteria}"
-            ),
             'case_study': (
                 "## Case Study: {title}\n\n"
                 "### Background\n\n"
@@ -283,27 +257,10 @@ COURSE_TEMPLATE = {
                 "{lessons_learned}\n\n"
                 "### Discussion Questions\n\n"
                 "{discussion_questions}"
-            ),
-            'quiz': (
-                "## Knowledge Check: {title}\n\n"
-                "{introduction}\n\n"
-                "{questions}\n\n"
-                "### Answer Key\n\n"
-                "{answer_key}"
             )
         },
         'summary': (
             "## Module {module_num} Summary\n\n"
-            "### Key Takeaways\n\n"
-            "{key_takeaways}\n\n"
-            "### Skills Acquired\n\n"
-            "{skills_acquired}\n\n"
-            "### Module Assessment\n\n"
-            "{assessment_description}\n\n"
-            "### Further Reading\n\n"
-            "{further_reading}\n\n"
-            "### Next Module Preview\n\n"
-            "{next_module_preview}"
         )
     }
 }
