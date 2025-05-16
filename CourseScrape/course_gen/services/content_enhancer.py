@@ -171,9 +171,12 @@ class AIContentEnhancer:
             elif content_type in {'key_learnings', 'next_steps'}:
                 temperature = 0.7
                 top_p = 0.95
-            elif content_type in {'beginner', 'intermediate', 'advanced', 'expert', 'title'}:
+            elif content_type in {'beginner', 'intermediate', 'advanced', 'expert', 'any level', 'title'}:
                 temperature = 0.75
                 repetition_penalty = 1.1
+            else:
+                temperature = 0.75
+                repetition_penalty = 1.0
 
             # Memory optimization
             with lazy.torch.no_grad():
@@ -216,7 +219,8 @@ class AIContentEnhancer:
 
     def _rule_based_generation(self, prompt: str, content_type: str) -> str:
         """Fallback method for generating content without GPT-2"""
-
+        logger.info("Using rule based generation")
+        
         # Extract keywords from prompt
         words = re.findall(r'\b\w{4,}\b', prompt.lower())
         keywords = [word for word in words if word not in ['this', 'that', 'with', 'from', 'about', 'what', 'where', 'when', 'which']]

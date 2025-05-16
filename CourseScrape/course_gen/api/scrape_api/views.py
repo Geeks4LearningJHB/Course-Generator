@@ -33,6 +33,7 @@ class ScrapedContentView(APIView):
 
         data = serializer.validated_data
         query = data["query"].strip()
+        level = data.get("level", "beginner")
         max_results = data.get("max_results", 5)
         save_to_db = data.get("save_to_db", False)
 
@@ -41,7 +42,7 @@ class ScrapedContentView(APIView):
 
         try:
             # 1. Fetch and scrape data
-            search_results = async_to_sync(scraper.search_and_scrape_async)(query, max_results)
+            search_results = async_to_sync(scraper.search_and_scrape_async)(query, level, max_results)
 
             # 2. Save using FileManager (handles merging/error logging)
             FileManager.save_to_knowledge_base(search_results)

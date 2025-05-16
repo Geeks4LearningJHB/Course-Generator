@@ -15,18 +15,6 @@ from course_gen.utils.file_manager import FileManager
 from course_gen.services.knowledge_scraper import PlaywrightScraper, URLManager, ContentCleaner, ContentExtractor, BaseDetector, BaseScraper
 from course_gen.core import (COURSE_TEMPLATE, LEVEL_MAP)
 
-# Set up scraper
-url_manager = URLManager(scraped_urls_file="scraped_urls.json", bad_urls_file="bad_urls.json")
-content_cleaner = ContentCleaner()
-extractor = ContentExtractor(content_cleaner)
-detector = BaseDetector()
-scraper = PlaywrightScraper(
-    url_manager=url_manager,
-    content_cleaner=content_cleaner,
-    extractor=extractor,
-    detector=detector
-)
-
 class CourseGenerator:
     """Advanced AI-powered course generator with dynamic content and MongoDB storage"""
     def __init__(self, knowledge_file: str = "knowledge_base.json"):
@@ -39,6 +27,18 @@ class CourseGenerator:
         # Load course templates
         self.templates = COURSE_TEMPLATE
         
+        # Set up scraper
+        self.url_manager = URLManager(scraped_urls_file="scraped_urls.json", bad_urls_file="bad_urls.json")
+        self.content_cleaner = ContentCleaner()
+        self.extractor = ContentExtractor(self.content_cleaner)
+        self.detector = BaseDetector()
+        self.scraper = PlaywrightScraper(
+            url_manager=self.url_manager,
+            content_cleaner=self.content_cleaner,
+            extractor=self.extractor,
+            detector=self.detector
+        )
+        
         self._module_num_lock = Lock()
         self._current_module_num = 0
         
@@ -48,57 +48,61 @@ class CourseGenerator:
             self._current_module_num += 1
             return current_num
 
-    def generate_course(self, topic: str, level: str = "beginner", 
-                         modules_count: int = 5,
-                         instructor_notes: Optional[str] = None,
-                         syllabus_outline: Optional[List[str]] = None,
-                         save_to_db: bool = False) -> Dict:
-        """Generate a comprehensive long-form course
-
-        Args:
-            topic: Course topic
-            level: Course difficulty level (beginner, intermediate, advanced, expert)
-            modules_count: Target number of modules to generate
-            instructor_notes: Optional instructor notes to guide content generation
-            syllabus_outline: Optional list of topics to include in syllabus
-            save_to_db: Whether to save the course to MongoDB
-
-        Returns:
-            Dict: Generated course data or error message
-        """
+    def generate_course(self, topic: str, level: str = "any level", 
+                    modules_count: int = 5,
+                    instructor_notes: Optional[str] = None,
+                    syllabus_outline: Optional[List[str]] = None,
+                    save_to_db: bool = False) -> Dict:
+        """Generate a comprehensive long-form course"""
         start_time = datetime.now()
         logger.info(f"Starting course generation for {topic} ({level})")
         
         # Validate level
-        if level not in self.level_map:
-            logger.warning(f"Invalid level '{level}'. Defaulting to 'beginner'")
-            level = "beginner"
+        valid_levels = ["beginner", "intermediate", "advanced", "expert", "any level"]
+        if level.lower() not in valid_levels:
+            logger.warning(f"Invalid level '{level}'. Defaulting to 'any level'")
+            level = "any level"
         
         # Ensure we have a knowledge base to work with
         if not self.knowledge:
             logger.warning("No knowledge items found - generating a synthetic course")
             course = self._create_synthetic_course(topic, level, modules_count,  
-                                                 instructor_notes, syllabus_outline)
+                                                instructor_notes, syllabus_outline)
             return course
 
         # Find relevant content in knowledge base
         relevant_content = self._find_relevant_content(topic, level)
         
+        # If no relevant content found, try web scraping
         if not relevant_content:
             logger.warning(f"No content found for '{topic}' in knowledge base. Initiating web scrape...")
             
+            scraped_results = []
             try:
-                # Attempt to scrape content for the topic
-                # Scrape and save to knowledge base
-                scraped_results = async_to_sync(scraper.search_and_scrape_async)(f"{topic} for {level}", 10)
-
-                if scraped_results:
-                    FileManager.save_to_knowledge_base(scraped_results)
-                    logger.info(f"Scraped and saved {len(scraped_results)} new knowledge base entries for '{topic}'.")
+                # Attempt to scrape content for the topic - only if scraper is available
+                if hasattr(self, 'scraper') and self.scraper:
+                    # Try two search queries for better results
+                    scraped_results = async_to_sync(self.scraper.search_and_scrape_async)(topic, level, 5)
                     
-                    self.knowledge = FileManager.load_knowledge(self.knowledge_file)
-                    # Re-check for relevant content
-                    relevant_content = self._find_relevant_content(topic, level)
+                    # If first search didn't yield enough results, try another query
+                    if len(scraped_results) < 3:
+                        additional_results = async_to_sync(self.scraper.search_and_scrape_async)(topic, level, 5)
+                        scraped_results.extend(additional_results)
+                    
+                    if scraped_results:
+                        # Save to knowledge base if FileManager is available
+                        if FileManager:
+                            FileManager.save_to_knowledge_base(scraped_results)
+                            logger.info(f"Scraped and saved {len(scraped_results)} new knowledge base entries")
+                            
+                            # Reload knowledge and re-check for relevant content
+                            if hasattr(self, 'knowledge_file'):
+                                self.knowledge = FileManager.load_knowledge(self.knowledge_file)
+                                relevant_content = self._find_relevant_content(topic, level)
+                        else:
+                            # If we can't save to knowledge base, just use scraped results directly
+                            logger.info(f"FileManager not available, using scraped results directly")
+                            relevant_content = scraped_results
 
             except Exception as e:
                 logger.error(f"Web scraping failed for topic '{topic}': {str(e)}", exc_info=True)
@@ -113,12 +117,12 @@ class CourseGenerator:
 
         # Initialize course structure
         course = self._initialize_course_structure(topic, level, relevant_content, 
-                                                  instructor_notes, syllabus_outline)
+                                                instructor_notes, syllabus_outline)
 
         try:
             # Generate course introduction with AI enhancement
             course["introduction"] = self._filter_content(self._generate_course_introduction(topic, level, 
-                                                                                             relevant_content, syllabus_outline))
+                                                                                            relevant_content, syllabus_outline))
             
             # Organize content into logical modules
             organized_modules = self._organize_content(relevant_content, modules_count)
@@ -131,7 +135,14 @@ class CourseGenerator:
                     module["order"] = i
                     course["modules"].append(module)
                     if "resources" in module:
-                        course["resources"].extend(module["resources"])
+                        # Avoid duplicate resources
+                        new_resources = []
+                        existing_urls = {res.get("url", "") for res in course["resources"]}
+                        for res in module["resources"]:
+                            if res.get("url", "") not in existing_urls and res.get("url", ""):
+                                new_resources.append(res)
+                                existing_urls.add(res.get("url", ""))
+                        course["resources"].extend(new_resources)
                 except Exception as module_error:
                     logger.error(f"Error creating module {i}: {str(module_error)}")
                     # Add a fallback module
@@ -149,7 +160,8 @@ class CourseGenerator:
                 "topic": topic,
                 "level": level,
                 "modules_count": len(course["modules"]),
-                "total_units": sum(len(m.get("units", [])) for m in course["modules"])            }
+                "total_units": sum(len(m.get("units", [])) for m in course["modules"])
+            }
             
         except Exception as e:
             logger.error(f"Error generating course: {str(e)}")
@@ -158,7 +170,7 @@ class CourseGenerator:
                 course["modules"].append(self._create_minimal_module(topic, level))
 
         # Save to database if requested
-        if save_to_db and self.db_manager:
+        if save_to_db and hasattr(self, 'db_manager') and self.db_manager:
             try:
                 course_id = self._save_course_to_db(course)
                 course["_id"] = course_id
@@ -170,9 +182,14 @@ class CourseGenerator:
         duration = (end_time - start_time).total_seconds()
         logger.info(f"Course generation completed in {duration:.2f} seconds")
         
-        FileManager.export_markdown(course)
+        # Export to markdown if FileManager is available
+        if FileManager:
+            try:
+                FileManager.export_markdown(course)
+            except Exception as export_error:
+                logger.error(f"Error exporting to markdown: {str(export_error)}")
         
-        return  self.validate_course(course)
+        return self.validate_course(course)
     
     def _find_relevant_content(self, topic: str, level: str) -> Optional[List[Dict]]:
         """Find relevant content from knowledge base with expanded search strategies"""
@@ -484,6 +501,86 @@ class CourseGenerator:
             "resources": []
         }
         return course
+    
+    def _create_module(self, content: List[Dict], topic: str, level: str) -> Dict:
+        """Create an AI-enhanced learning module with improved error handling"""
+        module_num = self.get_next_module_num()  # Get the next available number
+        
+        # Ensure we have content to work with
+        if not content:
+            return self._create_minimal_module(topic, level)
+
+        try:
+            # Determine a better module title
+            module_title = self._generate_module_title(content, topic)
+            
+            # Generate enhanced content for template fields
+            try:
+                ai_overview_prompt = f"Write a brief overview of a module about {module_title} for {level} students"
+                ai_enhanced_overview = self.ai_enhancer.enhance_content(ai_overview_prompt, 'overview')
+                
+                learning_obj_prompt = f"Create 3-5 learning objectives for a module about {module_title}"
+                learning_objectives = self.ai_enhancer.enhance_content(learning_obj_prompt, 'objectives')
+                
+                outline_prompt = f"Create a brief outline for a module about {module_title}"
+                module_outline = self.ai_enhancer.enhance_content(outline_prompt, 'outline')
+            except Exception as ai_error:
+                logger.error(f"Error generating AI-enhanced content: {str(ai_error)}")
+                # Fallback content
+                ai_enhanced_overview = f"This module covers key concepts related to {module_title}."
+                learning_objectives = "- Understand core principles\n- Apply key techniques\n- Solve related problems"
+                module_outline = "- Introduction to concepts\n- Key techniques\n- Practical applications"
+
+            module = {
+                "title": module_title,
+                "introduction": self.templates['module']['introduction'].format_map(
+                    defaultdict(str, {
+                        "module_num": module_num,
+                        "title": module_title.split(": ", 1)[1] if ": " in module_title else module_title,
+                        "ai_enhanced_overview": ai_enhanced_overview,
+                        "learning_objectives": learning_objectives,
+                        "module_outline": module_outline
+                    })
+                ),
+                "units": [],
+                "resources": []
+            }
+
+            # Add units for each content item
+            for i, item in enumerate(content, 1):
+                try:
+                    unit = self._create_unit(item, topic, i)
+                    module["units"].append(unit)
+                    if "resources" in unit:
+                        module["resources"].extend(unit["resources"])
+
+                except Exception as section_error:
+                    logger.error(f"Error creating unit {i}: {str(section_error)}")
+                    # Add a minimal unit as fallback
+                    minimal_unit = {
+                        "title": f"Section {i}: {item.get('title', 'Content')}",
+                        "content": {
+                            "explanation": f"Content for {item.get('title', 'this unit')}.",
+                            "examples": []
+                        },
+                        "resources": [{"title": item.get("title", "Resource"), "url": item.get("url", "")}],
+                        "order": i
+                    }
+                    module["units"].append(minimal_unit)
+                    module["resources"].extend(minimal_unit["resources"])
+
+            # Module summary
+            module["summary"] = self.templates['module']['summary'].format_map(
+                defaultdict(str, {
+                    "topic": topic,
+                    "level": level,
+                    "module_num": module_num
+                })
+            )
+            return module
+        except Exception as e:
+            logger.error(f"Error creating module: {str(e)}\n{traceback.format_exc()}")
+            return self._create_minimal_module(topic, level)
 
     def _create_minimal_module(self, topic: str, level: str) -> Dict:
         """Create a minimal module when errors occur"""
@@ -491,9 +588,25 @@ class CourseGenerator:
         
         module = {
             "title": f"Module {module_num}: Introduction to {topic.title()}",
-            "introduction": self.templates['module']['introduction'].format(topic=topic, level=level),
-            "summary": self.templates['module']['summary'].format(topic=topic, level=level),
-            "modules": [],
+            "introduction": self.templates['module']['introduction'].format_map(
+                defaultdict(str, {
+                    "topic": topic,
+                    "level": level,
+                    "module_num": module_num,
+                    "title": f"Introduction to {topic.title()}",
+                    "ai_enhanced_overview": f"This module introduces you to the basic concepts of {topic}.",
+                    "learning_objectives": "- Understand the basic principles\n- Learn key terminology\n- Apply foundational concepts",
+                    "module_outline": "- Introduction to key concepts\n- Core terminology\n- Basic applications"
+                })
+            ),
+            "summary": self.templates['module']['summary'].format_map(
+                defaultdict(str, {
+                    "topic": topic,
+                    "level": level,
+                    "module_num": module_num
+                })
+            ),
+            "units": [],  # Initialize empty units array
             "resources": []
         }
 
@@ -508,10 +621,63 @@ class CourseGenerator:
             "order": 1
         }
 
-        module["units"].append(unit)
+        module["units"].append(unit)  # Now we can safely append to the units array
 
         return module
+        
+    def _generate_module_title(self, content: List[Dict], topic: str) -> str:
+        """Generate an appropriate module title based on content"""
+        module_num = self.get_next_module_num()
+        
+        try:
+            # Try to extract common words across content items
+            common_words = self._find_common_words([item.get("title", "") for item in content]) if content else []
+            
+            if common_words:
+                return f"Module {module_num}: {' '.join(common_words).title()}"
+            elif content and "title" in content[0]:
+                return f"Module {module_num}: {content[0]['title']}"
+            else:
+                # Generate a title with AI
+                title_prompt = f"Generate a title for module {module_num} of a course on {topic}"
+                ai_title = self.ai_enhancer.enhance_content(title_prompt, 'title')
+                return f"Module {module_num}: {ai_title.strip('\"')}"
+        except Exception as e:
+            logger.error(f"Error generating module title: {str(e)}")
+            return f"Module {module_num}: {topic.title()} Concepts"
+    
+    def _find_common_words(self, titles: List[str]) -> List[str]:
+        """Find common meaningful words across titles"""
+        if not titles:
+            return []
 
+        # Filter out empty or None titles
+        titles = [title for title in titles if title]
+        if not titles:
+            return []
+
+        word_counter = {}
+        stop_words = {'and', 'the', 'to', 'of', 'in', 'for', 'with', 'on', 'at', 'from', 'by', 'a', 'an'}
+
+        for title in titles:
+            # Extract words and clean punctuation
+            words = [word.strip('.,!?:;()[]{}"-\'').lower() for word in title.split()]
+            # Filter short and stop words
+            words = [word for word in words if word and word not in stop_words and len(word) > 2]
+
+            for word in words:
+                word_counter[word] = word_counter.get(word, 0) + 1
+
+        # Find words that appear in multiple titles
+        common_words = [word for word, count in word_counter.items() if count > 1]
+
+        # If no common words found, fallback to top N frequent words
+        if not common_words and word_counter:
+            sorted_words = sorted(word_counter.items(), key=lambda x: x[1], reverse=True)
+            common_words = [word for word, _ in sorted_words[:min(2, len(sorted_words))]]
+
+        return common_words
+    
     def _organize_content(self, content: List[Dict], target_modules: int) -> List[List[Dict]]:
         """Organize content into logical learning modules with progressive difficulty"""
         try:
@@ -553,7 +719,7 @@ class CourseGenerator:
             
             # Try to determine difficulty level for each group
             group_difficulties = []
-            level_scores = {"beginner": 1, "intermediate": 2, "advanced": 3, "expert": 4}
+            level_scores = {"beginner": 1, "intermediate": 2, "advanced": 3, "expert": 4, "any level": 2}
             
             for group_items in groups:
                 # Use the average difficulty level in the group
@@ -602,123 +768,87 @@ class CourseGenerator:
         except Exception as e:
             logger.error(f"Error creating module: {str(e)}\n{traceback.format_exc()}")
             return [content] if content else [[]]
-        
-    def _create_module(self, content: List[Dict], topic: str, level: str) -> Dict:
-        """Create an AI-enhanced learning module with improved error handling"""
-        module_num = self.get_next_module_num()  # Get the next available number
-        
-        # Ensure we have content to work with
-        if not content:
-            return self._create_minimal_module(topic, level)
 
+    def _create_unit(self, item: Dict, topic: str, order: int, 
+                 section_type: str = "explanation", level: str = "beginner") -> Dict:
+        """Create a specialized unit based on unit type"""
         try:
-            # Determine a better module title
-            module_title = self._generate_module_title(content, topic)
-
-            module = {
-                "title": module_title,
-                "units": [],
-                "resources": []
+            # Get the level from the item if available
+            level = item.get("level", level)
+            
+            # Determine the appropriate section type based on content
+            if "code_examples" in item and item["code_examples"]:
+                section_type = "example"
+            elif "case_study" in item or (item.get("title", "").lower().find("case") >= 0):
+                section_type = "case_study"
+            
+            # Generate content based on section type
+            content_result = self._generate_unit_content(item, topic, section_type, level)
+            
+            # Initialize the unit structure
+            unit = {
+                "title": item.get("title", f"Section {order}"),
+                "type": section_type,
+                "content": {},  # Will be populated based on content_result
+                "resources": [
+                    {"title": item.get("title", "Resource"), "url": item.get("url", "")}
+                ],
+                "order": order
+            }
+            
+            # Handle different content structures based on section_type
+            if section_type == "case_study" and "case_study" in content_result:
+                unit["content"]["case_study"] = content_result["case_study"]
+                # Add explanation and examples as empty to maintain consistent structure
+                unit["content"]["explanation"] = content_result.get("explanation", "")
+                unit["content"]["examples"] = content_result.get("examples", [])
+            else:
+                # For other types, directly copy the content
+                unit["content"]["explanation"] = content_result.get("explanation", "")
+                unit["content"]["examples"] = content_result.get("examples", [])
+            
+            return unit
+        except Exception as e:
+            logger.error(f"Error in _create_unit: {str(e)}")
+            # Return minimal unit
+            return {
+                "title": item.get("title", f"Section {order}"),
+                "type": "explanation",
+                "content": {
+                    "explanation": f"Content about {item.get('title', 'this topic')}.",
+                    "examples": []
+                },
+                "resources": [{"title": item.get("title", "Resource"), "url": item.get("url", "")}],
+                "order": order
             }
 
-            # Module introduction
-            module["introduction"] = self.templates['module']['introduction'].format_map(
-                defaultdict(str, {
-                    "topic": topic,
-                    "level": level,
-                    "module_num": module_num
-                })
-            )
-
-            # Add units for each content item
-            for i, item in enumerate(content, 1):
-                try:
-                    unit = self._create_unit(item, topic, i)
-                    module["units"].append(unit)
-                    if "resources" in unit:
-                        module["resources"].extend(unit["resources"])
-
-                except Exception as section_error:
-                    logger.error(f"Error creating unit {i}: {str(section_error)}")
-                    # Add a minimal unit as fallback
-                    minimal_unit = {
-                        "title": f"Section {i}: {item.get('title', 'Content')}",
-                        "content": {
-                            "explanation": f"Content for {item.get('title', 'this unit')}.",
-                            "examples": []
-                        },
-                        "resources": [{"title": item.get("title", "Resource"), "url": item.get("url", "")}],
-                        "order": i
-                    }
-                    module["units"].append(minimal_unit)
-                    module["resources"].extend(minimal_unit["resources"])
-
-            # Module summary
-            module["summary"] = self.templates['module']['summary'].format_map(
-                defaultdict(str, {
-                    "topic": topic,
-                    "level": level,
-                    "module_num": module_num
-                })
-            )
-            return module
-        except Exception as e:
-            logger.error(f"Error creating module: {str(e)}\n{traceback.format_exc()}")
-            return self._create_minimal_module(topic, level)
-    
-    def _find_common_words(self, titles: List[str]) -> List[str]:
-        """Find common meaningful words across titles"""
-        if not titles:
-            return []
-
-        # Filter out empty or None titles
-        titles = [title for title in titles if title]
-        if not titles:
-            return []
-
-        word_counter = {}
-        stop_words = {'and', 'the', 'to', 'of', 'in', 'for', 'with', 'on', 'at', 'from', 'by', 'a', 'an'}
-
-        for title in titles:
-            # Extract words and clean punctuation
-            words = [word.strip('.,!?:;()[]{}"-\'').lower() for word in title.split()]
-            # Filter short and stop words
-            words = [word for word in words if word and word not in stop_words and len(word) > 2]
-
-            for word in words:
-                word_counter[word] = word_counter.get(word, 0) + 1
-
-        # Find words that appear in multiple titles
-        common_words = [word for word, count in word_counter.items() if count > 1]
-
-        # If no common words found, fallback to top N frequent words
-        if not common_words and word_counter:
-            sorted_words = sorted(word_counter.items(), key=lambda x: x[1], reverse=True)
-            common_words = [word for word, _ in sorted_words[:min(2, len(sorted_words))]]
-
-        return common_words
-    
-    def _generate_module_title(self, content: List[Dict], topic: str) -> str:
-        """Generate an appropriate module title based on content"""
-        module_num = self._current_module_num
-        
+    def _generate_unit_content(self, content: Dict, topic: str, 
+                           section_type: str, level: str) -> Dict:
+        """Generate comprehensive content for different unit types"""
         try:
-            # Try to extract common words across content items
-            common_words = self._find_common_words([item.get("title", "") for item in content]) if content else []
+            # Base content to work with
+            content_text = content.get('content', f"Content about {content.get('title', topic)}")
+            section_title = content.get('title', topic)
             
-            if common_words:
-                return f"Module {module_num}: {' '.join(common_words).title()}"
-            elif content and "title" in content[0]:
-                return f"Module {module_num}: {content[0]['title']}"
+            # Generate content based on unit type
+            if section_type == "explanation":
+                return self._generate_explanation_content(content_text, section_title, topic, level)
+            elif section_type == "example":
+                return self._generate_example_content(content, section_title, topic, level)
+            elif section_type == "case_study":
+                return self._generate_case_study_content(content_text, section_title, topic, level)
             else:
-                # Generate a title with AI
-                title_prompt = f"Generate a title for module {module_num} of a course on {topic}"
-                ai_title = self.ai_enhancer.enhance_content(title_prompt, 'title')
-                return f"Module {module_num}: {ai_title.strip('\"')}"
+                # Default to explanation
+                return self._generate_explanation_content(content_text, section_title, topic, level)
+                    
         except Exception as e:
-            logger.error(f"Error generating module title: {str(e)}")
-            return f"Module {module_num}: {topic.title()} Concepts"
-    
+            logger.error(f"Error generating unit content: {str(e)}")
+            # Return simplified content
+            return {
+                "explanation": f"## {content.get('title', 'Topic')}\n\nContent about {content.get('title', 'this topic')}.",
+                "examples": [f"### Example\n\nExample for {content.get('title', 'this topic')}"],
+            }
+            
     def _extract_unit_topics(self, module_outline: str, num_topics: int) -> List[str]:
         """Extract potential unit topics from a module outline"""
         try:
@@ -742,62 +872,6 @@ class CourseGenerator:
         except Exception as e:
             logger.error(f"Error extracting unit topics: {str(e)}")
             return [f"Topic {i+1}" for i in range(num_topics)]
-
-    def _create_unit(self, item: Dict, topic: str, order: int, 
-                       section_type: str = "explanation", level: str = "beginner") -> Dict:
-        """Create a specialized unit based on unit type"""
-        try:
-            unit = {
-                "title": item.get("title", f"Section {order}"),
-                "type": section_type,
-                "content": self._generate_unit_content(item, topic, section_type, level),
-                "resources": [
-                    {"title": item.get("title", "Resource"), "url": item.get("url", "")}
-                ],
-                "order": order
-            }
-            
-            return unit
-        except Exception as e:
-            logger.error(f"Error in _create_unit: {str(e)}")
-            # Return minimal unit
-            return {
-                "title": item.get("title", f"Section {order}"),
-                "type": "explanation",
-                "content": {
-                    "explanation": f"Content about {item.get('title', 'this topic')}.",
-                    "examples": []
-                },
-                "resources": [{"title": item.get("title", "Resource"), "url": item.get("url", "")}],
-                "order": order
-            }
-
-    def _generate_unit_content(self, content: Dict, topic: str, 
-                                section_type: str, level: str) -> Dict:
-        """Generate comprehensive content for different unit types"""
-        try:
-            # Base content to work with
-            content_text = content.get('content', f"Content about {content.get('title', topic)}")
-            section_title = content.get('title', topic)
-            
-            # Generate content based on unit type
-            if section_type == "explanation":
-                return self._generate_explanation_content(content_text, section_title, topic, level)
-            elif section_type == "example":
-                return self._generate_example_content(content, section_title, topic, level)
-            elif section_type == "case_study":
-                return self._generate_case_study_content(content_text, section_title, topic, level)
-            else:
-                # Default to explanation
-                return self._generate_explanation_content(content_text, section_title, topic, level)
-                
-        except Exception as e:
-            logger.error(f"Error generating unit content: {str(e)}")
-            # Return simplified content
-            return {
-                "explanation": f"## {content.get('title', 'Topic')}\n\nContent about {content.get('title', 'this topic')}.",
-                "examples": [f"### Example\n\nExample for {content.get('title', 'this topic')}"],
-            }
             
     def _enhance_unit(self, content: Dict, topic: str) -> Dict:
         """Enhance a content unit with AI-generated material"""
@@ -1001,7 +1075,7 @@ class CourseGenerator:
             }
 
     def _generate_case_study_content(self, content_text: str, 
-                                   section_title: str, topic: str, level: str) -> Dict:
+                               section_title: str, topic: str, level: str) -> Dict:
         """Generate comprehensive case study content"""
         try:
             # Generate background
@@ -1041,7 +1115,7 @@ class CourseGenerator:
             discussion_questions = self.ai_enhancer.enhance_content(questions_prompt, 'case_study')
             
             # Format the case study
-            case_study = self.templates['module']['unit']['case_study'].format(
+            formatted_case_study = self.templates['module']['unit']['case_study'].format(
                 title=section_title,
                 background=background,
                 challenge=challenge,
@@ -1051,18 +1125,19 @@ class CourseGenerator:
                 discussion_questions=discussion_questions
             )
             
+            # Return in consistent structure with other content generators
             return {
-                "case_study": case_study,
-                "explanation": "",  # This is a different unit type
-                "examples": []
+                "explanation": "",  # This is a case study, so explanation is empty
+                "examples": [],     # No examples in case study
+                "case_study": formatted_case_study  # Add the case study content
             }
-            
+                
         except Exception as e:
             logger.error(f"Error generating case study content: {str(e)}")
             return {
-                "case_study": f"## Case Study: {section_title}\n\nThis case study explores real-world applications of {section_title}.",
                 "explanation": "",
-                "examples": []
+                "examples": [],
+                "case_study": f"## Case Study: {section_title}\n\nThis case study explores real-world applications of {section_title}."
             }
 
 
