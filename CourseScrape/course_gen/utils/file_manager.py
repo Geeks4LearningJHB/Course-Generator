@@ -1,5 +1,5 @@
 from course_gen.core.globals import (
-    os, logging, json, Dict, Set, List, Optional, Union, Lock
+    os, logging, json, Dict, Set, List, Optional, Union, Lock, re
 )
 
 logger = logging.getLogger(__name__)
@@ -53,52 +53,207 @@ class FileManager:
                 return []
 
     @staticmethod
-    def export_markdown(course: Dict, filename: Optional[str] = None) -> str:
+    def export_markdown(course: Dict, filename: Optional[str] = None):
         """Export course structure to Markdown file."""
         if not filename:
-            filename = f"{course['title'].strip().replace(' ', '_')}.md"
+            filename = re.sub(r'[ /\-.,]', '_', filename)
+            filename = f"{course['title'].strip()}.md"
 
         try:
             md_content = FileManager._generate_markdown(course)
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(md_content)
             logger.info(f"Markdown saved to {filename}")
-            return md_content
         except Exception as e:
             logger.error(f"Markdown export failed: {str(e)}")
             raise
 
     @staticmethod
     def _generate_markdown(course: Dict) -> str:
-        """Generate Markdown content from course dict."""
-        md = f"# {course['title']}\n\n"
-        md += f"*{course['description']}*\n\n"
+        """Generate Markdown content following template structure without using template strings."""
+        md = []
+        
+        # Course Introduction
+        intro = [
+            f"# {course.get('title', '')}",
+            "",
+            "## Course Overview",
+            "",
+            course.get('ai_enhanced_description', ''),
+            "",
+            "### Course Objectives",
+            "",
+            course.get('learning_objectives', ''),
+            "",
+            "### Prerequisites",
+            "",
+            course.get('prerequisites', ''),
+            "",
+            "### Course Structure",
+            "",
+            course.get('structure_overview', ''),
+            "",
+            "### Learning Path",
+            "",
+            course.get('learning_path', ''),
+            ""
+        ]
+        md.append("\n".join(intro))
 
-        for i, module in enumerate(course["modules"], 1):
-            md += f"## Module {i}: {module['title']}\n\n"
-            md += f"{module['introduction']}\n\n"
+        # Modules
+        for i, module in enumerate(course.get('modules', []), 1):
+            # Module Introduction
+            module_intro = [
+                f"# Module {i}: {module.get('title', '')}",
+                "",
+                "## Overview",
+                "",
+                module.get('ai_enhanced_overview', ''),
+                "",
+                "## Learning Objectives",
+                "",
+                module.get('learning_objectives', ''),
+                "",
+                "## Module Outline",
+                "",
+                module.get('module_outline', ''),
+                ""
+            ]
+            md.append("\n".join(module_intro))
 
-            for section in module["sections"]:
-                md += f"### {section['title']}\n\n"
-                md += f"{section['content']['explanation']}\n\n"
+            # Units
+            for unit in module.get('units', []):
+                if unit.get('type') == 'explanation':
+                    explanation = [
+                        f"## {unit.get('title', '')}",
+                        "",
+                        unit['content'].get('explanation', ''),
+                        "",
+                        "### Key Points",
+                        "",
+                        unit['content'].get('key_points', ''),
+                        "",
+                        "### Real-world Application",
+                        "",
+                        unit['content'].get('real_world_application', ''),
+                        "",
+                        "### Conceptual Model",
+                        "",
+                        unit['content'].get('conceptual_model', ''),
+                        "",
+                        "### Common Misconceptions",
+                        "",
+                        unit['content'].get('misconceptions', ''),
+                        "",
+                        "---",
+                        ""
+                    ]
+                    md.append("\n".join(explanation))
+                
+                elif unit.get('type') == 'example':
+                    example = [
+                        f"### Example: {unit.get('title', '')}",
+                        "",
+                        "#### Problem Statement",
+                        "",
+                        unit['content'].get('problem_statement', ''),
+                        "",
+                        "#### Solution Approach",
+                        "",
+                        unit['content'].get('solution_approach', ''),
+                        "",
+                        f"```{unit['content'].get('language', '')}",
+                        unit['content'].get('code', ''),
+                        "```",
+                        "",
+                        "#### Explanation",
+                        "",
+                        unit['content'].get('explanation', ''),
+                        "",
+                        "#### Alternative Approaches",
+                        "",
+                        unit['content'].get('alternative_approaches', ''),
+                        "",
+                        "#### Practice Variation",
+                        "",
+                        unit['content'].get('practice_variation', ''),
+                        "",
+                        "---",
+                        ""
+                    ]
+                    md.append("\n".join(example))
+                
+                elif unit.get('type') == 'case_study':
+                    case_study = [
+                        f"## Case Study: {unit.get('title', '')}",
+                        "",
+                        "### Background",
+                        "",
+                        unit['content'].get('background', ''),
+                        "",
+                        "### Challenge",
+                        "",
+                        unit['content'].get('challenge', ''),
+                        "",
+                        "### Analysis",
+                        "",
+                        unit['content'].get('analysis', ''),
+                        "",
+                        "### Solution",
+                        "",
+                        unit['content'].get('solution', ''),
+                        "",
+                        "### Lessons Learned",
+                        "",
+                        unit['content'].get('lessons_learned', ''),
+                        "",
+                        "### Discussion Questions",
+                        "",
+                        unit['content'].get('discussion_questions', ''),
+                        "",
+                        "---",
+                        ""
+                    ]
+                    md.append("\n".join(case_study))
 
-                if section['content']['examples']:
-                    md += "#### Examples\n\n"
-                    for example in section['content']['examples']:
-                        md += f"- {example}\n\n"
+            # Module Summary
+            summary = [
+                f"## Module {i} Summary",
+                "",
+                module.get('summary', ''),
+                ""
+            ]
+            md.append("\n".join(summary))
 
-                md += f"#### Exercise\n"
-                md += f"{section['content']['exercise']}\n\n"
-                md += "---\n\n"
+        # Course Conclusion
+        conclusion = [
+            "# Course Conclusion",
+            "",
+            "## Congratulations!",
+            "",
+            f"You've completed the {course.get('level', '')} course on {course.get('topic', '')}! Let's recap what you've learned:",
+            "",
+            course.get('key_learnings', ''),
+            "",
+            "## Next Steps",
+            "",
+            course.get('next_steps', ''),
+            ""
+        ]
+        md.append("\n".join(conclusion))
 
-            md += f"### Module {i} Summary\n"
-            md += f"{module['summary']}\n\n"
+        # Resources
+        if course.get('resources'):
+            resources = ["## Course Resources", ""]
+            for resource in course['resources']:
+                if resource.get('url'):
+                    resources.append(f"- [{resource.get('title', '')}]({resource.get('url', '')})")
+                else:
+                    resources.append(f"- {resource.get('title', '')}")
+            resources.append("")
+            md.append("\n".join(resources))
 
-        md += "## Course Resources\n\n"
-        for resource in course["resources"]:
-            md += f"- [{resource['title']}]({resource['url']})\n" if resource["url"] else f"- {resource['title']}\n"
-
-        return md
+        return "\n".join(md)
 
     @staticmethod
     def save_json(data: Union[Dict, List, Set], file_path: Union[str, os.PathLike], indent: int = 2) -> None:
