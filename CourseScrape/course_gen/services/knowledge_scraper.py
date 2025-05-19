@@ -755,7 +755,7 @@ class PlaywrightScraper(BaseScraper):
             logger.error(f"Error in async paywall check for {url}: {str(e)}")
             return False
     
-    async def scrape_page_async(self, url: str, topic: str = "", depth=0, max_depth=5) -> Optional[ScrapedContent]:
+    async def scrape_page_async(self, url: str, topic: str = "", depth=0, max_depth=8) -> Optional[ScrapedContent]:
         """Scrape content from a JavaScript-heavy page using Playwright and return ScrapedContent"""
         self.headers = get_random_headers()
         
