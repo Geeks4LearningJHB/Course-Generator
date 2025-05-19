@@ -94,9 +94,10 @@ export class SidePanelComponent implements OnInit {
   //   this.toggleService.toggleLog();
   // }
 
-  // showNav() {
-  //   this.showingNav = true;
-  // }
+  toggle(): void {
+  this.toggleService.toggleNav();
+  this.toggleService.toggleLog();
+}
 
   togglePanel(panel: 'nav' | 'log'): void {
     this.isCollapsed = !this.isCollapsed;

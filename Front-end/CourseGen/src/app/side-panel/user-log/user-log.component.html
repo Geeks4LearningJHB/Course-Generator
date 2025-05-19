@@ -1,1 +1,13 @@
-<p>user-log works!</p>
+<!-- <div class="field">
+    <button></button>
+</div> -->
+
+<div class="menu">
+  <ul>
+    <li *ngFor="let log of logs">
+      <span class="timestamp">{{ log.timestamp | date:'short' }}</span>
+      <span class="message">{{ log.message }}</span>
+    </li>
+  </ul>
+</div>
+

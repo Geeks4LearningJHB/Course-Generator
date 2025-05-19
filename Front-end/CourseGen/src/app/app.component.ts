@@ -10,6 +10,7 @@ import { filter } from 'rxjs/operators';
 export class AppComponent {
   title = 'CourseGen';
   Exclusion = false;
+  isCollapsedFromService: boolean = false;
 
   constructor(private router: Router) {
     this.router.events.pipe(

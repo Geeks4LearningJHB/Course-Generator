@@ -360,7 +360,7 @@ div.body {
 }
 
 .dash-container-1 {
-  display: flex;
+  display: block;
   position: relative;
   align-items: center;
   justify-content: center;
