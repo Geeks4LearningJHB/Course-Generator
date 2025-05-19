@@ -54,4 +54,5 @@ transformers
 typing_extensions    
 tzdata               
 urllib3              
-yarl                 
+yarl       
+huggingface-hub>=0.19.0          

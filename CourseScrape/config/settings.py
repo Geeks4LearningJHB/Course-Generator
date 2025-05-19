@@ -12,7 +12,18 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import sys
+import os
+import openai
+from dotenv import load_dotenv
 
+
+load_dotenv()  # Loads variables from .env
+
+# Now access variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")  # Default fallback
+# Add to ALLOWED_HOSTS
+ALLOWED_HOSTS = ['*']  # For development only
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,9 +55,11 @@ INSTALLED_APPS = [
     'course_gen',
     'drf_yasg',  # ✅ For Swagger
     'rest_framework',
+     'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # MUST be high in the list
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -127,3 +140,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+]
+
+CORS_ALLOW_CREDENTIALS = True

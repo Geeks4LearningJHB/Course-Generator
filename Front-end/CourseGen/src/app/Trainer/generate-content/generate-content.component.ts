@@ -1,6 +1,5 @@
 import { Component, HostListener } from '@angular/core';
 import { GenerateContentService } from '../../Services/generate-content.service';
-import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToggleService } from '../../Services/toggle.service';
 
@@ -15,15 +14,19 @@ export class GenerateContentComponent {
   duration: number | null = null;
   isCollapsed = true;
   isLoading = false;
-  courseOutline: string = '';
+  courseResult: any = null;
 
   constructor(
-    private router: Router,
     private generateContentService: GenerateContentService,
     private toggleService: ToggleService
   ) {}
 
-  // Triggered when the form is submitted
+  ngOnInit(): void {
+    this.toggleService.isCollapsed$.subscribe(
+      (collapsed) => (this.isCollapsed = collapsed)
+    );
+  }
+
   onGenerateCourse() {
     if (!this.courseTitle || !this.difficulty || this.duration == null) {
       alert('Please fill in all fields.');
@@ -40,9 +43,8 @@ export class GenerateContentComponent {
 
     this.generateContentService.generateCourse(courseData).subscribe({
       next: (response: any) => {
-        this.generateContentService.setGeneratedCourse(response);
         this.isLoading = false;
-        this.router.navigate(['/view-generated-course']);
+        this.courseResult = response.data; // Store the generated dummy course here
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error generating course:', error);
@@ -50,12 +52,6 @@ export class GenerateContentComponent {
         alert('Failed to generate course.');
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.toggleService.isCollapsed$.subscribe(
-      (collapsed) => (this.isCollapsed = collapsed)
-    );
   }
 
   confirmCourseGeneration() {
@@ -63,14 +59,14 @@ export class GenerateContentComponent {
 
     const courseData = {
       courseTitle: this.courseTitle,
-      difficulty: this.difficulty,
+      difficulty: this.difficulty.toLowerCase(),
       duration: this.duration ?? 0
     };
 
     this.generateContentService.generateCourse(courseData).subscribe({
       next: (response: any) => {
         this.isLoading = false;
-        this.router.navigate(['/course-save-component']);
+        // Redirect to the save component if you decide to later
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error generating course:', error);
@@ -79,10 +75,6 @@ export class GenerateContentComponent {
       }
     });
   }
-
-  // toggleSidebar() {
-  //   this.isCollapsed = !this.isCollapsed;
-  // }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

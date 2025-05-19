@@ -1,30 +1,39 @@
-from django.shortcuts import render
-
-# Create your views here.
+import os
+import json
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PromptSerializer
+from .models import Prompt
+from .services import CourseGenerator
 
-class PromptReceiveAPIView(APIView):
-    """
-    API endpoint that receives and saves user prompts.
-    It expects JSON data with 'title', 'level', and 'duration' (course duration).
-    """
-    def post(self, request, *args, **kwargs):
-        """
-        Handles POST requests to create and save a new prompt.
-        """
+class CourseGenerationAPIView(APIView):
+    async def post(self, request, *args, **kwargs):
         serializer = PromptSerializer(data=request.data)
-        if serializer.is_valid():
-            # ModelSerializer's save() method will create a new Prompt instance
-            saved_prompt = serializer.save()
-
-            print(f"Saved Prompt: ID={saved_prompt.id}, Title='{saved_prompt.title}', Level='{saved_prompt.level}', Duration={saved_prompt.duration} mins")
-
-            return Response(
-                {"message": "Prompt received and saved successfully!", "data": serializer.data},
-                status=status.HTTP_201_CREATED
-            )
-        else:
+        if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            saved_prompt = serializer.save()
+            generator = CourseGenerator()
+            
+            prompt_data = {
+                'courseTitle': saved_prompt.courseTitle,
+                'difficulty': saved_prompt.difficulty,
+                'duration': saved_prompt.duration
+            }
+            
+            course = await generator.generate_course(prompt_data)
+            
+            return Response({
+                "status": "success",
+                "course_id": course.get('_id'),
+                "data": course['course']
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "message": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

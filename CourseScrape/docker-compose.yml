@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    env_file: 
+      - .env  # Loads ALL variables from .env automatically
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    # Remove the separate 'environment' section unless you need overrides
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin  # Recommended for security
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+volumes:
+  mongodb_data:

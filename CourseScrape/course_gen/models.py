@@ -10,8 +10,9 @@ class Prompt(models.Model):
         ('advanced', 'Advanced'),
     )
 
-    title = models.CharField(max_length=255, help_text="The main title or subject of the prompt.")
-    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, help_text="The intended difficulty level for the prompt.")
+
+    courseTitle = models.CharField(max_length=255, help_text="The main title or subject of the prompt.")
+    difficulty = models.CharField(max_length=20, help_text="The intended difficulty level for the prompt.")
     duration = models.IntegerField(help_text="Estimated course duration in months (or your chosen unit).")
     created_at = models.DateTimeField(auto_now_add=True) 
     updated_at = models.DateTimeField(auto_now=True)     

@@ -15,7 +15,8 @@ export class GenerateContentService {
   // Method to generate the course
   generateCourse(data: { courseTitle: string; difficulty: string; duration: number }): Observable<any> {
     const { difficulty, duration } = data;
-    return this.http.post(`${this.apiUrl}generateCourse`, data);
+    return this.http.post(`http://127.0.0.1:8000/api/prompt/`, data);
+
   }
  
 

@@ -5,13 +5,14 @@ class PromptSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Prompt
-        fields = ['id', 'title', 'level', 'duration', 'created_at', 'updated_at']
+        fields = ['id', 'courseTitle', 'difficulty', 'duration', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at'] 
 
-    def validate_title(self, value):
-        if len(value.split()) < 0:
-            raise serializers.ValidationError("Title not provided.")
-        return value
+    def validate_courseTitle(self, value):
+     if len(value.split()) == 0:
+        raise serializers.ValidationError("Title not provided.")
+     return value
+
 
     def validate_duration(self, value):
         if value <= 0:

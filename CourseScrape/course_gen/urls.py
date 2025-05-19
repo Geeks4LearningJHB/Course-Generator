@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import PromptReceiveAPIView
+from .views import CourseGenerationAPIView
 
 urlpatterns = [
-    path('api/prompt/', PromptReceiveAPIView.as_view(), name='prompt-receive'),
+    path('api/prompt/', CourseGenerationAPIView.as_view(), name='prompt-receive'),
 ]

@@ -13,10 +13,10 @@
 
         <div class="form-group">
           <label for="difficulty">Difficulty</label>
-          <select id="difficulty" [(ngModel)]="difficulty" name="difficulty" required>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
+          <select [(ngModel)]="difficulty">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
           </select>
         </div>
 
@@ -34,6 +34,37 @@
         </div>
       </form>
     </div>
+
+    <!-- Dummy Course Result Preview -->
+<div *ngIf="courseResult" class="course-preview">
+  <h2>📘 Generated Course</h2>
+  <p><strong>Title:</strong> {{ courseResult.courseTitle }}</p>
+  <p><strong>Difficulty:</strong> {{ courseResult.difficulty }}</p>
+  <p><strong>Duration:</strong> {{ courseResult.duration }} months</p>
+
+  <div *ngFor="let module of courseResult.modules">
+    <h3>📦 Module: {{ module.moduleTitle }}</h3>
+    <p><strong>Objectives:</strong></p>
+    <ul>
+      <li *ngFor="let obj of module.objectives">{{ obj }}</li>
+    </ul>
+    <p><strong>Summary:</strong> {{ module.summary }}</p>
+
+    <div *ngFor="let unit of module.units">
+      <h4>📗 Unit: {{ unit.unitTitle }}</h4>
+      <p>{{ unit.content }}</p>
+      <p><strong>Activities:</strong></p>
+      <ul>
+        <li *ngFor="let act of unit.activities">{{ act }}</li>
+      </ul>
+    </div>
+
+    <p><strong>Assessment:</strong></p>
+    <ul>
+      <li *ngFor="let a of module.assessment">{{ a }}</li>
+    </ul>
+  </div>
+</div>
 
     <!-- Loading State -->
     <div class="loading-box" *ngIf="isLoading">
