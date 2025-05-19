@@ -401,7 +401,7 @@ class ContentExtractor:
                 return "intermediate"
         except Exception as e:
             logger.error(f"Error determining level: {e}")
-            return "beginner"
+            return "any level"
         
     def _clean_content(self, soup: BeautifulSoup) -> BeautifulSoup:
         """Remove non-content elements from the soup"""
@@ -1009,7 +1009,7 @@ class PlaywrightScraper(BaseScraper):
             except Exception as e:
                 logger.warning(f"Error closing browser: {str(e)}")
     
-    async def search_and_scrape_async(self, query: str, max_results: int = 10) -> List[Dict]:
+    async def search_and_scrape_async(self, query: str, level = "any level", max_results: int = 10) -> List[Dict]:
         """Async implementation of search and scrape"""
         knowledge = []
         try:
@@ -1020,7 +1020,7 @@ class PlaywrightScraper(BaseScraper):
                 delay = random.uniform(*self.search_delay) - time_since_last
                 await asyncio.sleep(delay)
             
-            enhanced_query = f"{query} course OR tutorial OR guide OR learn"
+            enhanced_query = f"{query} for {level} course OR tutorial OR guide OR learn"
             results_list = []
             
             # Retry mechanism
@@ -1131,6 +1131,6 @@ class PlaywrightScraper(BaseScraper):
             
         return knowledge
 
-    def search_and_scrape(self, query: str, max_results: int = 10) -> List[Dict]:
+    def search_and_scrape(self, query: str, level = "any level", max_results: int = 10) -> List[Dict]:
         """Synchronous wrapper for the async search_and_scrape method"""
-        return asyncio.run(self.search_and_scrape_async(query, max_results))
+        return asyncio.run(self.search_and_scrape_async(query, level, max_results))

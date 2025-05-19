@@ -1,7 +1,4 @@
-from course_gen.core.globals import (logging)
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from course_gen.core.globals import (logging, APIView, Response, status)
 
 from .serializer import CourseGenerationRequestSerializer
 from course_gen.services.course_generator import CourseGenerator
@@ -31,13 +28,7 @@ class CourseGenerationAPI(APIView):
             
             response_data = {
                 'status': 'success',
-                'course': course,
-                'metadata': {
-                    'topic': topic,
-                    'level': level,
-                    'module_count': len(course.get('modules', [])),
-                    'section_count': sum(len(m.get('sections', [])) for m in course.get('modules', []))
-                }
+                'course': course
             }
             
             return Response(response_data, status=status.HTTP_201_CREATED)

@@ -216,7 +216,7 @@ COURSE_TEMPLATE = {
             "## Module Outline\n\n"
             "{module_outline}\n\n"
         ),
-        'section': {
+        'unit': {
             'explanation': (
                 "## {title}\n\n"
                 "{ai_enhanced_explanation}\n\n"
@@ -261,6 +261,7 @@ COURSE_TEMPLATE = {
         },
         'summary': (
             "## Module {module_num} Summary\n\n"
+            "{summary}"
         )
     }
 }
@@ -287,10 +288,11 @@ SPECIAL_TOKENS = {
                     'learning_path': '<|learning_path|>',
                     'key_learnings': '<|key_learnings|>',
                     'next_steps': '<|next_steps|>',
+                    'overview': '<|overview|>',
+                    'outline': '<|outline|>',
                     'beginner': '<|beginner|>',
                     'intermediate': '<|intermediate|>',
                     'advanced': '<|advanced|>',
                     'expert': '<|expert|>',
-                    
                     'title': '<|title|>'
 }
