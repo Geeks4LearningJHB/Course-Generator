@@ -1,4 +1,8 @@
-from .content_scraper import ContentScraper
+from .knowledge_scraper import (
+    URLManager, ContentCleaner, ContentExtractor, 
+    BaseDetector, BaseScraper
+)
+from .content_enhancer import AIContentEnhancer
 from .course_generator import CourseGenerator
 from .LLM import LLMService
 
