@@ -14,12 +14,16 @@ export class AdminLoginComponent {
   loginError: string = '';
   LoggingIn: boolean = false;
   successMessage: string = '';
+  rememberMe: boolean = false;
+  showPassword: boolean = false;
+  isLoading: boolean = false;
 
   constructor(private router: Router, private loginService: LoginService, private authService: AuthService ) {}
 
   onLogin() {
     // Reset the error message
     this.loginError = '';
+    this.isLoading = true;
 
     // Check if email and password are empty
     if (!this.email || !this.password) {
@@ -45,6 +49,7 @@ export class AdminLoginComponent {
             this.router.navigate(['/dashboard']);
           }, 1000); 
         } else {
+          this.isLoading = false;
           this.loginError = 'Invalid credentials!';
         }
 
