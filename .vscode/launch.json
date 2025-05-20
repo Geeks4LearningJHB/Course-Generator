@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-CourseGenApplication<CourseGen>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.geeks4learning.CourseGen.CourseGenApplication",
+            "projectName": "CourseGen",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
