@@ -189,6 +189,8 @@ class URLManager:
             logger.error(f"Bad urls save failed: {e}")
             raise
 
+# In course_gen/core/knowledge_scraper.py
+
 class ContentCleaner:
     """Handles cleaning and normalization of scraped content"""
     
@@ -207,21 +209,59 @@ class ContentCleaner:
         # Remove citations like [1], [2], etc.
         text = re.sub(r'\[\d+\]', '', text)
         
-        # Remove common ads/cookie notice text
+        # --- ENHANCEMENT START ---
+        # Expanded patterns for common ads/cookie notice/footer/header text
         remove_patterns = [
-            r'accept all cookies',
-            r'we use cookies',
-            r'cookie policy',
-            r'privacy policy',
-            r'terms of service',
-            r'all rights reserved',
-            r'copyright \d{4}',
+            r'accept all cookies', r'we use cookies', r'cookie policy',
+            r'privacy policy', r'terms of service', r'all rights reserved',
+            r'copyright \d{4}(-\d{4})?', r'advertisement', r'sponsored content',
+            r'subscribe now', r'sign up for our newsletter', r'login to read more',
+            r'read more about our', r'related articles', r'share this article',
+            r'follow us on', r'designed by', r'powered by', r'contact us',
+            r'about us', r'disclaimer', r'affiliate links', r'©\s*\d{4}',
+            r'e-mail address', r'password', r'forgot password',
+            r'buy now', r'add to cart', r'shop now', r'discount code',
+            r'promotional offer', r'limited time offer', r'download our app',
+            r'get started today', r'learn more', r'click here',
+            r'top stories', r'trending topics', r'latest news',
+            r'search for courses', r'course categories', r'enroll now'
         ]
         
         for pattern in remove_patterns:
             text = re.sub(pattern, '', text, flags=re.IGNORECASE)
+
+        # Remove common header/footer navigation text that often isn't properly tagged for removal
+        text = re.sub(r'(home|about|contact|blog|features|pricing|support|faq)(\s*\|?\s*){1,}', '', text, flags=re.IGNORECASE)
+        
+        # Remove lines that are very short and appear like navigational elements or broken content
+        lines = text.split('\n')
+        cleaned_lines = []
+        for line in lines:
+            stripped_line = line.strip()
+            if len(stripped_line) > 10 or not stripped_line: # Keep longer lines or empty lines for formatting
+                cleaned_lines.append(line)
+        text = '\n'.join(cleaned_lines)
+
+        # Aggressively remove empty lines, but preserve paragraph breaks
+        text = re.sub(r'\n\s*\n\s*\n', '\n\n', text) # Reduce multiple empty lines to two
+        # --- ENHANCEMENT END ---
         
         return text.strip()
+
+    @staticmethod
+    def clean_code(code: str) -> str:
+        """Clean code examples"""
+        if not code:
+            return ""
+            
+        # Remove shell prompts ($ or > at the beginning of lines)
+        code = re.sub(r'^\s*[$>]\s*', '', code, flags=re.MULTILINE)
+        
+        # Remove extra line breaks and normalize whitespace
+        code = re.sub(r'\s+\n', '\n', code)
+        code = re.sub(r'\n\s+\n', '\n\n', code)
+        
+        return code.strip()
 
     @staticmethod
     def clean_code(code: str) -> str:
