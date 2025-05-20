@@ -1,4 +1,4 @@
-.toggle-btn {
+.nav-btn {
     background-color: #145570;
     border: none;
     color: white;
@@ -6,9 +6,13 @@
     text-align: center;
     padding: 10px;
     cursor: pointer;
+
+    position: fixed;
+    z-index: 1110;
+    left: 0px;
 }
 
-.toggle-btn:hover,
+.nav-btn:hover,
 .log-btn:hover {
     background-color: #11627d;
 }
@@ -21,8 +25,26 @@
     text-align: center;
     padding: 10px;
     cursor: pointer;
-
-    position: absolute;
+    
+    position: fixed;
     z-index: 1110;
     left: 70px;
 }
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #ffffff;
+    position: fixed;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 11000;
+    transition: width 0.3s ease;
+    box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+
+  .sidebar.collapsed {
+    width: 70px;
+  }

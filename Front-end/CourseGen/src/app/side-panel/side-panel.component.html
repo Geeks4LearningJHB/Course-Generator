@@ -10,25 +10,24 @@
 </div>
 
 <div class="body">
-    <div class="btns">
-        <div class="sidebar" [class.collapsed]="isCollapsed">
-            <!-- <button class="toggle-btn" (click)="toggleNav()">☰</button> -->
-            <button class="toggle-btn" (click)="toggleService.showNav()">☰</button>
-            <!-- <button class="log-btn" (click)="logUserAction()">Log</button> -->
-            <!-- <button class="log-btn" (click)="toggleLog()"><i class="fas fa-history"></i></button> -->
-            <button class="log-btn" (click)="toggleService.showLog()"><i class="fas fa-history"></i></button>
-      
+    <div class="sidebar" [class.collapsed]="(toggleService.isCollapsed$ | async)">
+  <button class="nav-btn" (click)="toggleService.togglePanel('nav')">
+    <i class="fas fa-bars"></i>
+  </button>
+  <button class="log-btn" (click)="toggleService.togglePanel('log')">
+    <i class="fas fa-history"></i>
+  </button>
         </div>
 
 
-        <div class="sub-header" [class.shifted]="isCollapsed">
+        <div class="sub-header" [class.shifted]="(toggleService.isCollapsed$ | async)">
             <h3 class="sub-heading">{{ headerTitle }}</h3>
             <button *ngIf="showBackButton" class="back-button" (click)="goBack()">
                 <span class="icon fas fa-arrow-left"></span> Back </button>
         </div>
-    </div>
 
-    <app-nav *ngIf="showingNav"></app-nav>
-    <app-user-log *ngIf="!showingNav"></app-user-log>
-
+   <div class="panel-content" *ngIf="!(toggleService.isCollapsed$ | async)">
+    <app-nav *ngIf="(toggleService.activePanel$ | async) === 'nav'"></app-nav>
+    <app-user-log *ngIf="(toggleService.activePanel$ | async) === 'log'"></app-user-log>
+  </div>
 </div>

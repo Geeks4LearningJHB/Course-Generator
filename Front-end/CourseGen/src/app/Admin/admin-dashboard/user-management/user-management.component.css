@@ -11,8 +11,9 @@
 
 .container-2 {
     gap: 20px;
-    padding-left: 25px;
-    padding-right: 25px;
+    padding: 20px;
+    /* padding-left: 25px; */
+    /* padding-right: 25px; */
     display: flex;
     flex-direction: column;
     justify-content: center;

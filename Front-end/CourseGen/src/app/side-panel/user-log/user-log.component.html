@@ -4,9 +4,12 @@
 
 <div class="menu">
   <ul>
-    <li *ngFor="let log of logs">
-      <span class="timestamp">{{ log.timestamp | date:'short' }}</span>
-      <span class="message">{{ log.message }}</span>
+    <li *ngFor="let log of logs" class="log-item">
+      <i class="icon fas fa-history"></i>
+      <div *ngIf="!(toggleService.isCollapsed$ | async)" class="log-details">
+        <span class="timestamp">{{ formatTimestamp(log.timestamp) }}</span>
+        <span class="message">{{ log.message }}</span>
+      </div>
     </li>
   </ul>
 </div>

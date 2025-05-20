@@ -2,32 +2,28 @@
   <ul>
     <li>
       <i class="icon fa fa-home"></i>
-      <span *ngIf="!isCollapsed" routerLink="/dashboard">Dashboard</span>
+      <span *ngIf="!(toggleService.isCollapsed$ | async)" routerLink="/dashboard">Dashboard</span>
     </li>
     <li *ngIf="userRole === 'Administrator' || userRole === 'Trainer'">
       <i class="icon fas fa-book"></i>
-      <span *ngIf="!isCollapsed" routerLink="/generate-content">Generate Course</span>
+      <span *ngIf="!(toggleService.isCollapsed$ | async)" routerLink="/generate-content">Generate Course</span>
     </li>
     <li *ngIf="userRole === 'Administrator' || userRole === 'Trainer'">
       <i class="icon fas fa-file-alt"></i>
-      <span *ngIf="!isCollapsed" routerLink="/view-courses">View Content</span>
+      <span *ngIf="!(toggleService.isCollapsed$ | async)" routerLink="/view-courses">View Content</span>
     </li>
     <li *ngIf="userRole === 'Administrator'">
       <i class="icon fas fa-user-check"></i>
-      <span *ngIf="!isCollapsed" routerLink="/user-management">User Management</span>
+      <span *ngIf="!(toggleService.isCollapsed$ | async)" routerLink="/user-management">User Management</span>
     </li>
     <li *ngIf="userRole === 'Administrator'">
       <i class="icon fas fa-users"></i>
-      <span *ngIf="!isCollapsed" routerLink="/view-users">View All Users</span>
+      <span *ngIf="!(toggleService.isCollapsed$ | async)" routerLink="/view-users">View All Users</span>
     </li>
     <hr class="divider" />
     <li>
       <i class="icon fas fa-sign-out-alt"></i>
-      <span class="logout-link" *ngIf="!isCollapsed" routerLink="/landing-page">Logout</span>
-    </li>
-    <li>
-      <i class="icon fas fa-history"></i>
-      <h4>Just to make sure</h4>
+      <span class="logout-link" *ngIf="!(toggleService.isCollapsed$ | async)" (click)="logout()">Logout</span>
     </li>
   </ul>
 </div>

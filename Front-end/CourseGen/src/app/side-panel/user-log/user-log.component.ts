@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LogService } from '../../Services/log.service';
+import { ToggleService } from '../../Services/toggle.service';
+import { HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-user-log',
@@ -7,6 +9,8 @@ import { LogService } from '../../Services/log.service';
   styleUrl: './user-log.component.css'
 })
 export class UserLogComponent implements OnInit {
+
+  isOpen = false;
 logs: { message: string; timestamp: string }[] = [];
 ngOnInit(): void {
   // Temporary hardcoded logs until API is ready
@@ -36,7 +40,9 @@ formatTimestamp(dateString: string): string {
 }
 
 
-  constructor(private logService: LogService) {}
+  constructor( private logService: LogService,
+               public toggleService: ToggleService
+  ) {}
 
   // ngOnInit(): void {
   //   this.fetchLogs();
@@ -50,5 +56,21 @@ formatTimestamp(dateString: string): string {
       })),
       error: (err) => console.error('Error fetching logs:', err)
     });
+  }
+
+  openPanel() {
+    this.isOpen = true;
+  }
+
+  closePanel() {
+    this.isOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.side-panel')) {
+      this.closePanel();
+    }
   }
 }

@@ -1,4 +1,4 @@
-.sidebar {
+/* .sidebar {
     width: 250px;
     height: 100vh;
     background-color: #ffffff;
@@ -10,19 +10,19 @@
     transition: width 0.3s ease;
     box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-  }
+  } */
 
-  .sidebar.collapsed {
+  .menu.collapsed {
     width: 70px;
   }
 
-  .sidebar ul {
+  .menu ul {
     list-style: none;
     padding: 0;
     margin: 8px;
   }
 
-  .sidebar ul li {
+  .menu ul li {
     display: flex;
     align-items: center;
     padding: 12px;
@@ -32,33 +32,33 @@
     border-radius: 25px;
   }
 
-  .sidebar ul li:hover {
+  .menu ul li:hover {
     background-color: #133B50;
     opacity: 0.85;
   }
 
-  .sidebar ul li .icon {
+  .menu ul li .icon {
     font-size: 20px;
     color: #333;
     margin-right: 10px;
     transition: color 0.3s ease;
   }
 
-  .sidebar ul li:hover .icon {
+  .menu ul li:hover .icon {
     color: white;
   }
 
-  .sidebar ul li span {
+  .menu ul li span {
     font-size: 16px;
     color: #333;
     transition: color 0.3s ease;
   }
 
-  .sidebar ul li:hover span {
+  .menu ul li:hover span {
     color: white;
   }
 
-  .sidebar.collapsed ul li span {
+  .menu.collapsed ul li span {
     display: none;
   }
 
@@ -70,15 +70,18 @@
   }
 
   .menu {
-    width: 70px;
+    /* width: 70px; */
     height: 100vh;
     background-color: #ffffff;
     position: fixed;
     left: 0;
+    margin-top: 45px;
     display: flex;
     flex-direction: column;
     z-index: 11000;
     transition: width 0.3s ease;
     box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-  } 
+
+    width: 250px;
+  }

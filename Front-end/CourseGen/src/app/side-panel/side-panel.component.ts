@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
@@ -8,40 +8,28 @@ import { ToggleService } from '../Services/toggle.service';
 @Component({
   selector: 'app-side-panel',
   templateUrl: './side-panel.component.html',
-  styleUrl: './side-panel.component.css'
+  styleUrls: ['./side-panel.component.css']
 })
 export class SidePanelComponent implements OnInit {
-  isCollapsedFromService = true;
-  showingNav = true;
   faHome = faHome;
-  // isCollapsed = true;
-  @Input() isCollapsed: boolean = true;
   userRole: string | null = null;
-  headerTitle  = 'COURSE GENERATOR';
+  headerTitle = 'COURSE GENERATOR';
   showBackButton = true;
   private previousUrl: string | null = null;
   private currentUrl: string | null = null;
 
-  constructor( private authService: AuthService,
-               public toggleService: ToggleService,
-               private router: Router,
-               private activatedRoute: ActivatedRoute,
-              //  private location: Location
-              ) { 
-    this.toggleService.isCollapsed$.subscribe(
-      (collapsed) => (this.isCollapsed = collapsed)
-    );
-    this.toggleService.activePanel$.subscribe((panel) => {
-      this.showingNav = panel === 'nav';
-    });
-   }
+  constructor(
+    public authService: AuthService,
+    public toggleService: ToggleService, // Changed to public
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    // Listen for role changes
     this.authService.userRole$.subscribe((role) => {
       this.userRole = role;
     });
-    // Listen for route changes to update header dynamically
+
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -50,29 +38,20 @@ export class SidePanelComponent implements OnInit {
         this.showBackButton = currentRoute.snapshot.data['showBackButton'] ?? true;
       });
 
-      // Track previous and current URLs
     this.router.events
-    .pipe(filter((event) => event instanceof NavigationStart))
-    .subscribe((event: NavigationStart) => {
-      this.previousUrl = this.currentUrl;
-      this.currentUrl = event.url;
-    });
+      .pipe(filter((event) => event instanceof NavigationStart))
+      .subscribe((event: NavigationStart) => {
+        this.previousUrl = this.currentUrl;
+        this.currentUrl = event.url;
+      });
+  }
 
-    this.toggleService.isCollapsed$.subscribe(
-      (collapsed) => (this.isCollapsedFromService = collapsed)
-    );
-    }
-
-    
-
-  // Navigate to the previous page or a default route
   goBack(): void {
     const currentRoute = this.router.routerState.snapshot.root;
     const previous = currentRoute.firstChild?.data['previous'] || '/dashboard';
     this.router.navigate([previous]);
   }
 
-  // Helper method to get the deepest child route
   private getChildRoute(route: ActivatedRoute): ActivatedRoute {
     while (route.firstChild) {
       route = route.firstChild;
@@ -84,47 +63,15 @@ export class SidePanelComponent implements OnInit {
     this.authService.logout();
   }
 
-  // toggleNav(): void {
-  //   this.isCollapsed = !this.isCollapsed;
-  //   this.toggleService.toggleNav();
-  // }
-
-  // toggleLog(): void {
-  //   this.isCollapsed = !this.isCollapsed;
-  //   this.toggleService.toggleLog();
-  // }
-
-  toggle(): void {
-  this.toggleService.toggleNav();
-  this.toggleService.toggleLog();
-}
-
-  togglePanel(panel: 'nav' | 'log'): void {
-    this.isCollapsed = !this.isCollapsed;
-    panel === 'nav' ?
-    this.toggleService.toggleNav():
-    this.toggleService.toggleLog();
-  }
-
-  showLog() {
-    this.showingNav = false;
-  }
-
-  showNav(): void {
-    this.showingNav = true;
-  }
-  showPanel(panel: 'nav' | 'log'): void {
-    this.showingNav = panel === 'nav';
-  }
-
-
   @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-
-    if (!target.closest('.sidebar') && !target.closest('.toggle-btn')) {
-      this.isCollapsed = true;
-    }
+onDocumentClick(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+  const clickedInside = target.closest('.sidebar') || 
+                       target.closest('.nav-btn') || 
+                       target.closest('.log-btn');
+  
+  if (!clickedInside) {
+    this.toggleService.collapsePanel();
+  }
   }
 }
-

@@ -5,34 +5,30 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class ToggleService {
-  private collapsed = new BehaviorSubject<boolean>(true);
-  isCollapsed$ = this.collapsed.asObservable();
+  private isCollapsedSubject = new BehaviorSubject<boolean>(true);
+  isCollapsed$ = this.isCollapsedSubject.asObservable();
 
-  private _isCollapsed = new BehaviorSubject<boolean>(false);
-  isCollapsed = this._isCollapsed.asObservable();
+  private activePanelSubject = new BehaviorSubject<'nav' | 'log'>('nav');
+  activePanel$ = this.activePanelSubject.asObservable();
 
-  private activePanel = new BehaviorSubject<'nav' | 'log'>('nav');
-  activePanel$ = this.activePanel.asObservable();
-
-  toggleCollapse(): void {
-    this.collapsed.next(!this.collapsed.value);
+  togglePanel(panel?: 'nav' | 'log'): void {
+    if (panel) {
+      // If clicking a different panel, expand and switch
+      if (this.activePanelSubject.value !== panel || this.isCollapsedSubject.value) {
+        this.activePanelSubject.next(panel);
+        this.isCollapsedSubject.next(false);
+      } 
+      // If clicking the same panel, toggle collapse
+      else {
+        this.isCollapsedSubject.next(!this.isCollapsedSubject.value);
+      }
+    } else {
+      // External click or manual toggle
+      this.isCollapsedSubject.next(!this.isCollapsedSubject.value);
+    }
   }
 
-  showNav(): void {
-    this.activePanel.next('nav');
-  }
-
-  showLog(): void {
-    this.activePanel.next('log');
-  }
-
-  toggleNav(): void {
-    this._isCollapsed.next(!this._isCollapsed.value);
-    console.log('Navigation toggled:', !this._isCollapsed.value);
-  }
-  
-  toggleLog(): void {
-    console.log('Log toggled');
-    // Implement your logging toggle logic here
+  collapsePanel(): void {
+    this.isCollapsedSubject.next(true);
   }
 }
