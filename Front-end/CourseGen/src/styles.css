@@ -208,7 +208,7 @@
     margin: 10px 0;
   } */
 
-  /* .toggle-btn {
+   .toggle-btn {
     background-color: #145570;
     border: none;
     color: white;
@@ -238,7 +238,7 @@
   
   .log-btn:hover {
     background-color: #11627d;
-  } */
+  } 
 
 .top-nav {
   display: flex;
