@@ -55,15 +55,22 @@ class FileManager:
     @staticmethod
     def export_markdown(course: Dict, filename: Optional[str] = None):
         """Export course structure to Markdown file."""
-        if not filename:
-            filename = re.sub(r'[ /\-.,]', '_', filename)
-            filename = f"{course['title'].strip()}.md"
-
         try:
+            if not filename:
+                # First get the raw course title
+                raw_title = course.get('title', 'generated_course')
+                # Fallback if title is missing
+                if not raw_title:
+                    raw_title = 'generated_course'
+                # Sanitize the title for a filename
+                sanitized_title = FileManager._sanitize_title(raw_title)
+                filename = f"{sanitized_title}.md"
+
             md_content = FileManager._generate_markdown(course)
             with open(filename, "w", encoding="utf-8") as f:
                 f.write(md_content)
             logger.info(f"Markdown saved to {filename}")
+
         except Exception as e:
             logger.error(f"Markdown export failed: {str(e)}")
             raise
@@ -287,3 +294,22 @@ class FileManager:
             except Exception as e:
                 logger.error(f"JSON load failed: {str(e)}")
                 raise
+            
+    @staticmethod
+    def _sanitize_title(raw_title: str) -> str:
+        # Remove leading/trailing whitespace
+        title = raw_title.strip()
+        
+        # Replace problematic characters with underscore
+        title = re.sub(r' [<>:"/\\|?*\.,;\'()\[\]{}\-+=!@#$%^&~`]', '_', title)
+        
+        # Replace multiple underscores with single one
+        title = re.sub(r'__+', '_', title)
+        
+        # Remove trailing/leading underscores
+        title = title.strip('_')
+        
+        # Optionally, lowercase it
+        title = title.lower()
+        
+        return title

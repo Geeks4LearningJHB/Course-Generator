@@ -7,15 +7,14 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class GenerateContentService {
-  private apiUrl = 'http://localhost:8080/AI/';
+  private apiUrl = 'http://localhost:8000/api/course/';
   private generatedCourse: any;
 
   constructor(private http: HttpClient) {}
 
   // Method to generate the course
-  generateCourse(data: { courseTitle: string; difficulty: string; duration: number }): Observable<any> {
-    const { difficulty, duration } = data;
-    return this.http.post(`${this.apiUrl}generateCourse`, data);
+  generateCourse(data: { topic: string; level: string; save_to_db: boolean }): Observable<any> {
+    return this.http.post(`${this.apiUrl}generate-course/`, data);
   }
  
 
@@ -48,9 +47,25 @@ export class GenerateContentService {
   }
 
   // Method to get the units from the generated course stored in memory
-  getUnitsFromMemory(): any[] {
-    return this.generatedCourse?.units || [];
+getUnitsFromMemory(): any[] {
+  if (!this.generatedCourse || !this.generatedCourse.modules) {
+    return [];
   }
+
+  const units: any[] = [];
+
+  this.generatedCourse.modules.forEach((module: any) => {
+    if (module.units && Array.isArray(module.units)) {
+      units.push(...module.units.map((unit: any) => ({
+        ...unit,
+        moduleTitle: module.title,  // optional: attach module info to unit
+        moduleOrder: module.order
+      })));
+    }
+  });
+
+  return units;
+}
 
   // Clear the stored course and its units from memory
   clearGeneratedCourse(): void {

@@ -143,9 +143,6 @@ class URLManager:
         """Check if URL should be skipped and return reason if so"""
         domain = self.extract_domain(url)
         
-        if url in self.trusted_domains.keys():
-            return False, ""
-        
         # Skip if domain should be avoided
         if self.should_avoid_domain(url):
             return True, "Avoided domain"
@@ -378,20 +375,8 @@ class ContentExtractor:
                             "section", ".post", ".article", ".entry"]:
                 elements = clean_soup.select(selector)
                 for el in elements:
-                    text = el.get_text(strip=True)
-                    # Score based on text length and quality indicators
-                    score = len(text)
-                    
-                    # Penalize elements that contain ad/cookie related text
-                    if any(keyword in text.lower() for keyword in ['cookie', 'privacy', 'terms', 'advertisement']):
-                        score -= 1000
-                    
-                    # Bonus for educational content indicators
-                    if any(keyword in text.lower() for keyword in ['example', 'tutorial', 'learn', 'guide', 'how to']):
-                        score += 500
-                    
-                    if score > 50:  # Minimum score threshold
-                        containers.append((el, score))
+                    if len(el.get_text(strip=True)) > 120:  # Minimum text length
+                        containers.append(el)
             
             if containers:
                 # Sort by score and take top 3 containers
@@ -456,7 +441,7 @@ class ContentExtractor:
                 elements = clean_soup.select(selector)
                 for element in elements:
                     text = self.cleaner.clean_text(element.get_text())
-                    if text and len(text) > 100:  # Minimum content threshold
+                    if text and len(text) > 120:  # Minimum content threshold
                         content["text"] += f"\n{text}"
             
             # Try all code selectors (from original soup)
@@ -736,7 +721,7 @@ class StandardScraper(BaseScraper):
                                 continue
                                 
                             page_content = self._scrape_page(link, topic)
-                            if page_content and page_content.is_valid():
+                            if page_content:
                                 knowledge.append(page_content.to_dict())
                                 self.url_manager.mark_as_scraped(link)
                         except Exception as e:
@@ -1012,7 +997,7 @@ class PlaywrightScraper(BaseScraper):
 
                     # Clean and validate text
                     text = self.cleaner.clean_text(main_content.get_text())
-                    if len(text.split()) < 50:
+                    if len(text.split()) < 120:
                         logger.warning(f"Content from {url} is too short ({len(text.split())} words)")
                         await self._safe_close_page(page)
                         await self._safe_close_context(context)
@@ -1077,14 +1062,6 @@ class PlaywrightScraper(BaseScraper):
                                 scraped.code.extend(next_content.code)
                         else:
                             logger.info(f"Skipping next link (domain/visited/depth): {next_url}")
-        
-                    # Validate scraped content
-                    if not hasattr(scraped, 'is_valid') or not scraped.is_valid():
-                        logger.warning(f"Scraped content validation failed for {url}")
-                        await self._safe_close_page(page)
-                        await self._safe_close_context(context)
-                        await self._safe_close_browser(browser)
-                        return None
 
                     await self._safe_close_page(page)
                     await self._safe_close_context(context)
@@ -1166,16 +1143,6 @@ class PlaywrightScraper(BaseScraper):
                             logger.error(f"Fallback search failed: {str(fallback_error)}")
                             return knowledge
                     continue
-                
-            # Sort results to prioritize educational sites
-            def domain_priority(url):
-                domain = urlparse(url).netloc
-                for i, edu_domain in enumerate(self.url_manager.trusted_domains.keys()):
-                    if edu_domain in domain:
-                        return i
-                return len(self.url_manager.trusted_domains.keys())
-                
-            results_list.sort(key=lambda x: domain_priority(x['href']))
             
             processed_count = 0
             attempted_count = 0
