@@ -419,7 +419,7 @@ class CourseGenerator:
                         f"in a {level} course on {topic}"
                     )
                     module_title = self.ai_enhancer.enhance_content(module_topic_prompt, 'title')
-                    module_title = f"Module {i}: {module_title.strip('\"')}"
+                    # module_title = f"Module {i}: {module_title.strip('')}"
                 
                 # Create synthetic module content
                 module_content = [{
@@ -641,7 +641,7 @@ class CourseGenerator:
                 # Generate a title with AI
                 title_prompt = f"Generate a title for module {module_num} of a course on {topic}"
                 ai_title = self.ai_enhancer.enhance_content(title_prompt, 'title')
-                return f"Module {module_num}: {ai_title.strip('\"')}"
+                # return f"Module {module_num}: {ai_title.strip('\"')}"
         except Exception as e:
             logger.error(f"Error generating module title: {str(e)}")
             return f"Module {module_num}: {topic.title()} Concepts"
