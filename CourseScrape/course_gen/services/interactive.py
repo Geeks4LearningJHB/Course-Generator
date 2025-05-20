@@ -5,7 +5,7 @@ from course_gen.core.globals import (
 from .course_generator import CourseGenerator
 from .database_manager import DatabaseManager
 from .knowledge_scraper import StandardScraper, PlaywrightScraper, URLManager, ContentCleaner, ContentExtractor, BaseDetector, BaseScraper
-
+from course_gen.utils.file_manager import FileManager
 
 class CourseBuilderInterface:
     """
@@ -132,11 +132,11 @@ class CourseBuilderInterface:
                 
             print(f"\nFound {len(self._search_results)} good resources:")
             for i, item in enumerate(self._search_results, 1):
-                print(f"{i}. {item['title']} ({item['source']})")
-                
+                print(f"{i}. {item.get('title', 'No Title')} ({item.get('source', 'Unknown Source')})")
+
             # Always extend knowledge and save to file
             self.knowledge.extend(self._search_results)
-            self.generator.load_knowledge()
+            FileManager.load_knowledge()
             print(f"Added {len(self._search_results)} items to in-memory knowledge base.")
                     
             # Save to JSON file
@@ -192,7 +192,7 @@ class CourseBuilderInterface:
                         
                     if input("\nAdd to knowledge base? [y/N]: ").lower() == 'y':
                         self.knowledge.extend(search_results)
-                        self.generator.load_knowledge()
+                        FileManager.load_knowledge()
             except Exception as e:
                 logger.error(f"Web search during course creation failed: {str(e)}")
                 print("Web search failed, continuing with existing knowledge...")
@@ -219,11 +219,11 @@ class CourseBuilderInterface:
         print("\nUpdating knowledge base...")
         try:
             self.knowledge = self.scraper_sync.scrape_configured_sources()
-            self.generator.load_knowledge()
+            FileManager.load_knowledge()
             
             # Always extend knowledge and save to file
             self.knowledge.extend(self._search_results)
-            self.generator.load_knowledge()
+            FileManager.load_knowledge()
             print(f"Added {len(self._search_results)} items to in-memory knowledge base.")
                     
             # Save to JSON file
@@ -319,7 +319,7 @@ class CourseBuilderInterface:
             
             if input("\nExport to Markdown? [y/N]: ").lower() == 'y':
                 filename = input("Filename (blank for default): ").strip()
-                self.generator.export_markdown(course, filename or None)
+                FileManager.export_markdown(course, filename or None)
         except (ValueError, IndexError):
             print("\nInvalid selection")
 
@@ -327,7 +327,7 @@ class CourseBuilderInterface:
         """Handle course saving options"""
         if input("\nSave to Markdown? [y/N]: ").lower() == 'y':
             filename = input("Filename (blank for default): ").strip()
-            self.generator.export_markdown(course, filename or None)
+            FileManager.export_markdown(course, filename or None)
             
         if self.db_manager:
             self.db_manager.store_course(course)
@@ -340,8 +340,8 @@ class CourseBuilderInterface:
         
     def export_markdown(self, course: Dict, filename: Optional[str] = None) -> str:
         """Export course to markdown (delegates to GenerateCourse)"""
-        return self.generator.export_markdown(course, filename)
+        return FileManager.export_markdown(course, filename)
         
     def load_knowledge(self):
         """Load knowledge base (delegates to GenerateCourse)"""
-        return self.generator.load_knowledge()
+        return FileManager.load_knowledge()

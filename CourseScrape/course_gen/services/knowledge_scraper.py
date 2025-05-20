@@ -186,12 +186,14 @@ class URLManager:
             logger.error(f"Bad urls save failed: {e}")
             raise
 
+# In course_gen/core/knowledge_scraper.py
+
 class ContentCleaner:
     """Handles cleaning and normalization of scraped content"""
     
     @staticmethod
     def clean_text(text: str) -> str:
-        """Clean and normalize text content"""
+        """Clean and normalize text content with enhanced ad/cookie removal"""
         if not text:
             return ""
             
@@ -204,21 +206,84 @@ class ContentCleaner:
         # Remove citations like [1], [2], etc.
         text = re.sub(r'\[\d+\]', '', text)
         
-        # Remove common ads/cookie notice text
+        # Enhanced removal patterns for ads, cookies, and legal notices
         remove_patterns = [
-            r'accept all cookies',
-            r'we use cookies',
-            r'cookie policy',
-            r'privacy policy',
-            r'terms of service',
-            r'all rights reserved',
-            r'copyright \d{4}',
+            r'accept\s*(all)?\s*cookies?', 
+            r'we\s*use\s*cookies?',
+            r'(this\s*)?website\s*uses?\s*cookies?',
+            r'cookie\s*(policy|notice|banner|consent|preferences)',
+            r'privacy\s*(policy|notice|statement)',
+            r'terms\s*(of\s*service|and\s*conditions)',
+            r'all\s*rights\s*reserved',
+            r'copyright\s*©?\s*\d{4}',
+            r'advertisement|sponsored\s*content',
+            r'please\s*(enable|accept)\s*cookies',
+            r'(sign\s*up|subscribe)\s*(for\s*free)?\s*(newsletter|updates)',
+            r'continue\s*(reading|with)\s*(a\s*subscription|free\s*trial)',
+            r'(enable|disable)\s*notifications?',
+            r'this\s*content\s*is\s*(protected|locked)',
+            r'read\s*more\s*(with|by)\s*(subscription|membership)',
+            r'you\s*have\s*\d+\s*free\s*articles?\s*left',
+            r'register\s*(to|for)\s*(read|view|access)',
+            r'log\s*in\s*to\s*(view|read|access)',
+            r'create\s*(a\s*)?free\s*account',
+            r'join\s*(now|today)\s*for\s*free',
+            r'your\s*email\s*(address)?\s*(is|will be)\s*required',
+            r'this\s*site\s*is\s*protected\s*by\s*recaptcha',
+            r'continue\s*to\s*site|read\s*more\s*below',
+            r'close\s*(this|ad|popup|notification)',
+            r'dismiss\s*(this|message|notification)',
+            r'by\s*continuing\s*you\s*agree\s*to',
+            r'we\s*value\s*your\s*privacy',
+            r'manage\s*(your)?\s*(cookie|privacy)\s*settings',
+            r'essential\s*cookies\s*only',
+            r'accept\s*(all|necessary)\s*cookies',
+            r'customize\s*your\s*settings',
+            r'learn\s*more\s*about\s*how\s*we\s*use\s*cookies',
+            r'allow\s*(all|necessary)\s*cookies',
+            r'necessary\s*cookies\s*only',
+            r'only\s*essential\s*cookies',
+            r'strictly\s*necessary\s*cookies',
+            r'functional\s*cookies',
+            r'performance\s*cookies',
+            r'targeting\s*cookies',
+            r'advertising\s*cookies',
+            r'analytics\s*cookies',
+            r'social\s*media\s*cookies'
         ]
         
+        # Remove all patterns case-insensitively
         for pattern in remove_patterns:
             text = re.sub(pattern, '', text, flags=re.IGNORECASE)
         
-        return text.strip()
+        # Remove any remaining standalone cookie-related words
+        cookie_words = ['cookie', 'cookies', 'gdpr', 'ccpa', 'consent', 'banner']
+        for word in cookie_words:
+            text = re.sub(rf'\b{word}\b', '', text, flags=re.IGNORECASE)
+        
+        # Remove empty parentheses/brackets that might remain after cleaning
+        text = re.sub(r'\([\s]*\)', '', text)
+        text = re.sub(r'\[[\s]*\]', '', text)
+        
+        # Final whitespace normalization
+        text = re.sub(r'\s+', ' ', text).strip()
+        
+        return text
+
+    @staticmethod
+    def clean_code(code: str) -> str:
+        """Clean code examples"""
+        if not code:
+            return ""
+            
+        # Remove shell prompts ($ or > at the beginning of lines)
+        code = re.sub(r'^\s*[$>]\s*', '', code, flags=re.MULTILINE)
+        
+        # Remove extra line breaks and normalize whitespace
+        code = re.sub(r'\s+\n', '\n', code)
+        code = re.sub(r'\n\s+\n', '\n\n', code)
+        
+        return code.strip()
 
     @staticmethod
     def clean_code(code: str) -> str:
@@ -243,31 +308,67 @@ class ContentExtractor:
         self.code_selectors = CODE_SELECTORS
         self.advanced_indicators = ADVANCED_INDICATORS
         self.basic_indicators = BASIC_INDICATORS
-        self.elements_to_remove = ELEMENTS_TO_REMOVE
-        self.non_content_cases = NON_CONTENT_CASES
-    
-    def get_title(self, soup: BeautifulSoup) -> str:
-        """Extract page title"""
-        try:
-            if soup.title:
-                title = soup.title.string
-            else:
-                # Try to find h1
-                h1 = soup.find('h1')
-                title = h1.get_text() if h1 else "Untitled"
-                
-            return self.cleaner.clean_text(title)
-        except Exception as e:
-            logger.error(f"Error extracting title: {e}")
-            return "Untitled"
+        self.elements_to_remove = ELEMENTS_TO_REMOVE # This is a list of tags like 'script', 'style'
+        self.non_content_cases = NON_CONTENT_CASES # This is a list of patterns for class/id names
+
+        # --- NEW/UPDATED SELECTORS FOR MORE ROBUST CLEANING ---
+        self.ad_and_cookie_selectors = [
+            ".cookie-consent", "#cookie-notice", ".gdpr-banner", ".ad",
+            ".advertisement", "[id*='ad-container']", "[class*='ad-slot']",
+            ".banner-ad", ".popup", ".modal", ".overlay", "[id*='cookie-']",
+            "[class*='cookie-']", ".consent", "[aria-label*='cookie']",
+            "footer", "header", "nav", "aside", ".sidebar", ".navigation",
+            ".related-posts", ".social-share", ".comments", ".comment-form",
+            ".pagination", ".breadcrumbs", ".widget", ".promo", ".upsell",
+            "[class*='js-consent']", "[id*='adblock']"
+        ]
+        # Combining with existing lists from globals if they are suitable
+        self.elements_to_remove.extend(['iframe', 'form', 'button', 'input', 'select', 'textarea']) # Add more tags to remove
+        self.non_content_cases.extend(['ad', 'cookie', 'banner', 'nav', 'footer', 'header', 'sidebar', 'social', 'popup', 'modal', 'overlay', 'consent', 'promo', 'widget'])
+        # --- END NEW/UPDATED SELECTORS ---
+
+    # ... (get_title, extract_main_content, extract_code_examples, find_links, determine_level remain the same) ...
+
+    def _clean_content(self, soup: BeautifulSoup) -> BeautifulSoup:
+        """Remove non-content elements from the soup"""
+        # Make a copy to avoid modifying the original
+        clean_soup = copy(soup)
+        
+        # Remove unwanted elements by tag name (from self.elements_to_remove)
+        for tag in self.elements_to_remove:
+            for element in clean_soup.find_all(tag):
+                element.decompose()
+        
+        # --- ENHANCEMENT START ---
+        # Remove elements with specific ad/cookie/non-content selectors
+        for selector in self.ad_and_cookie_selectors:
+            for element in clean_soup.select(selector):
+                element.decompose()
+        # --- ENHANCEMENT END ---
+
+        # Remove elements with non-content classes/IDs (from self.non_content_cases)
+        for class_name in self.non_content_cases:
+            # Match class or ID containing the pattern
+            for element in clean_soup.find_all(class_=re.compile(class_name, re.I)):
+                element.decompose()
+            for element in clean_soup.find_all(id=re.compile(class_name, re.I)):
+                element.decompose()
+        
+        # Remove empty elements
+        for element in clean_soup.find_all():
+            # Check if element is truly empty or contains only whitespace
+            if not element.get_text(strip=True) and not element.find(lambda tag: tag.get_text(strip=True)):
+                element.decompose()
+        
+        return clean_soup
 
     def extract_main_content(self, soup: BeautifulSoup) -> Optional[BeautifulSoup]:
-        """Extract clean main content without code/navigation/ads"""
+        """Extract clean main content with enhanced filtering"""
         try:
             # First clean the soup of non-content elements
             clean_soup = self._clean_content(soup)
             
-            # Try all common content containers with minimum text check
+            # Enhanced content detection with scoring
             containers = []
             for selector in ["main", "article", "#content", ".content", 
                             "#main", ".main", "div.content", "div.main",
@@ -278,18 +379,24 @@ class ContentExtractor:
                         containers.append(el)
             
             if containers:
+                # Sort by score and take top 3 containers
+                containers.sort(key=lambda x: x[1], reverse=True)
+                top_containers = [c[0] for c in containers[:3]]
+                
                 # Combine all matching containers
                 combined = BeautifulSoup("", "html.parser")
-                for container in containers:
+                for container in top_containers:
                     combined.append(container)
                 return combined
             
-            # Fallback: find paragraphs with substantial text
+            # Fallback: find paragraphs with substantial text and good indicators
             paragraphs = []
             for p in clean_soup.find_all("p"):
                 text = p.get_text(strip=True)
                 if len(text) > 40:  # Minimum paragraph length
-                    paragraphs.append(p)
+                    # Skip paragraphs with ad/cookie text
+                    if not any(keyword in text.lower() for keyword in ['cookie', 'privacy', 'terms', 'advertisement']):
+                        paragraphs.append(p)
             
             if len(paragraphs) >= 3:  # Require at least 3 substantial paragraphs
                 combined = BeautifulSoup("", "html.parser")
@@ -752,7 +859,7 @@ class PlaywrightScraper(BaseScraper):
             logger.error(f"Error in async paywall check for {url}: {str(e)}")
             return False
     
-    async def scrape_page_async(self, url: str, topic: str = "", depth=0, max_depth=5) -> Optional[ScrapedContent]:
+    async def scrape_page_async(self, url: str, topic: str = "", depth=0, max_depth=8) -> Optional[ScrapedContent]:
         """Scrape content from a JavaScript-heavy page using Playwright and return ScrapedContent"""
         self.headers = get_random_headers()
         
