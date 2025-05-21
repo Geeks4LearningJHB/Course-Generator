@@ -581,6 +581,38 @@ class CourseGenerator:
         except Exception as e:
             logger.error(f"Error creating module: {str(e)}\n{traceback.format_exc()}")
             return self._create_minimal_module(topic, level)
+    def _enhance_content(self, raw_content: str, content_type: str) -> str:
+        """Clean and enhance scraped content"""
+        if not raw_content:
+            return ""
+        
+        # Basic cleaning
+        cleaned = re.sub(r'\s+', ' ', raw_content).strip()
+        cleaned = re.sub(r'\[.*?\]', '', cleaned)  # Remove citations
+        
+        # Remove common unwanted patterns
+        unwanted_patterns = [
+            r'please subscribe.*',
+            r'continue reading.*',
+            r'cookie policy.*',
+            r'privacy policy.*',
+            r'terms of service.*'
+        ]
+        for pattern in unwanted_patterns:
+            cleaned = re.sub(pattern, '', cleaned, flags=re.IGNORECASE)
+        
+        # Enhance with AI if needed
+        if len(cleaned.split()) < 50:  # If content is too short
+            enhanced = self.ai_enhancer.enhance_content(
+                f"Expand on this {content_type} content: {cleaned}",
+                content_type
+            )
+            return enhanced or cleaned
+        
+        return cleaned
+
+    
+
 
     def _create_minimal_module(self, topic: str, level: str) -> Dict:
         """Create a minimal module when errors occur"""
@@ -679,92 +711,50 @@ class CourseGenerator:
         return common_words
     
     def _organize_content(self, content: List[Dict], target_modules: int) -> List[List[Dict]]:
-        """Organize content into logical learning modules with progressive difficulty"""
+        """Improved content organization with logical grouping"""
         try:
-            # If we have very little content, just put it all in one module
-            if len(content) <= 3:
-                return [content]
-                
-            # If we have exactly what we need for the target modules
-            if target_modules == 1:
-                return [content]
-
-            # First group by subtopics
-            topic_groups = defaultdict(list)
-
+            # First categorize content by type
+            content_types = {
+                'theory': [],
+                'examples': [],
+                'exercises': [],
+                'advanced': []
+            }
+            
             for item in content:
-                # Extract key topic words from title
-                title_words = set(re.findall(r'\b\w{4,}\b', item['title'].lower()))
-
-                # Find best group or create new one
-                best_group = None
-                max_overlap = 0
-
-                for group_name, group_items in topic_groups.items():
-                    group_words = set(re.findall(r'\b\w{4,}\b', group_name.lower()))
-                    overlap = len(title_words.intersection(group_words))
-
-                    if overlap > max_overlap:
-                        max_overlap = overlap
-                        best_group = group_name
-
-                if best_group and max_overlap > 0:
-                    topic_groups[best_group].append(item)
+                title = item.get('title', '').lower()
+                if 'example' in title or 'demo' in title:
+                    content_types['examples'].append(item)
+                elif 'exercise' in title or 'practice' in title:
+                    content_types['exercises'].append(item)
+                elif 'advanced' in title or 'expert' in title:
+                    content_types['advanced'].append(item)
                 else:
-                    topic_groups[item['title']].append(item)
-                    
-            # Sort groups by complexity/difficulty if possible
-            sorted_groups = []
-            groups = list(topic_groups.values())
+                    content_types['theory'].append(item)
             
-            # Try to determine difficulty level for each group
-            group_difficulties = []
-            level_scores = {"beginner": 1, "intermediate": 2, "advanced": 3, "expert": 4, "any level": 2}
+            # Create balanced modules
+            modules = []
+            base_items_per_module = max(1, len(content) // target_modules) if target_modules > 0 else 1
             
-            for group_items in groups:
-                # Use the average difficulty level in the group
-                avg_difficulty = sum(level_scores.get(item.get('level', 'beginner').lower(), 1) 
-                                   for item in group_items) / len(group_items)
-                group_difficulties.append(avg_difficulty)
+            # Distribute theory first
+            for i in range(0, len(content_types['theory']), base_items_per_module):
+                module_content = content_types['theory'][i:i+base_items_per_module]
                 
-            # Sort groups by difficulty score (easier topics first)
-            sorted_indices = lazy.np.argsort(group_difficulties)
-            for idx in sorted_indices:
-                sorted_groups.append(groups[idx])
+                # Add examples and exercises proportionally if available
+                if content_types['examples']:
+                    example_idx = int(i // (len(content_types['theory']) / max(1, len(content_types['examples']))))
+                    module_content.extend(content_types['examples'][example_idx:example_idx+1])
+                if content_types['exercises']:
+                    exercise_idx = int(i // (len(content_types['theory']) / max(1, len(content_types['exercises']))))
+                    module_content.extend(content_types['exercises'][exercise_idx:exercise_idx+1])
                 
-            # Adjust number of modules if we don't have enough content
-            actual_modules = min(target_modules, len(sorted_groups))
-            if actual_modules < target_modules:
-                logger.warning(f"Only generated {actual_modules} modules instead of requested {target_modules}")
-                
-            # If we have more groups than target modules, merge some groups
-            if len(sorted_groups) > actual_modules:
-                # Calculate how many groups to merge into each module
-                groups_per_module = len(sorted_groups) // actual_modules
-                remainder = len(sorted_groups) % actual_modules
-                
-                result = []
-                start_idx = 0
-                
-                for i in range(actual_modules):
-                    # Calculate how many groups go in this module (distribute remainder)
-                    module_groups = groups_per_module + (1 if i < remainder else 0)
-                    end_idx = start_idx + module_groups
-                    
-                    # Flatten the groups for this module
-                    module_items = []
-                    for j in range(start_idx, min(end_idx, len(sorted_groups))):
-                        module_items.extend(sorted_groups[j])
-                    
-                    result.append(module_items)
-                    start_idx = end_idx
-                
-                return result
-            else:
-                # We have fewer groups than modules, so each group is a module
-                # and we might have fewer modules than requested
-                return sorted_groups
+                modules.append(module_content)
             
+            # Add advanced content as separate modules if needed
+            if content_types['advanced']:
+                modules.append(content_types['advanced'])
+            
+            return modules
         except Exception as e:
             logger.error(f"Error creating module: {str(e)}\n{traceback.format_exc()}")
             return [content] if content else [[]]
