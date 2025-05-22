@@ -11,13 +11,13 @@ import { HostListener } from '@angular/core';
 export class UserLogComponent implements OnInit {
 
   isOpen = false;
-logs: { message: string; timestamp: string }[] = [];
+logs: { message: string; action:string; timestamp: string }[] = [];
 ngOnInit(): void {
   // Temporary hardcoded logs until API is ready
   this.logs = [
-    { message: 'Generated Java principles', timestamp: '2023-10-01T12:00:00Z' },
-    { message: 'User logged in', timestamp: '2023-10-02T09:30:00Z' },
-    { message: 'Course created', timestamp: '2023-10-03T15:45:00Z' }
+    { message: 'Java OOP', action: 'Generated', timestamp: '2023-10-01T12:00:00Z' },
+    { message: 'Node.js Fundamentals', action: 'Updated', timestamp: '2023-10-02T09:30:00Z' },
+    { message: 'Artificial Intelligence', action: 'Edited', timestamp: '2023-10-03T15:45:00Z' }
   ];
   // Uncomment below when API is ready
   // this.fetchLogs();
@@ -52,7 +52,8 @@ formatTimestamp(dateString: string): string {
     this.logService.getLogs().subscribe({
       next: (data) => this.logs = data.map((entry: any) => ({
         message: entry.message ?? entry.text ?? '',
-        timestamp: entry.timestamp ?? entry.date ?? ''
+        timestamp: entry.timestamp ?? entry.date ?? '',
+        action: entry.action ?? entry.text ??''
       })),
       error: (err) => console.error('Error fetching logs:', err)
     });

@@ -7,8 +7,9 @@
     <li *ngFor="let log of logs" class="log-item">
       <i class="icon fas fa-history"></i>
       <div *ngIf="!(toggleService.isCollapsed$ | async)" class="log-details">
-        <span class="timestamp">{{ formatTimestamp(log.timestamp) }}</span>
         <span class="message">{{ log.message }}</span>
+        <span class="timestamp">{{ formatTimestamp(log.timestamp) }}</span>
+        <span class="action">{{log.action}}</span>
       </div>
     </li>
   </ul>

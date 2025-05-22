@@ -1,17 +1,7 @@
-/* .user-log {
-  max-width: 700px;
-  margin: 2rem auto;
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-} */
-
-/* .user-log h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-} */
+.log-details {
+  display: flex;
+  flex-direction: column;
+}
 
 .user-log ul {
   list-style: none;
@@ -27,12 +17,20 @@
 
 .timestamp {
   color: #888;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
+  margin-left: 136px;
 }
 
 .message {
   font-weight: 500;
 }
+
+.action {
+  /* font-weight: 700; */
+  font-size: 0.7rem;
+  margin-top: -17px;
+}
+
 
 .menu {
   width: 250px;
@@ -55,12 +53,9 @@
 
  .menu ul li:hover {
     background-color: #133B50;
+
     opacity: 0.85;
   }
-
-
-
-
 
 
 
@@ -95,7 +90,8 @@
     margin-bottom: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
-    border-radius: 25px;
+    border-radius: 15px;
+    height:50px
   }
 
   .menu ul li:hover {
@@ -107,6 +103,7 @@
     font-size: 20px;
     color: #333;
     margin-right: 10px;
+    margin-bottom: 10px;
     transition: color 0.3s ease;
   }
 
@@ -115,7 +112,7 @@
   }
 
   .menu ul li span {
-    font-size: 16px;
+    /* font-size: 16px; */
     color: #333;
     transition: color 0.3s ease;
   }

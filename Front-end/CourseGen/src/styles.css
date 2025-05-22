@@ -88,6 +88,7 @@
     width: 400px;
     max-height: 80%;
     overflow-y: auto;
+    justify-content: center;
   }
 
   .form-group {
@@ -313,7 +314,7 @@ div.body {
 .sub-header {
   display: flex;
   position: fixed;
-  z-index: 1000;
+  z-index: 12000;
   width: 100%;
   margin-left: 150px;
   height: 45px;
@@ -326,11 +327,12 @@ div.body {
 
 .sub-header.isCollapsed {
   margin-left: 250px;
+  z-index: 12000;
   /* justify-content: center; */
 }
 
 .sub-header.shifted {
-  margin-left: 70px;
+  margin-left: 140px;
   top:80px;
 }
 
@@ -340,8 +342,11 @@ div.body {
 @media (max-width: 768px) {
   .sub-header {
     justify-content: center; /* Ensures centering for smaller screens */
-    margin-left: 0; /* Adjusts margins for narrow screens */
+    /* margin-left: 0; Adjusts margins for narrow screens */
 
+  }
+  .sub-heading {
+    margin-right: 70px;
   }
 
 }
@@ -351,7 +356,7 @@ div.body {
   font-size: 32px;
   position: absolute;
   width: 50vw;
-  left: 25%;
+  left: 10%;
   /* margin-left: 35%; */
   background: linear-gradient(to bottom, hsl(0, 0%, 68%), hsl(0, 0%, 0%));
   -webkit-background-clip: text;
@@ -360,10 +365,12 @@ div.body {
 }
 
 .dash-container-1 {
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: relative;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
+  justify-content: flex-start;
   margin-top: 46px;
   width: 80vw;
   background-color: #e4e9ef;

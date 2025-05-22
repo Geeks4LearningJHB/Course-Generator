@@ -8,7 +8,7 @@
     cursor: pointer;
 
     position: fixed;
-    z-index: 1110;
+    z-index: 13000;
     left: 0px;
 }
 
@@ -27,7 +27,7 @@
     cursor: pointer;
     
     position: fixed;
-    z-index: 1110;
+    z-index: 13000;
     left: 70px;
 }
 
@@ -39,7 +39,7 @@
     left: 0;
     display: flex;
     flex-direction: column;
-    z-index: 11000;
+    z-index: 1000;
     transition: width 0.3s ease;
     box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
     overflow: hidden;
@@ -47,4 +47,82 @@
 
   .sidebar.collapsed {
     width: 70px;
+  }
+
+
+
+
+
+
+
+
+
+
+    .menu {
+    width: 70px;
+    height: 100vh;
+    background-color: #ffffff;
+    position: fixed;
+    left: 0;
+    margin-top: 45px;
+    display: flex;
+    flex-direction: column;
+    z-index: 11000;
+    transition: width 0.3s ease;
+    box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+
+    /* width: 250px; */
+  }
+   .menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px;
+  }
+
+  .menu ul li {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 25px;
+  }
+
+  .menu ul li:hover {
+    background-color: #133B50;
+    opacity: 0.85;
+  }
+
+  .menu ul li .icon {
+    font-size: 20px;
+    color: #333;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+  }
+
+  .menu ul li:hover .icon {
+    color: white;
+  }
+
+  .menu ul li span {
+    font-size: 16px;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+
+  .menu ul li:hover span {
+    color: white;
+  }
+
+  .menu.collapsed ul li span {
+    display: none;
+  }
+
+  .divider {
+    border: 0;
+    height: 1px;
+    background-color: #555;
+    margin: 10px 0;
   }

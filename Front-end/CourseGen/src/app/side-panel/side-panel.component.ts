@@ -15,9 +15,10 @@ export class SidePanelComponent implements OnInit {
   userRole: string | null = null;
   headerTitle = 'COURSE GENERATOR';
   showBackButton = true;
+  showLogBtn = true;
   private previousUrl: string | null = null;
   private currentUrl: string | null = null;
-
+  isCollapsed = true;
   constructor(
     public authService: AuthService,
     public toggleService: ToggleService, // Changed to public
@@ -36,6 +37,7 @@ export class SidePanelComponent implements OnInit {
         const currentRoute = this.getChildRoute(this.activatedRoute);
         this.headerTitle = currentRoute.snapshot.data['title'] || this.headerTitle;
         this.showBackButton = currentRoute.snapshot.data['showBackButton'] ?? true;
+        this.showLogBtn = currentRoute.snapshot.data['showLogBtn'] ?? true;
       });
 
     this.router.events
