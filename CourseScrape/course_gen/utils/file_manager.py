@@ -297,19 +297,24 @@ class FileManager:
             
     @staticmethod
     def _sanitize_title(raw_title: str) -> str:
-        # Remove leading/trailing whitespace
         title = raw_title.strip()
         
-        # Replace problematic characters with underscore
-        title = re.sub(r' [<>:"/\\|?*\.,;\'()\[\]{}\-+=!@#$%^&~`]', '_', title)
+        # Replace "C#" with "Csharp" (case-insensitive)
+        title = re.sub(r'\bC#\b', 'csharp', title, flags=re.IGNORECASE)
         
-        # Replace multiple underscores with single one
-        title = re.sub(r'__+', '_', title)
+        # Replace all non-alphanumeric characters (except underscores and spaces) with underscores
+        title = re.sub(r'[^\w\s]', '_', title)
         
-        # Remove trailing/leading underscores
+        # Replace spaces with underscores
+        title = re.sub(r'\s+', '_', title)
+        
+        # Collapse multiple underscores
+        title = re.sub(r'_+', '_', title)
+        
+        # Strip leading/trailing underscores
         title = title.strip('_')
-        
-        # Optionally, lowercase it
+
+        # Lowercase
         title = title.lower()
-        
+
         return title
