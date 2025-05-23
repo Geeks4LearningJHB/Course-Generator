@@ -70,19 +70,19 @@ class URLManager:
         
         # Configure trusted domains and their delay configurations
         self.trusted_domains = {
-            "w3schools.com": (1, 2),
-            "geeksforgeeks.org": (2, 3),
-            "realpython.com": (2, 4),
-            "developer.mozilla.org": (1, 2),
-            "docs.python.org": (1, 2),
-            "github.com": (2, 3),
-            "stackoverflow.com": (2, 3),
-            "tutorialspoint.com": (1, 2),
-            "codecademy.com": (1, 2), 
-            "tutorialspoint.com": (1, 2),
-            "simplilearn.com": (1, 2),
-            "freecodecamp.org": (1, 2),
-            "javatpoint.com": (1, 2)
+            "w3schools.com": (2, 5),
+            "geeksforgeeks.org": (2, 5),
+            "realpython.com": (2, 5),
+            "developer.mozilla.org": (2, 5),
+            "docs.python.org": (2, 5),
+            "github.com": (2, 5),
+            "stackoverflow.com": (2, 5),
+            "tutorialspoint.com": (2, 5),
+            "codecademy.com": (2, 5), 
+            "tutorialspoint.com": (2, 5),
+            "simplilearn.com": (2, 5),
+            "freecodecamp.org": (2, 5),
+            "javatpoint.com": (2, 5)
         }
         
         # Default delay for other sites
