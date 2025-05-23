@@ -48,6 +48,6 @@ export class AuthService {
   // Logout and redirect to login page
   logout(): void {
     this.clearUserRole();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 }
