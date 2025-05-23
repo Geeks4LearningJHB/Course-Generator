@@ -1,53 +1,81 @@
 <div class="admin-login-page">
-  <div class="login-container">
-    <h3>Admin Login</h3>
-    <form (submit)="onLogin(); $event.preventDefault()">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input 
-          type="email" 
-          id="email" 
-          [(ngModel)]="email" 
-          name="email" 
-          placeholder="Enter your email" 
-          required 
-          #emailInput="ngModel"
-        />
+  <div class="login-content">
+    <div class="login-container">
+      <div class="login-header">
+        <h2>Admin Portal</h2>
+        <p>Sign in to access the administration dashboard</p>
       </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input 
-          type="password" 
-          id="password" 
-          [(ngModel)]="password" 
-          name="password" 
-          placeholder="Enter your password" 
-          required 
-          #passwordInput="ngModel"
-        />
-      </div>
-
-      <div *ngIf="LoggingIn" class="loading-overlay">
-        <div class="loading-content">
-          <p>{{ successMessage }}</p>
-          <div class="spinner"></div>
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            [(ngModel)]="email" 
+            name="email" 
+            placeholder="admin@example.com" 
+            required
+            email
+            #emailInput="ngModel"
+            [class.invalid]="emailInput.invalid && emailInput.touched"
+          />
+          <div *ngIf="emailInput.invalid && emailInput.touched" class="error-message">
+            Please enter a valid email address
+          </div>
         </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-input">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              id="password" 
+              [(ngModel)]="password" 
+              name="password" 
+              placeholder="Enter your password" 
+              required
+              #passwordInput="ngModel"
+              [class.invalid]="passwordInput.invalid && passwordInput.touched"
+            />
+            <button type="button" class="toggle-password" (click)="showPassword = !showPassword">
+              <i *ngIf="!showPassword" class="fas fa-eye"></i>
+              <i *ngIf="showPassword" class="fas fa-eye-slash"></i>
+            </button>
+          </div>
+          <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error-message">
+            Password is required
+          </div>
+        </div>
+
+        <div class="form-options">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" [(ngModel)]="rememberMe" name="rememberMe" />
+            <label for="remember">Remember me</label>
+          </div>
+          <a routerLink="/forgot-password" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-signin" [disabled]="!loginForm.valid || isLoading">
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading" class="spinner"></span>
+        </button>
+
+        <div *ngIf="loginError" class="alert alert-error">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ loginError }}
+        </div>
+      </form>
+    </div>
+
+    <div class="logo-container">
+      <img src="assets/266029052_440814094377424_7370804340925552208_n.png" 
+           alt="Geeks4Learning Logo" 
+           class="logo" />
+      <div class="logo-text">
+        <h1>Geeks4Learning</h1>
+        <p>A journey to excellence</p>
       </div>
-
-      <!-- Display general error message -->
-      <div *ngIf="loginError" class="alert">
-        {{ loginError }}
-      </div>
-
-      <button type="submit" class="btn-signin"> Sign In </button>
-      
-      <a routerLink="/forgot-password" class="forgot-password">Forgot password?</a>
-    </form>
-  </div>
-  
-
-  <div class="logo-container">
-    <img src="assets/266029052_440814094377424_7370804340925552208_n.png" alt="Geeks4Learning Logo" class="logo" />
+    </div>
   </div>
 </div>

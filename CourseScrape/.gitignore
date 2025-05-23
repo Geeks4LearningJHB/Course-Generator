@@ -1,0 +1,76 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+*.sqlite3
+
+# Model Cache
+model_cache/
+~/.cache/huggingface/
+
+# Scraper files
+bad_urls.json
+scraped_urls.json
+knowledge_base.json
+# Saved markdown files
+*.md
+
+# If using Django's collectstatic
+/static/
+
+# Ignore env files
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Virtual environment
+venv/
+ENV/
+env/
+*.venv/
+.scrape_env
+
+# pipenv
+Pipfile.lock
+
+# mypy
+.mypy_cache/
+
+# pytest
+.cache/
+
+# coverage reports
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Sphinx documentation
+docs/_build/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
