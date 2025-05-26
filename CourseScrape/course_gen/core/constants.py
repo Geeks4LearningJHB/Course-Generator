@@ -50,6 +50,11 @@ CODE_SELECTORS = [
     "[data-lang]", 
 ]
 
+# Non Educational related text to remove
+NON_EDUCATIONAL_TEXT = [
+    "sign in", "home","click here to redeem" "glossary", "skip to main", "accept cookies", "language", "terms", "privacy"
+]
+
 # Advanced topics
 ADVANCED_INDICATORS = [
     "advanced", "expert", "complex", "deep dive", "in-depth",
@@ -128,6 +133,47 @@ PAYWALL_PATTERNS = [
     "only available to subscribers", "premium subscription", "content locked"
 ]
 
+# Promotional patterns
+PROMO_PATTERNS = [
+    "start now", "click here", "get started", "join", "subscribe",
+    "sign up", "discount", "free trial", "sponsored by", "save", "code", 
+    "redeem", "annual subscription", "expert instructors", "generously supported"
+]
+
+# Brand names
+BRAND_NAMES = [
+    "datacamp", "coursera", "alison.com" "udemy", "linkedin", "facebook", "learnpython.org"
+]
+
+# Configure trusted domains and their delay configurations
+TRUSTED_DOMAINS = {
+    "w3schools.com": (1, 2),
+    "geeksforgeeks.org": (2, 3),
+    "realpython.com": (2, 4),
+    "developer.mozilla.org": (1, 2),
+    "docs.python.org": (1, 2),
+    "github.com": (2, 3),
+    "stackoverflow.com": (2, 3),
+    "tutorialspoint.com": (1, 2),
+    "codecademy.com": (1, 2), 
+    "tutorialspoint.com": (1, 2),
+    "simplilearn.com": (1, 2),
+    "freecodecamp.org": (1, 2),
+    "javatpoint.com": (1, 2)
+}
+
+# Domains to avoid completely
+AVOID_DOMAINS = [
+    "pinterest", "facebook.com", "twitter.com", "instagram.com",
+    "youtube.com", "medium.com", "quora.com", "linkedin.com",
+    "reddit.com", "courses.com", "udemy.com", "coursera.org"
+]
+
+# Patterns in urls to avoid
+SKIP_PATTERNS = [
+    "/watch", "/signin", "/login", "/video"
+]
+
 # Common consent button selectors
 CONSENT_SELECTORS = [
     "button[id*='cookie']", "button[class*='cookie']",
@@ -176,6 +222,12 @@ COMMON_CONTENT_SELECTORS = [
     ".content-wrapper", ".content-area", ".details-content", 
     ".article-body", ".body-content", ".section-content", ".educational-content",
     ".lesson-content", ".course-content", ".study-material", ".exam-content"
+]
+
+PAGINATION_SELECTORS = [
+    "a:has-text('Next')", "a:has-text('Next ❯')", 
+    "a:has-text('❯')", "a.next", "#nextbtn", 
+    ".pagination a:last-child", "a[rel='next']"
 ]
 
 #################################################################################

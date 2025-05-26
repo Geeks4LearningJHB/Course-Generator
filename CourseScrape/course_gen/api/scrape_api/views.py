@@ -1,9 +1,9 @@
-from course_gen.core.globals import (logging, APIView, Response, status, async_to_sync)
+from course_gen.core.globals import (logging, APIView, Response, status)
 
 from .serializer import WebScrapeRequestSerializer
 from course_gen.services.course_generator import CourseGenerator
 from course_gen.services.database_manager import DatabaseManager
-from course_gen.services.knowledge_scraper import PlaywrightScraper, URLManager, ContentCleaner, ContentExtractor, BaseDetector, BaseScraper
+from course_gen.services.knowledge_scraper import PlaywrightWebScraper, URLManager
 from course_gen.utils.file_manager import FileManager
 
 logger = logging.getLogger(__name__)
@@ -12,15 +12,7 @@ logger = logging.getLogger(__name__)
 generator = CourseGenerator()
 db_manager = DatabaseManager()
 url_manager = URLManager(scraped_urls_file="scraped_urls.json", bad_urls_file="bad_urls.json")
-content_cleaner = ContentCleaner()
-extractor = ContentExtractor(content_cleaner)
-detector = BaseDetector()
-scraper = PlaywrightScraper(
-            url_manager=url_manager,
-            content_cleaner=content_cleaner,
-            extractor=extractor,
-            detector=detector
-        )
+scraper = PlaywrightWebScraper()
 
 new_knowledge = []
 search_results = []  # Store temporary search results
@@ -36,13 +28,15 @@ class ScrapedContentView(APIView):
         level = data.get("level", "beginner")
         max_results = data.get("max_results", 5)
         save_to_db = data.get("save_to_db", False)
+        
+        thinking_mode = True
 
         if not query:
             return Response({"detail": "Query cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # 1. Fetch and scrape data
-            search_results = async_to_sync(scraper.search_and_scrape_async)(query, level, max_results)
+            search_results = scraper.search_and_scrape_sync(query, thinking_mode, level, max_results)
 
             # 2. Save using FileManager (handles merging/error logging)
             FileManager.save_to_knowledge_base(search_results)

@@ -6,10 +6,12 @@ import traceback
 import json
 import os
 import time
+import unicodedata
 import re
 import random
 import logging
 import urllib
+import hashlib
 from urllib.parse import urljoin, urlparse
 from typing import List, Dict, Optional, Tuple, Any, Union, Set, TYPE_CHECKING
 from collections import defaultdict
@@ -31,6 +33,7 @@ from asgiref.sync import async_to_sync
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from trafilatura import extract
 
 # Third-Party Libraries (Direct imports - medium weight)
 import requests
@@ -54,18 +57,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# Lazy Importer for Heavy Libraries
+from typing import TYPE_CHECKING
+
 class LazyLoader:
     """
-    Lazy loader for heavy machine learning libraries.
-    Caches imported modules to avoid multiple imports.
-    Usage:
-        from core.globals import lazy
-        tokenizer = lazy.transformers.GPT2TokenizerFast.from_pretrained('gpt2')
-        model = lazy.transformers.GPT2LMHeadModel.from_pretrained('gpt2')
-        tensor = lazy.torch.tensor([1, 2, 3])
-        with lazy.playwright() as p:
-            ...
+    Lazy loader for heavy ML libraries, including transformers and accelerate.
+    Caches imports to avoid repeated imports.
     """
 
     _cache = {}
@@ -80,29 +77,40 @@ class LazyLoader:
         elif name == 'transformers':
             import transformers
             self._cache[name] = transformers
+        elif name == 'accelerate':
+            try:
+                import accelerate
+                self._cache[name] = accelerate
+            except ImportError:
+                # Optional: Warn user about missing accelerate if used
+                raise ImportError(
+                    "The 'accelerate' package is required for device_map or tp_plan. "
+                    "Install with: pip install accelerate"
+                )
         elif name == 'np':
             import numpy as np
             self._cache[name] = np
-        #elif name == 'async_playwright': # Call using async with lazy.playwright()() as p
-            #from playwright.async_api import async_playwright
-            #self._cache[name] = lambda: async_playwright()
+        elif name == 'AutoTokenizer':
+            from transformers import AutoTokenizer
+            self._cache[name] = AutoTokenizer
+        elif name == 'AutoModelForCausalLM':
+            from transformers import AutoModelForCausalLM
+            self._cache[name] = AutoModelForCausalLM
         else:
             raise AttributeError(f"No lazy import available for {name}")
 
         return self._cache[name]
 
+
 lazy = LazyLoader()
 
-
-# Type hints for autocompletion (only active during type checking)
 if TYPE_CHECKING:
     import torch
     import transformers
+    import accelerate
     import numpy as np
-    #from playwright.async_api import async_playwright
 else:
-    # These won't be imported at runtime
     torch = None
     transformers = None
+    accelerate = None
     np = None
-    #async_playwright = None

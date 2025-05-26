@@ -9,13 +9,21 @@ class FileManager:
     
     _instance = None
     _lock = Lock()
+    _initialized = False
 
-    def __new__(cls):
-        """Singleton pattern to ensure thread-safe access."""
-        with cls._lock:
-            if cls._instance is None:
-                cls._instance = super().__new__(cls)
+    # Singleton pattern for multiple FileManager class initializations
+    def __new__(cls, *args, **kwargs):
+        """Thread-safe Singleton pattern with init guard."""
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
         return cls._instance
+    
+    def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
 
     @staticmethod
     def save_to_knowledge_base(new_data: List[Dict], file_path: str = "knowledge_base.json") -> None:
@@ -34,7 +42,7 @@ class FileManager:
             except Exception as e:
                 logger.error(f"Failed to save knowledge: {str(e)}")
                 raise
-
+            
     @staticmethod
     def load_knowledge(file_path: str = "knowledge_base.json") -> List[Dict]:
         """Load JSON data from file with validation."""

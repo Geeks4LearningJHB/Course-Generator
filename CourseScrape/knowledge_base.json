@@ -1,0 +1,282 @@
+[
+    {
+        "title": "Python for Beginners | Microsoft Learn",
+        "url": "https://learn.microsoft.com/en-us/shows/intro-to-python-development/",
+        "topics": [
+            "1. Foundation on programming in Python  \n2. Common everyday code and scenarios  \n3. Resources for learning Python"
+        ],
+        "level": "Beginner",
+        "cleaned_text": "- **Definition**  \n  - Python for Beginners: A course designed to introduce programming concepts to beginners, focusing on practical coding skills.  \n\n- **Key Concepts**  \n  - Foundation on Programming: The course aims to provide a solid understanding of programming, starting from common everyday code and scenarios.  \n\n- **Detailed Explanations**  \n  - The course emphasizes learning through examples, such as using built-in libraries, writing simple scripts, and understanding basic syntax.  \n\n- **Examples**  \n  - Example 1: Use of built-in functions like `print()` and `input()` for basic interaction.  \n  - Example 2: Code snippets from official documentation or tutorials.  \n\n- **Important Notes or Warnings**  \n  - The course does not cover all aspects of Python, but it ensures a strong foundation by focusing on practical",
+        "code_snippets": []
+    },
+    {
+        "title": "Learn Python – Free Python Courses for Beginners",
+        "url": "https://www.freecodecamp.org/news/learn-python-free-python-courses-for-beginners/",
+        "topics": [
+            "- Python programming for beginners  \n- Data analysis  \n- Machine learning  \n- Scientific computing"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "<think>\nOkay, let's start by breaking down the user's request. They want the educational content extracted into structured sections like 'Definitions', 'Key Concepts', etc., formatted with code blocks, and presented as a list. The input text is a list of Python courses with explanations.\n\nFirst, I need to identify the sections they want. The user mentioned 'Definitions', 'Key Concepts', 'Detailed Explanations', 'Examples', and 'Important Notes'. So I'll go through each part of the text and categorize them.\n\nStarting with 'Definitions'. The text mentions courses like 'Learn Python' and 'Python Basics with Sam', which are the main topics. But the user's instruction is to extract definitions. Wait, the original text lists the courses but doesn't define them. Maybe the 'Definitions' section should be about what each course is. But looking at the text, each course is a title. So perhaps 'Definitions' here is just the titles, and the user wants that as a list. Wait, no, the user's example shows sections like 'Definition', 'Example', etc. So maybe the 'Definitions' should be the terms used in the courses. But in the input text, each course is a title, not a definition. Wait, maybe the user is asking for definitions of terms, but the input text doesn't have any terms. That's a problem. Wait, looking back, the text lists courses, but perhaps the user intended to extract definitions of terms like 'lists', 'tuples', etc. But in the given text, there's no mention of such terms. Wait, the first line says 'You can use Python for web development...'. Then the next lines list courses. So maybe the 'Definitions' section is about the key concepts in the courses. For example, 'Key Concepts' could include terms like 'functions', 'variables', etc. But the user's input text doesn't have those terms. Wait, looking again, in the 'Key Concepts' section, the text says 'functions, loops, conditionals, variables and more' from the University of Michigan course. So maybe 'Key Concepts' is about the main topics covered in each course. So perhaps the 'Definitions' is empty, and the user wants that to be filled. Alternatively, maybe the user expects that the 'Definitions' section is about the terms used in the courses. But since the input text doesn't have such terms, maybe the user made",
+        "code_snippets": []
+    },
+    {
+        "title": "Python for Beginners: Learn Programming with JetBrains Academy",
+        "url": "https://academy.jetbrains.com/course/16630-introduction-to-python",
+        "topics": [
+            "<think>\nOkay",
+            "let's see. The user wants me to list 3-5 key topics or themes discussed in the given text. The text is about a Python course",
+            "specifically an introduction to Python with some examples and some other related topics.\n\nFirst",
+            "I need to go through the text and identify the main sections. The introduction mentions the course is for those with little experience",
+            "so that's a theme. Then there's the content section",
+            "which includes topics like variables",
+            "types",
+            "string operations",
+            "etc. The next part talks about the JetBrains Toolbox App and licensing. \n\nLooking at the content",
+            "the user also has two other courses: NumPy and Machine Learning 101",
+            "and Gateway to Pandas. But the user's request is only for the main topics from the given text. So I should focus on the parts that are discussed in the text provided. \n\nWait",
+            "the text has two more courses",
+            "but they are not the main topics. The main topics are probably the introductory content",
+            "variables",
+            "types",
+            "string operations",
+            "etc. Also",
+            "the JetBrains Toolbox App setup and its role in learning. But the user wants only the topics from the given text. So I need to extract the key points from that text.\n\nLet me check again. The first part is the introduction. The content includes variables",
+            "types",
+            "string operations",
+            "etc. Then there's the part about JetBrains Toolbox App and its usage. The other parts are about other courses but not the main topics. So the key topics would be: Introduction to Python",
+            "Variables",
+            "Types",
+            "String operations",
+            "and maybe the JetBrains Toolbox App setup. But the user wants only the topics from the text. \n\nWait",
+            "the text has \"Introduction to Python\"",
+            "\"About this course\"",
+            "\"Content\"",
+            "and then the list of topics. The \"Content\" section includes the about the course",
+            "first program",
+            "comments",
+            "variable definitions",
+            "etc. So the key themes would be Introduction to Python",
+            "Variables",
+            "Types",
+            "String operations",
+            "and maybe the JetBrains Toolbox App. But the user wants 3-5. Let me count. The main topics from the text are:\n\n1. Introduction to Python\n2. Variables\n3. Types\n4. String operations (concatenation",
+            "slicing",
+            "etc.)\n5. The JetBrains Toolbox App setup\n\nBut maybe \"String operations\" is a part of the content. So those would be the 5 key topics. Let me make sure there's no other mentions. Yes",
+            "the text"
+        ],
+        "level": "Beginner",
+        "cleaned_text": "- **Definitions**  \n  - Variable definition  \n  - Undefined variable  \n  - Variable types  \n  - Type conversion  \n  - Arithmetic operators  \n  - Assignments  \n  - Boolean operators  \n  - Comparison operators  \n  - Concatenation  \n  - String multiplication  \n  - String indexing  \n  - String negative indexing  \n  - Slicing  \n  - `in` operator  \n  - String length  \n  - Character escaping  \n  - Basic string methods  \n  - String formatting  \n  - Formatted string literals  \n  - Lists introduction  \n  - List operations  \n  - List items  \n  - Nested Lists  \n  - Tuples  \n  - `join()` method  \n  - Dictionaries  \n  - `keys()` and `values()`  \n  - `in` keyword  \n  - Boolean operators order  \n  - `if` statement  \n  - `else` and `elif` statements  \n  - Single-line `if-else`  \n  - `for` loop  \n  - Loop over a string  \n  - Nested loops  \n  - List comprehension  \n  - Nested list comprehension  \n  - `while` loop  \n  - `break` keyword  \n  - `else` with loops  \n  - `continue` keyword",
+        "code_snippets": []
+    },
+    {
+        "title": "Python For Beginners | Python.org",
+        "url": "https://www.python.org/about/gettingstarted/",
+        "topics": [
+            "1. Installation  \n2. Learning  \n3. Looking for Specific Information  \n4. Frequently Asked Questions  \n5. Helping with Python Development"
+        ],
+        "level": "Beginner",
+        "cleaned_text": "<think>\nOkay, let's tackle this. The user wants me to extract structured sections from the given text. The text is about installing Python and learning Python, with some FAQs and a help section.\n\nFirst, I need to identify the main sections. The text starts with Installation, then Learning, then Looking for Something Specific, Then Frequently Asked Questions, and Finally Looking to Help. Each of these sections should have their own headings. \n\nFor Definitions, the user might need to know key terms like Python, installation, etc. The text mentions installing Python, so maybe the definition here is straightforward. The key concepts could include IDEs and text editors, which are important for learning. \n\nExamples are part of the Learning section. The user wants code blocks. The text includes code examples in the \"Looking for Something Specific?\" section, but I need to check if there are actual code snippets. The examples might be in the \"Frequently Asked Questions\" section, but the user's example is in the first part. Wait, looking again, the text says \"if you do need to install Python...\" but then the \"Looking for Something Specific?\" section has a part about the Python web site. Maybe the code examples are in the \"Looking for Something Specific?\" section. But the user wants examples with code blocks. Wait, the original text doesn't have code blocks, so perhaps the user expects that part to be included. But since the original text doesn't have code, maybe the user made a mistake, but according to the instructions, I need to extract as per the input. So maybe the \"Examples\" section will have the code blocks from the web site. \n\nImportant Notes or Warnings: The text mentions that installation is unremarkable on most platforms, and some Windows computers. Also, the note about not needing to be an expert programmer. So those should be included as important notes. \n\nI need to structure each section with clear headings. Let me list them out:\n\n- Definition\n- Key Concepts\n- Detailed Explanations\n- Examples (with code blocks)\n- Important Notes or Warnings\n\nEach section should have a heading and the content. For the examples, I need to check if there are code blocks. The original text says \"the Python web site provides a Python Package Index...\" but there's no code. So maybe the user's example is in the \"Looking for Something Specific?\" section. Wait, in the \"Looking for Something Specific?\" section, there",
+        "code_snippets": []
+    },
+    {
+        "title": "Cookie Policy | Khan Academy",
+        "url": "https://www.khanacademy.org/computing/intro-to-python-fundamentals",
+        "topics": [
+            "1. Types of cookies and technologies used  \n2. Purposes of cookies (personalization",
+            "tracking",
+            "analytics)  \n3. Third-party hosting and cookie management  \n4. Cookie management settings and opt-out options  \n5. Examples of cookie types and their purposes"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "<think>\nOkay, let's start by understanding what the user is asking for. They want me to extract and format specific sections from the provided text into a well-structured list. The key points are Definitions, Key Concepts, Detailed Explanations, Examples with code blocks, and Important Notes/Warnings.\n\nFirst, I need to identify each section. The text is a cookie notice from Khan Academy. Let me break it down. \n\nThe first section is Definitions. The text mentions \"Strictly Necessary Cookies\" and \"Targeting Cookies\". But the user's example requires Definitions, so maybe I should list the terms like \"Cookie Type\" and \"Purpose\". Wait, the user's example uses headings like 'Definition', 'Example', etc. So perhaps the first part is Definitions, then Key Concepts, etc.\n\nLooking at the text, the sections are:\n\n- Definitions\n- Key Concepts\n- Detailed Explanations\n- Examples with code blocks\n- Important Notes/Warnings\n\nI need to extract each of these. Let's check each part:\n\nDefinitions: The text starts with \"What types of cookies and similar technologies does Khan Academy use?\" but the user's example might not have that. Wait, maybe the first part is Definitions. Let me read again. The first sentence is the cookie notice. The user's input is the text, and the example output uses headings. So perhaps the first part is Definitions. But the user's example shows a list with sections like 'Definition', 'Example', etc. So maybe the Definitions are the first section, then Key Concepts, etc.\n\nWait, the user's instruction says to extract and format from the text. So the text provided is the cookie notice. The sections to extract are:\n\n- Definitions\n- Key Concepts\n- Detailed Explanations\n- Examples\n- Important Notes/Warnings\n\nSo I need to split the text into these sections. Let me go through each part:\n\nDefinitions: The first part is the cookie notice. The text mentions \"What types of cookies and similar technologies does Khan Academy use?\" but that's the question. The user's example might not have that. Wait, perhaps the Definitions section is the first part. Let me check again.\n\nThe text starts with:\n\nKhan Academy Cookie Notice\nLast Updated: February 22nd 2024\nWhat types of cookies and similar technologies does Khan Academy use?\n\nSo the Definitions section here might be the question. But the user's example shows headings",
+        "code_snippets": []
+    },
+    {
+        "title": "Learn Python - Free Interactive Python Tutorial",
+        "url": "https://www.learnpython.org/",
+        "topics": [
+            "1. Learn Python with DataCamp  \n2. Data Science and Python  \n3. Interactive Coding Challenges  \n4. Learning Python for Data Science  \n5. Online Tutorials and Resources"
+        ],
+        "level": "Advanced",
+        "cleaned_text": "- **Definitions**  \n  - **Python**: A high-level, interpreted programming language known for its readability and versatility.  \n  - **Data Science**: A field that uses programming to analyze and process data.  \n\n- **Key Concepts**  \n  - **Variables**: Used to store data.  \n  - **Types**: Different data types in Python (e.g., integers, strings, lists).  \n  - **Functions**: reusable blocks of code.  \n  - **Classes and Objects**: Structures that encapsulate data and behavior.  \n  - **Dictionaries**: A data structure that maps keys to values.  \n\n- **Detailed Explanations**  \n  - **Hello, World!**: A simple program that prints \"Hello, World!\" to the console.  \n  - **Variables and Types**: Variables hold data, and types define what data can be stored.  \n  - **Lists**: A collection of items.  \n  - **Basic Operators**: Operations like addition, subtraction, and comparison.  \n  - **String Formatting**: Techniques to format text.  \n\n- **Examples**  \n  ```python\n  # Example 1: Hello, World!\n  print(\"Hello, World!\")\n\n  # Example 2: Variables and Types\n  name = \"Alice\"\n  age = 30\n  print(f\"Name: {name}, Age: {age}\")\n  ```\n\n- **Important Notes or Warnings**  \n  - The site is supported by DataCamp and offers free tutorials.  \n  - The tutorial is interactive and covers a wide range of topics.",
+        "code_snippets": []
+    },
+    {
+        "title": "Python for Beginners | Microsoft Learn",
+        "url": "https://learn.microsoft.com/en-us/shows/intro-to-python-development/",
+        "topics": [
+            "1. Python for Beginners  \n2. Programming in Python  \n3. Common Everyday Code  \n4. Learning Python on Your Own  \n5. Documentation and Resources"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "- **Definition**: Python is a high-level, interpreted programming language known for its readability and ease of use, widely used in various applications such as web development, data analysis, and scientific computing.\n\n- **Key Concepts**: \n  - **Variables**: Used to store data.\n  - **Data Types**: Numbers, strings, lists, dictionaries, etc.\n  - **Control Flow**: If, while, for loops, etc.\n  - **Functions**: Used to organize code.\n\n- **Detailed Explanations**:\n  - **Variables**: A variable is a named storage location for a value. For example, `x = 5` assigns the value 5 to a variable `x`.\n  - **Data Types**: Data types define the type of data a variable can hold. For example, `int` for integers, `str` for strings, and `list` for collections.\n  - **Control Flow**: Control flow statements allow the program to change the execution path. For example, `if` statements determine when to execute different code blocks.\n  - **Functions**: Functions allow you to define a block of code that can be reused. For example, `def greet(name): print(f\"Hello, {name}!\")`.\n\n- **Examples**:\n  ```python\n  # Example of a simple program\n  print(\"Hello, World!\")\n  print(\"This is a string.\")\n  print(\"This is a list:\", [1, 2, 3])\n  print(\"This is a dictionary:\", {\"name\": \"Alice\", \"age\": 30})\n  ```\n\n- **Important Notes or Warnings**: \n  - Python is beginner-friendly and has a strong community, making it accessible for learning.\n  - It is not a static language, so understanding its dynamic nature is important.",
+        "code_snippets": []
+    },
+    {
+        "title": "Learn Python – Free Python Courses for Beginners",
+        "url": "https://www.freecodecamp.org/news/learn-python-free-python-courses-for-beginners/",
+        "topics": [
+            "- Python for Beginners  \n- Python Core  \n- Python Tutorial"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "- **Definitions**  \n  - **Python**: A high-level, interpreted programming language known for its simplicity and versatility.  \n  - **Web Development**: A field using Python to create websites, web applications, and web services.  \n  - **Data Analysis**: A process involving the extraction, processing, and analysis of data from various sources.  \n  - **Machine Learning**: A subset of artificial intelligence where algorithms learn patterns from data to make predictions or decisions.  \n  - **Artificial Intelligence (AI)**: The simulation of human intelligence in machines, including problem-solving, reasoning, and decision-making.  \n\n- **Key Concepts**  \n  - **Functions**: Reusable blocks of code that perform specific tasks.  \n  - **Loops**: Structures that repeat a set of actions.  \n  - **Variables**: Named storage locations for data.  \n  - **Classes and Objects**: A way to structure and organize code in Python.  \n  - **Data Types**: Basic and built-in data types used to store and manipulate data.  \n\n- **Detailed Explanations**  \n  - **Automate the Boring Stuff with Python**: A book by Al Sweigart that teaches how to automate tasks using Python.  \n  - **Python Crash Course for Beginners**: A course by Brad Traversy that teaches Python basics.  \n  - **Python for Beginners**: A YouTube course that covers programming basics.  \n\n- **Examples**  \n  ```python\n  # Example: Basic Calculator\n  num1 = 5\n  num2 = 3\n  result = num1 + num2\n  print(\"Result:\", result)\n  ```\n\n  ```python\n  # Example: Twitter Bot using Python\n  import requests\n  url = \"https://api.twitter.com/1.1/statuses/update.json\"\n  data = {\n      \"status\": \"Hello, world!\"\n  }\n  response = requests.post(url, json=data)\n  print(\"Twitter Response:\", response.status_code)\n  ```\n\n  ```python\n  # Example: Guessing Game\n  print(\"Welcome to the Guessing Game!\")\n  print(\"Think of a number between 1 and 10.\")\n  print(\"Guess what it is.\")\n  ```\n\n- **Important Notes or Warnings**  \n  - Always ensure to install Python before starting any project.  \n  - Use of code blocks for structured examples.",
+        "code_snippets": []
+    },
+    {
+        "title": "Introduction to Python | Learn with Sololearn",
+        "url": "https://www.sololearn.com/en/learn/courses/python-introduction",
+        "topics": [
+            "1. Certificate of Completion  \n2. Personalization and Advertising  \n3. Data Collection Practices  \n4. Learning and Certificate Unlocking  \n5. Certificate Quality and Accessibility"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "- **Definitions**  \n  - **Certificate**: A credential or qualification awarded to demonstrate proficiency in a specific subject or skill.  \n  - **Personalization**: The customization of content or services to meet the individual needs of users.  \n  - **Advertising effectiveness**: The measure of how well a program or service drives traffic or engagement.  \n\n- **Key Concepts**  \n  - **Data collection**: The process of gathering information about users to improve services.  \n  - **Cookies**: Small pieces of data stored on a device to track user behavior.  \n  - **User experience**: The ease with which users can interact with and navigate a service.  \n\n- **Detailed Explanations**  \n  - **Certificate**: A credential that shows mastery of a specific skill or knowledge.  \n  - **Personalization**: It involves tailoring content, recommendations, and interactions to meet individual preferences.  \n  - **Advertising effectiveness**: It refers to how well a program or service performs in driving users to engage with it.  \n\n- **Examples**  \n  ```python\n  # Example of a simple data collection function\n  def collect_data():\n      return {\n          \"user_age\": 25,\n          \"interests\": [\"reading\", \"music\"],\n          \"preferences\": {\"theme\": \"nature\"}\n      }\n  ```  \n  ```javascript\n  // Example of using cookies\n  const cookie = document.cookie;\n  if (cookie.includes(\"personalization\")) {\n      console.log(\"Personalization is enabled.\");\n  }\n  ```  \n\n- **Important Notes or Warnings**  \n  - This provider collects data for personalization and advertising effectiveness.  \n  - Cookies may be used to track user behavior and preferences.",
+        "code_snippets": [
+            "PracticeGame Messages",
+            "PracticeShopping Prices",
+            "PracticeThe Semester Grade",
+            "PracticeAnd the Winner is …",
+            "PracticeFlight Tracker",
+            "PracticeSnowflake",
+            "PracticeIt’s Payday!",
+            "PracticeChatbot v1.0",
+            "PracticeMessaging App",
+            "PracticeChatbot v1.1",
+            "PracticeFinance App",
+            "PracticeChess Tournament",
+            "PracticeLevel Up!",
+            "PracticeFitness Goals!",
+            "PracticeHouston, we've had a problem.",
+            "PracticeFasten your Seat Belt",
+            "PracticeTime's Up!",
+            "PracticeCell Growth",
+            "PracticeSmart Parking Lot",
+            "PracticeMedical Software",
+            "PracticeGame Machine",
+            "PracticePancakes",
+            "PracticeRelay Race",
+            "PracticeStep Counter",
+            "PracticeSurvey Data Format",
+            "PracticeQueue Management",
+            "PracticeShipping cost",
+            "PracticeHashtag Generator"
+        ]
+    },
+    {
+        "title": "10 Best Online Python Courses with Certificates [2025] | GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/free-python-course-for-beginners/",
+        "topics": [
+            "1. Python's popularity and opportunities  \n2. Free Python course for beginners  \n3. Course structure and content details"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "- **Definitions**  \n  - Python: A high-level, interpreted, and flexible programming language.  \n  - Web Framework: A software framework used to build web applications.  \n  - Django: A web framework for building scalable and secure web applications.  \n\n- **Key Concepts**  \n  - Web Development: Building websites and applications.  \n  - Back-End Development: Building applications that run on a server.  \n  - RESTful APIs: Web services that communicate over HTTP.  \n\n- **Detailed Explanations**  \n  - **Django**: A web framework that simplifies web development by providing built-in features like templates, authentication, and database management.  \n  - **URLs.py**: A file in Django that defines the URLs for web applications.  \n  - **Views.py**: A file in Django that handles HTTP requests and returns responses.  \n  - **Models**: Data structures used to store and retrieve data.  \n  - **Views**: Functions that handle user requests and return responses.  \n  - **Authentication**: Securing web applications by requiring user login.  \n\n- **Examples**  \n  ```python\n  # Example of a simple Python script\n  print(\"Hello, World!\")\n  ```\n\n- **Important Notes or Warnings**  \n  - No doubt support is available for this course.  \n  - The course is open to all students without charges.  \n  - The course includes all the necessary tools and resources for learning.  \n\n- **Frequently Asked Questions (FAQs)**  \n  - **Q1. Will I get any certification after the completion of the course?**  \n    Ans. Yes, once the course is completed and the certificate criteria are achieved, candidates will be able to access the course completion certificate.  \n  - **Q2. Who are eligible to register for this course?**  \n    Ans. The course is open to each and every student, without any charges, who wants to get started with Python in a fun and entertaining way.  \n  - **Q3. How can I register for the course?**  \n    Ans. You need to sign up for the workshop course by clicking on the registration link provided above or you can do it from the official course page as well.\n\n- **Definition**  \n  - **Dictionaries**: A data structure that stores data in key-value pairs.  \n  - **Functions**: A block of code that performs an action when called.  \n  - **Arguments and Keyword Argument (args & kwargs)**: How to pass parameters to functions.  \n  - **Classes and Objects**: A way to create reusable code units.  \n  - **Django**: A web framework for building web applications.  \n  - **File Structure and Data Models**: How to organize files and define data models.  \n  - **Template**: A way to create HTML pages using Django.  \n  - **Bootstrap**: A UI framework for web development.  \n  - **Post Request**: A request to a server.  \n  - **Csrf Attack Prevention**: How to prevent cross-site request forgery.  \n  - **Django Blog Website**: A way to create a blog using Django.  \n  - **HTML Templates**: How to create HTML templates.  \n  - **Migration**: A process for updating database models.  \n  - **Super User**: A role in Django.  \n  - **Contact Us Model**: A way to create a contact form.  \n  - **Post Request In Django**: How to handle requests.  \n  - **Blog Page and Blog Model**: How to create a blog.  \n  - **Search Functionality**: How to search for content.  \n  - **Authentication & Authorization**: How to secure user access.  \n  - **User and Validate Signup Form**: How to create and validate a signup form.  \n  - **Login & Logout**: How to handle user sessions.  \n  - **Comment Model**: How to create a comment system.  \n  - **API for Posting Comment**: How to create an API for comments.  \n  - **Restriction and Replies**: How to manage restrictions and replies.  \n  - **Nested Comments**: How to handle nested comments.  \n  - **TinyMCE**: A text editor for writing content.  \n  - **Post Views**: How to track how many times a post is viewed.  \n\n- **Examples**  \n  ```python\n  # Example of a function\n  def greet(name):\n      print(f\"Hello, {name}!\")\n\n  # Example of a dictionary\n  my_dict = {\"name\": \"Alice\", \"age\": 30}\n\n  # Example of a list\n  my_list = [1, 2, 3\n\n- **Definitions**  \n  - **Python**: A high-level, interpreted programming language known for its readability and versatility.  \n  - **Python Programming Foundation**: A self-paced course to build a strong foundation in programming.  \n  - **Certified Entry-Level Python Programmer (PCEP)**: A certification to showcase proficiency in Python programming.  \n  - **Certified Associate in Python Programming (PCAP)**: A certification to build upon PCEP knowledge.  \n  - **Python for Everybody Specialization**: A course covering core Python concepts and applications.  \n\n- **Key Concepts**  \n  - **Operators**: Basic arithmetic and comparison operators.  \n  - **Loops**: For, while, and if-else constructs.  \n  - **Functions**: Modular code that can be reused.  \n  - **Data Types**: Strings, lists, dictionaries, and tuples.  \n  - **Control Flow**: Conditional statements and loops.  \n  - **OOP**: Object-oriented programming concepts.  \n\n- **Detailed Explanations**  \n  - **Python Programming Foundation**: Covers the fundamentals of programming, including variables, data types, input/output, and basic logic. It is designed to help learners build a foundation for more advanced topics.  \n  - **Google IT Automation with Python Professional Certificate**: A self-paced course focusing on IT automation and Python. It equips professionals with skills in Python, Git, and automation tools.  \n  - **Certified Entry-Level Python Programmer (PCEP)**: Focuses on basic concepts, data types, and functions. It prepares learners for entry-level programming.  \n  - **Certified Associate in Python Programming (PCAP)**: Expands on OOP principles and more advanced topics. It builds upon PCEP knowledge to prepare for higher-level certifications.  \n\n- **Examples**  \n  ```python\n  # Example of a simple program\n  print(\"Hello, World!\")\n  print(\"This is a sample Python program.\")\n  ```  \n\n- **Important Notes or Warnings**  \n  - **Duration**: Some courses are 6 weeks, 6 months, or 1 month long.  \n  - **Certification**: All courses offer a certificate upon completion.  \n  - **Industry Relevance**: Courses like Python for Data Science, AI & Development and Django are highly recommended for professionals.\n\n- **Definitions**  \n  - Python: A high-level programming language used for writing software and data analysis.  \n  - Python Data Structures: A collection of data types and structures for efficient data manipulation.  \n  - Web Scraping: The process of extracting data from websites using programming.  \n  - Data Visualization: The use of tools to present data in charts, graphs, or images.  \n  - Machine Learning: A subset of artificial intelligence that involves training algorithms to make predictions or decisions.  \n\n- **Key Concepts**  \n  - Object-Oriented Programming (OOP): Organizing code into classes and objects.  \n  - GUI Programming: Creating graphical user interfaces for applications.  \n  - Web Scraping: Extracting data from web pages.  \n  - Data Manipulation: Using tools like Pandas and NumPy to process and analyze data.  \n  - Deep Learning: A subset of machine learning involving neural networks.  \n\n- **Detailed Explanations**  \n  - **Python for Everybody Specialization**: This course covers programming, data analysis, and web development using Python. It includes hands-on projects to build applications and visualize data.  \n  - **Python for Data Science, AI & Development**: Focuses on data processing, machine learning, and deployment using Python.  \n  - **Python for Data Science, AI & Development**: Introduces concepts like text mining, deep learning, and TensorFlow.  \n  - **Python for Everybody**: Covers programming fundamentals and best practices.  \n\n- **Examples**  \n  ```python\n  # Example: Using NumPy for Array Manipulation\n  import numpy as np\n  data = np.array([1, 2, 3, 4, 5])\n  sum_data = np.sum(data)\n  print(\"Sum of array:\", sum_data)\n  ```\n\n- **Important Notes or Warnings**  \n  - The courses are beginner-friendly and available for self-paced learning.  \n  - Certificates are available for completion of all courses.\n\n- **Definition**: AWS stands for Amazon Web Services, a cloud computing platform provided by Amazon. It offers a wide range of cloud-based services, including computing, storage, databases, networking, machine learning, and AI.\n\n- **Key Concepts**: AWS provides cloud computing services that allow businesses to build and manage their infrastructure efficiently, scale resources as needed, and innovate rapidly without upfront capital expenses.\n\n- **Detailed Explanations**: AWS offers a broad range of services that enable businesses to leverage cloud computing for scalability, cost-efficiency, global reach, and innovation.\n\n- **Examples**:\n  - ```python\n    # Example of AWS S3 bucket creation\n    import boto3\n    s3 = boto3.client('s3')\n    s3.create_bucket(Bucket='example-bucket')\n    ```\n  - ```python\n    # Example of AWS Lambda function\n    import os\n    import boto3\n    lambda_client = boto3.client('lambda')\n    response = lambda_client.invoke(FunctionName='example-function', InvocationName='test-invocation')\n    print(response['ResponseMetadata']['RequestId'])\n    ```\n\n- **Important Notes or Warnings**: No specific warnings or notes are provided in the text.\n\n- **Definitions**  \n  - **Data Security and Compliance**: The practice of protecting data from unauthorized access, breaches, and unauthorized use, ensuring that data is secure and compliant with relevant laws and regulations.  \n  - **Cost and Performance Optimization**: A process of reducing costs while improving system performance to meet business goals.  \n  - **Migration Strategies**: A set of methods and approaches used to move data, applications, or infrastructure from one environment to another.  \n\n- **Key Concepts**  \n  - **AWS Security Fundamentals**: Overview of core security practices and policies in AWS.  \n  - **Identity and Access Management (IAM)**: Managing user, role, and policy access to AWS resources.  \n  - **Data Protection and Encryption**: Techniques used to protect data at rest and in transit.  \n  - **Incident Response and Monitoring**: Procedures for responding to security incidents and monitoring system health.  \n  - **Security Best Practices**: Guidelines for implementing security measures in cloud environments.  \n\n- **Detailed Explanations**  \n  - **AWS Certified Security Specialty (Pluralsight)**: This course focuses on AWS security practices, compliance, and risk management. It covers advanced design strategies to address complex architectural challenges.  \n  - **AWS Certified Solutions Architect Associate (AWS Training and Certification)**: This course prepares you for the AWS Certified Solutions Architect Associate exam. It covers foundational AWS knowledge and best practices for building scalable solutions.  \n  - **AWS Certified Developer Associate (EdX)**: This course focuses on developing and maintaining applications on AWS, covering various AWS services and best practices for application development.  \n  - **AWS Certified Cloud Practitioner Ultimate Exam Guide (Simplilearn)**: This course provides a focused review of exam topics with practical insights, making it ideal for those looking for an intensive preparation experience.  \n\n- **Examples**, including formatted code blocks (use triple backticks ``` for code)  \n  - ```python\n    import boto3\n    client = boto3.client('s3')\n    response = client.get_all_objects(Bucket='example-bucket', Prefix='data/')\n    print(response)\n    ```  \n  - ```bash\n    aws cloudformation describe-stack --stack-name mystack\n    ```  \n\n- **Important Notes or Warnings**, if applicable  \n  - Ensure compliance with all relevant data privacy laws and regulations when implementing security practices.  \n  - Always review and update AWS security policies and compliance requirements as new regulations are introduced.\n\n- **Definitions**  \n  - **Interactive Practice Questions**: Interactive practice questions to gauge your readiness and provide real-time feedback.  \n  - **Mock Exams**: Mock exams to simulate the certification exam and assess your understanding.  \n\n- **Key Concepts**  \n  - **Hands-on Exercises**: Hands-on practice exercises to reinforce learning and apply knowledge.  \n  - **Practice Quizzes**: Practice quizzes to assess your understanding and identify areas for improvement.  \n\n- **Detailed Explanations**  \n  - **AWS**: AWS is the latest technology in the cloud computing landscape, offering diverse services and solutions that empower businesses to innovate and scale efficiently.  \n  - **Certification**: Available upon course completion and passing the certification exam.  \n\n- **Examples**  \n  - ```python\n    def example_function():\n        print(\"Hello, this is an example function.\")\n    example_function()\n    ```  \n\n- **Important Notes or Warnings**  \n  - The course includes hands-on exercises and practice questions to ensure practical application of knowledge.",
+        "code_snippets": []
+    },
+    {
+        "title": "Python Course for Beginners Online FREE - AskPython",
+        "url": "https://www.askpython.com/python-course-for-beginners",
+        "topics": [
+            "- Python Course Installing Python and PyCharm IDE  \n- Python Course Keywords  \n- Python Course Identifiers  \n- Python Course Variables  \n- Python Course Comments"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "- **Definition**  \n  - **Python**: A high-level, interpreted programming language known for its readability and dynamic typing.  \n\n- **Key Concepts**  \n  - **Identifiers**: Names used to denote variables, functions, or classes.  \n  - **Variables**: Assigning values to data in a program.  \n  - **Comments**: Lines of text that are not executed.  \n  - **Docstrings**: Descriptions of functions or classes.  \n  - **Statements**: Commands that perform actions.  \n  - **Indentation**: The spaces used to indicate the structure of code.  \n\n- **Detailed Explanations**  \n  - **Keywords**: Specific terms used in Python syntax.  \n  - **Variables**: Assigning values to data.  \n  - **Comments**: Lines of text that are not executed.  \n  - **Docstrings**: Descriptions of functions or classes.  \n  - **Statements**: Commands that perform actions.  \n  - **Indentation**: The spaces used to indicate the structure of code.  \n\n- **Examples**  \n  - ```python\n    print(\"Hello, World!\")\n    ```  \n    Example: Printing a message.  \n\n- **Important Notes or Warnings**  \n  - **Documentation**: Python has comprehensive documentation.  \n  - **Community**: Python has a large and supportive community.",
+        "code_snippets": []
+    },
+    {
+        "title": "Python for Beginners: Learn Programming with JetBrains Academy",
+        "url": "https://academy.jetbrains.com/course/16630-introduction-to-python",
+        "topics": [
+            "- Introduction to Python  \n- Python Libraries - NumPy  \n- Python Libraries - Pandas"
+        ],
+        "level": "Intermediate",
+        "cleaned_text": "- **Definitions**  \n  - **Python**: A high-level, interpreted programming language.  \n  - **IDE**: Integrated Development Environment (Integrated Development Environment), a software application that provides a complete environment for writing, testing, and running programs.  \n  - **Module**: A Python file that contains code to be executed as a program.  \n  - **Function**: A block of code that performs a specific task.  \n  - **Variable**: A named storage location for data.  \n  - **List**: A collection of items that can be modified and accessed.  \n  - **Tuple**: A collection of items that can be modified and accessed.  \n  - **Dictionary**: A collection of key-value pairs.  \n  - **String**: A sequence of characters.  \n  - **Boolean**: A logical value (True or False).  \n  - **Arithmetic operators**: Operators for performing mathematical operations.  \n  - **Assignments**: Statements that assign values to variables.  \n  - **Boolean operators**: Logical operators that evaluate to True or False.  \n  - **Comparison operators**: Operators that compare values.  \n  - **Concatenation**: Combining strings.  \n  - **String multiplication**: Multiplying a string by an integer.  \n  - **String indexing**: Accessing characters in a string.  \n  - **String negative indexing**: Accessing characters from the end of the string.  \n  - **Slicing**: Subsetting a string.  \n  - **in operator**: Checking if a value exists in a list.  \n  - **String length**: The number of characters in a string.  \n  - **Character escaping**: Using backslashes to represent special characters.  \n  - **Basic string methods**: Methods for string manipulation.  \n  - **String formatting**: Formatting numbers and strings.  \n  - **Lists**: As discussed.  \n  - **Tuples**: As discussed.  \n  - **Join**: A method to concatenate strings.  \n  - **Dictionaries**: As discussed.  \n  - **in keyword**: As discussed.  \n  - **Boolean operators**: As discussed.  \n  - **if statement**: A condition that executes when a condition is met.  \n  - **else and elif statements**: Conditional statements.  \n  - **Single-line if-else**: A simple conditional.  \n  - **for loop**: Iterating over a sequence.  \n  - **nested loops**: Multiple loops within a loop.  \n  -",
+        "code_snippets": []
+    },
+    {
+        "title": "5500 Courses, 45M Learners, 10M Graduates | Terms of Use | Alison",
+        "url": "https://alison.com/course/java-for-beginners",
+        "topics": [
+            "data collection",
+            "data protection",
+            "course information"
+        ],
+        "level": "beginner",
+        "cleaned_text": "\n\n### Definition  \n- **Definition**:  \n  - **Cookies**: Small data files stored on a user's device to track browsing behavior and personalize the user experience.  \n  - **Session Cookies**: Cookies that maintain user session status to allow seamless login and transaction processes.  \n  - **Functional and Session Cookies**: Cookies used to tailor the user experience, securely automate user login, and enable purchase transactions.  \n  - **Web Beacons**: Tools\n\n- **Definition**:  \n  - PII (Personal Information) refers to data that can be identified from a person’s data.  \n  - Profile and Resum data are personal information.  \n  - Anonymization ensures data is irreversibly removed from a learner’s record.  \n  - User account self-service tools allow users to access data without direct interaction.  \n\n- **Key Concept**:  \n  - **Anonymization**: Data is irreversibly anonymized to protect privacy.  \n  - **Data Sharing**: The company ensures data is shared with third parties only if justified.  \n  - **Data Protection Rights**: Users can object to processing or request corrections.  \n\n- **Explanation**:  \n  - **Definition**: Clar\n\n",
+        "code_snippets": [
+            "en"
+        ]
+    },
+    {
+        "title": "Java for Beginners: Learn Programming with JetBrains Academy",
+        "url": "https://academy.jetbrains.com/course/18905-java-for-beginners",
+        "topics": [
+            "variables",
+            "loops",
+            "objects"
+        ],
+        "level": "beginner",
+        "cleaned_text": "- **Definition**: Java for beginners is a structured online course designed for students to learn programming fundamentals, complementing regular coding education and not replacing it.  \n- **Key Concept**: Core programming concepts include variables, operators, conditionals, loops, objects, methods, string methods, arrays, and IDE setup.  \n- **Explanation**: Java focuses on syntax and logic, emphasizing practical coding skills. Variables store data, operators perform operations, conditionals handle decision-making, loops execute repetitive tasks, and objects represent real-world entities. Examples include using variables to store user input and loops to generate sequences.  \n- **Example**: To set up the JetBrains Toolbox App, users can launch it from the IDE's recent projects, select \"Allow\" to skip setup, and use the app to manage coding environments.",
+        "code_snippets": []
+    },
+    {
+        "title": "Java Tutorial",
+        "url": "https://www.w3schools.com/java/",
+        "topics": [],
+        "level": "beginner",
+        "cleaned_text": "- ### Definition  \nJava is a high-level programming language developed by Oracle, used for creating mobile apps, web apps, desktop apps, games, and more. It is open-source and cross-platform compatible, with a large community supporting it.  \n\n- ### Key Concept  \nJava emphasizes cross-platform development, security, and ease of learning. It’s ideal for building enterprise applications and web services due to its robust features and community support.  \n\n- ### Explanation  \nJava’s syntax is case-sensitive, with class names starting with uppercase letters. A main() method is required for execution, and the syntax\n\n- ### Definition  \n  - Java includes `System`, `out`, and `println()` methods for printing values or text to the screen. `println()` adds a new line, while `print()` does not.  \n\n- ### Key Concept  \n  - `println()` prints text or values with a new line. `print()` adds a space at the end.  \n\n- ### Explanation  \n  - `println()` adds a new line by default, making it easier to read. `print()` omits this newline.  \n  - `System.out.println()` outputs a new line by default, while `System.out.print()` adds a space.  \n\n- ### Example  \n  ```java\n  System.out.println(\"Hello World!\");\n  System.out.println(\"I am learning Java.\");\n  System.out.println(\"It is awesome!\");\n  ```  \n\n- ### Exercise  \n  Which method is often used to print text in Java?  \n  - **Answer**: `println()`  \n\n- ### Java Output Numbers  \n  ```java\n  System.out.println(3);\n  System.out.println(358);\n  System.out.println(50000);\n  ```  \n\n- ### Output of Code",
+        "code_snippets": [
+            "public class Main {\n  public static void main(String[] args) {\n    System.out.println(\"Hello World\");\n  }\n}"
+        ]
+    },
+    {
+        "title": "Java Tutorial for Beginners: Learn Core Java Programming",
+        "url": "https://www.guru99.com/java-tutorial.html",
+        "topics": [
+            "OOPs",
+            "Memory Management",
+            "Java Advance Stuff"
+        ],
+        "level": "beginner",
+        "cleaned_text": "\n\n- **Definition**: Java is a versatile programming language developed by James Gosling at Sun Microsystems. It is known for its object-oriented programming (OOP) features, platform independence, and use across various domains like mobile apps, web apps, and enterprise solutions.  \n\n- **Key Concept**: Java emphasizes object-oriented programming, platform independence, and built-in tools for development and execution.  \n\n- **Explanation**: Java allows developers to write code once and run it on nearly any platform. Its platform-independent nature enables applications to function seamlessly across different systems.  \n\n- **Example**: ```java public class Demo { public static void main(String args[]){ System.out.println(\"Hello, World\");\n\n- **Definition**:  \n  Java",
+        "code_snippets": [
+            "RELATED ARTICLES\n\n\n\n                How to Download & Install Java JDK 8 in Windows            \n\n\n\n                Java Date and Time            \n\n\n\n                11 BEST Java IDE (2025)            \n\n\n\n                Synchronization in Java"
+        ]
+    },
+    {
+        "title": "Java Tutorial for Beginners - BeginnersBook",
+        "url": "https://beginnersbook.com/java-tutorial-for-beginners-with-examples/",
+        "topics": [
+            "Java Programming Basics",
+            "JDK",
+            "Java Programming Features"
+        ],
+        "level": "beginner",
+        "cleaned_text": "- **Definition**: Java is a high-level, object-oriented programming language developed by Oracle. It is platform-independent, easy to learn, and supports object-oriented programming (OOPs) concepts.  \n- **Key Concept**:  \n  - **Object-Oriented Programming (OOPs)**: Programs are organized as collections of objects, each representing an instance of a class.  \n  - **Multithreading**: Java supports concurrent execution of multiple threads for CPU optimization.  \n- **Explanation**:  \n  Java uses the **JVM** (Java Virtual Machine) to execute bytecode. The **compiler (javac)** converts source code to bytecode, which can run on any platform. The **JDK** includes tools like JRE and compilers for compiling Java programs.  \n- **Example**:  \n  ```java\n  public class JavaExample {  \n      public static void main(String[] args) {  \n          System.out.println(\"Hello World\");  \n      }  \n  }  \n  ```  \n- **Java Terminology**:  \n  - **JVM**: The runtime environment that executes Java bytecode.  \n  - **Bytecode**: Machine-readable code",
+        "code_snippets": [
+            "public class JavaExample {\n  public static void main(String[] args){\n    System.out.println(\"Hello World\");\n  }\n}"
+        ]
+    },
+    {
+        "title": "Java for Absolute Beginners - Full Course",
+        "url": "https://www.freecodecamp.org/news/java-for-absolute-beginners-full-course/",
+        "topics": [
+            "variables",
+            "loops",
+            "objects"
+        ],
+        "level": "beginner",
+        "cleaned_text": "- **Definition**: This is a complete Java course designed for absolute beginners, requiring no prior programming experience.  \n- **Key Concept**: The course covers fundamental Java concepts such as variables, data types, operators, input/output, conditionals, loops, and object-oriented programming principles.  \n- **Explanation**: Each concept is explained in simple terms to ensure clarity. For example, variables and data types define how data is stored and processed, while loops teach how to structure code for repeated tasks.  \n- **Example**: You can watch the full video course on the freeCodeCamp.org YouTube channel (4-hour watch).",
+        "code_snippets": []
+    },
+    {
+        "title": "Java Tutorial: Learn Java Programming | Codecademy",
+        "url": "https://www.codecademy.com/learn/learn-java",
+        "topics": [
+            "projects",
+            "certificates",
+            "skills"
+        ],
+        "level": "intermediate",
+        "cleaned_text": "- **Definition**: Learn Java by developing core programming concepts, object-oriented logic, and building real-world projects.  \n- **Key Concept**: Focus on mastering Java fundamentals, practicing coding, and creating projects to develop applications and solve problems.  \n- **Explanation**: Java is an object-oriented programming language that enables developers to build complex systems, apps, and mobile applications. Understanding object-oriented concepts and practicing coding through projects enhances problem-solving skills.  \n- **Example**:  \n  - **Planting a Tree**: Practice writing a Java program to create a class, define a main method, and print statements.  \n  - **Java Variables: Mad Libs**: Generate stories using variables and arithmetic operations.  \n  - **Math Magic**: Build fluency with arithmetic operations to solve real-world tasks.",
+        "code_snippets": [
+            "String"
+        ]
+    }
+]

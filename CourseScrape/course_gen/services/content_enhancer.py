@@ -6,7 +6,7 @@ from course_gen.core.constants import SPECIAL_TOKENS
 
 class AIContentEnhancer:
     """Advanced AI content generation using GPT-2 with enhancements and improved error handling"""
-    def __init__(self, model_name: str = "gpt2-large", cache_dir: str = "model_cache"):
+    def __init__(self, model_name: str = "gpt2-large", cache_dir: str = "enhancer_model_cache"):
         """Initialize AI Content Enhancer
 
         Args:
@@ -26,19 +26,18 @@ class AIContentEnhancer:
 
             # Import here to allow graceful fallback if imports fail
             try:
-                from transformers import GPT2TokenizerFast, GPT2LMHeadModel, GPT2Config
-                self.tokenizer = GPT2TokenizerFast.from_pretrained(model_name, cache_dir=cache_dir)
+                self.tokenizer = lazy.transformers.GPT2TokenizerFast.from_pretrained(model_name, cache_dir=cache_dir)        
 
                 # Attempt to load model with optimizations
                 try:
-                    config = GPT2Config.from_pretrained(model_name, cache_dir=cache_dir)
-                    self.model = GPT2LMHeadModel.from_pretrained(
+                    config = lazy.transformers.GPT2Config.from_pretrained(model_name, cache_dir=cache_dir)
+                    self.model = lazy.transformers.GPT2LMHeadModel.from_pretrained(
                         model_name,
                         config=config,
                         cache_dir=cache_dir
                     )
                 except:
-                    self.model = GPT2LMHeadModel.from_pretrained(model_name, cache_dir=cache_dir)
+                    self.model = lazy.transformers.GPT2LMHeadModel.from_pretrained(model_name, cache_dir=cache_dir)
 
                 # Use GPU if available
                 try:

@@ -4,7 +4,7 @@ from course_gen.core.globals import (
 
 from .course_generator import CourseGenerator
 from .database_manager import DatabaseManager
-from .knowledge_scraper import StandardScraper, PlaywrightScraper, URLManager, ContentCleaner, ContentExtractor, BaseDetector, BaseScraper
+from .knowledge_scraper import PlaywrightWebScraper, URLManager
 
 
 class CourseBuilderInterface:
@@ -17,9 +17,6 @@ class CourseBuilderInterface:
     - Markdown export
     """
     url_manager = URLManager(scraped_urls_file="scraped_urls.json", bad_urls_file="bad_urls.json")
-    content_cleaner = ContentCleaner()
-    extractor = ContentExtractor(content_cleaner)
-    detector = BaseDetector()
     
     def __init__(self, db_manager=None):
         """
@@ -29,18 +26,7 @@ class CourseBuilderInterface:
             db_manager: Database manager instance (optional)
         """
         self.generator = CourseGenerator()
-        self.scraper_async = PlaywrightScraper(
-            url_manager=self.url_manager,
-            content_cleaner=self.content_cleaner,
-            extractor=self.extractor,
-            detector=self.detector
-        )
-        self.scraper_sync = StandardScraper(
-            url_manager=self.url_manager,
-            content_cleaner=self.content_cleaner,
-            extractor=self.extractor,
-            detector=self.detector
-        )
+        self.scraper_async = PlaywrightScraper()
         self.db_manager = DatabaseManager()
         self._current_page = 0  # For pagination
         self._search_results = []  # Store temporary search results
@@ -119,7 +105,7 @@ class CourseBuilderInterface:
         
         try:
             # Determine which scraper to use
-            if isinstance(self.scraper_async, PlaywrightScraper):
+            if isinstance(self.scraper_async, PlaywrightWebScraper):
                 # Use async method directly
                 self._search_results = await self.scraper_async.search_and_scrape_async(query, max_results)
             else:

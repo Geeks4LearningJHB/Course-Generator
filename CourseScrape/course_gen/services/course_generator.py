@@ -12,7 +12,7 @@ from course_gen.core.globals import (
 from .content_enhancer import AIContentEnhancer
 from .database_manager import DatabaseManager
 from course_gen.utils.file_manager import FileManager
-from course_gen.services.knowledge_scraper import PlaywrightScraper, URLManager, ContentCleaner, ContentExtractor, BaseDetector, BaseScraper
+from course_gen.services.knowledge_scraper import PlaywrightWebScraper, URLManager
 from course_gen.core import (COURSE_TEMPLATE, LEVEL_MAP)
 
 class CourseGenerator:
@@ -22,22 +22,13 @@ class CourseGenerator:
         self.knowledge = FileManager.load_knowledge(self.knowledge_file)
         self.ai_enhancer = AIContentEnhancer()
         self.db_manager = DatabaseManager()
+        self.url_manager = URLManager(scraped_urls_file="scraped_urls.json", bad_urls_file="bad_urls.json")
+        self.scraper = PlaywrightWebScraper()
+        
         # Course difficulty levels mapping with progressive learning paths
         self.level_map = LEVEL_MAP
         # Load course templates
         self.templates = COURSE_TEMPLATE
-        
-        # Set up scraper
-        self.url_manager = URLManager(scraped_urls_file="scraped_urls.json", bad_urls_file="bad_urls.json")
-        self.content_cleaner = ContentCleaner()
-        self.extractor = ContentExtractor(self.content_cleaner)
-        self.detector = BaseDetector()
-        self.scraper = PlaywrightScraper(
-            url_manager=self.url_manager,
-            content_cleaner=self.content_cleaner,
-            extractor=self.extractor,
-            detector=self.detector
-        )
         
         self._module_num_lock = Lock()
         self._current_module_num = 0
@@ -82,11 +73,11 @@ class CourseGenerator:
                 # Attempt to scrape content for the topic - only if scraper is available
                 if hasattr(self, 'scraper') and self.scraper:
                     # Try two search queries for better results
-                    scraped_results = async_to_sync(self.scraper.search_and_scrape_async)(topic, level, 5)
+                    scraped_results = self.scraper.search_and_scrape_sync(topic, level, 5)
                     
                     # If first search didn't yield enough results, try another query
                     if len(scraped_results) < 3:
-                        additional_results = async_to_sync(self.scraper.search_and_scrape_async)(topic, level, 5)
+                        additional_results = self.scraper.search_and_scrape_sync(topic, level, 5)
                         scraped_results.extend(additional_results)
                     
                     if scraped_results:
@@ -419,7 +410,8 @@ class CourseGenerator:
                         f"in a {level} course on {topic}"
                     )
                     module_title = self.ai_enhancer.enhance_content(module_topic_prompt, 'title')
-                    module_title = f"Module {i}: {module_title.strip('\"')}"
+                    module_title = module_title.strip('"')
+                    module_title = f"Module {i}: {module_title}"
                 
                 # Create synthetic module content
                 module_content = [{
@@ -641,7 +633,7 @@ class CourseGenerator:
                 # Generate a title with AI
                 title_prompt = f"Generate a title for module {module_num} of a course on {topic}"
                 ai_title = self.ai_enhancer.enhance_content(title_prompt, 'title')
-                return f"Module {module_num}: {ai_title.strip('\"')}"
+                # return f"Module {module_num}: {ai_title.strip('\"')}"
         except Exception as e:
             logger.error(f"Error generating module title: {str(e)}")
             return f"Module {module_num}: {topic.title()} Concepts"

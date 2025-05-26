@@ -1,17 +1,17 @@
 from course_gen.core.globals import (
-    requests, logger, urljoin, urlparse, BeautifulSoup, time, json, logging,
-    ABC, re, random, copy, random, sys,
-    Dict, List, Optional, Set, Tuple, os, DDGS, asyncio
+    logger, urljoin, urlparse, BeautifulSoup, time, logging, random, requests,
+    random, re, unicodedata, sys, Dict, List, Set, Tuple, Optional, os, DDGS, 
+    asyncio, hashlib, extract
 )
 
-from playwright.async_api import async_playwright
-from course_gen.core import ScrapedContent
+from playwright.async_api import async_playwright, Browser, BrowserContext
 from course_gen.core import (
-    USER_AGENTS, BASE_HEADERS, CODE_SELECTORS, ADVANCED_INDICATORS, 
-    BASIC_INDICATORS, ELEMENTS_TO_REMOVE, NON_CONTENT_CASES, PAYWALL_PATTERNS, 
-    CONSENT_SELECTORS, MODAL_SELECTORS, COMMON_CONTENT_SELECTORS
+    USER_AGENTS, BASE_HEADERS, SKIP_PATTERNS, AVOID_DOMAINS, TRUSTED_DOMAINS, 
+    CONSENT_SELECTORS, PAGINATION_SELECTORS, CODE_SELECTORS, NON_EDUCATIONAL_TEXT,
+    PAYWALL_PATTERNS, BASIC_INDICATORS, ADVANCED_INDICATORS, PROMO_PATTERNS, BRAND_NAMES
 )
 from course_gen.utils.file_manager import FileManager
+from course_gen.services.knowledge_enhancer import KnowledgeEnhancer
 
 # Configure logging
 logger = logging.getLogger("knowledge_scraper")
@@ -25,28 +25,6 @@ if sys.platform == "win32":
     os.environ['PLAYWRIGHT_DISABLE_ISOLATED_HEAP'] = '1'
     os.environ['PLAYWRIGHT_NO_PROXY'] = '1'
 
-
-# Custom exceptions for better error handling
-class ScraperException(Exception):
-    """Base exception class for all scraper errors"""
-    pass
-
-class NetworkError(ScraperException):
-    """Raised for network connectivity issues"""
-    pass
-
-class PaywallError(ScraperException):
-    """Raised when a paywall is detected"""
-    pass
-
-class LoginRequiredError(ScraperException):
-    """Raised when login is required to access content"""
-    pass
-
-class ContentExtractionError(ScraperException):
-    """Raised when content cannot be extracted"""
-    pass
-
 # Global headers function
 def get_random_headers():
         """Return headers with a random user agent"""
@@ -58,57 +36,53 @@ def get_random_headers():
 
 class URLManager:
     """Manages URL processing, storage and retrieval"""
+    @property
+    def bad_urls(self) -> Set[str]:
+        return self.get_bad_urls()
+
+    @property
+    def scraped_urls(self) -> Set[str]:
+        return self.get_scraped_urls()
+    
     def __init__(self, scraped_urls_file: str = "scraped_urls.json", 
                  bad_urls_file: str = "bad_urls.json"):
         self.scraped_urls_file = scraped_urls_file
         self.bad_urls_file = bad_urls_file
-        self.scraped_urls = self._load_urls_file(self.scraped_urls_file)
-        self.bad_urls = self._load_urls_file(self.bad_urls_file)
-        
+        self._scraped_urls_cache = None
+        self._bad_urls_cache = None
         # Cache URL results to avoid redundant processing
         self.url_results_cache = {}
-        
         # Configure trusted domains and their delay configurations
-        self.trusted_domains = {
-            "w3schools.com": (1, 2),
-            "geeksforgeeks.org": (2, 3),
-            "realpython.com": (2, 4),
-            "developer.mozilla.org": (1, 2),
-            "docs.python.org": (1, 2),
-            "github.com": (2, 3),
-            "stackoverflow.com": (2, 3),
-            "tutorialspoint.com": (1, 2),
-            "codecademy.com": (1, 2), 
-            "tutorialspoint.com": (1, 2),
-            "simplilearn.com": (1, 2),
-            "freecodecamp.org": (1, 2),
-            "javatpoint.com": (1, 2)
-        }
-        
+        self.trusted_domains = TRUSTED_DOMAINS
+        # Domains to avoid completely
+        self.avoid_domains = AVOID_DOMAINS
+        # Patterns in urls to avoid
+        self.skip_patterns = SKIP_PATTERNS
+        # Level indicators
+        self.advanced_indicators = ADVANCED_INDICATORS
+        self.basic_indicators = BASIC_INDICATORS
         # Default delay for other sites
         self.default_delay = (5, 10)
         
-        # Domains to avoid completely
-        self.avoid_domains = [
-            "pinterest", "facebook.com", "twitter.com", "instagram.com",
-            "youtube.com", "medium.com", "quora.com", "linkedin.com",
-            "reddit.com", "courses.com", "udemy.com", "coursera.org"
-        ]
-        
-        self.skip_patterns = [
-            "/watch", "/signin", "/login", "/video"
-        ]
     
-    def _load_urls_file(self, file_path: str) -> Set[str]:
-        """Load URLs from JSON file using the generic loader."""
-        try:
-            data = FileManager.load_json(file_path)
-            return set(data) if isinstance(data, list) else set()
-        except Exception:
-            logger.warning(f"Falling back to empty set for {file_path}")
-            return set()
+    def _load_urls_file(self, file_path: str, cache_attr: str) -> Set[str]:
+        """Load URLs from JSON file once and cache."""
+        if getattr(self, cache_attr) is None:
+            try:
+                data = FileManager.load_json(file_path)
+                setattr(self, cache_attr, set(data) if isinstance(data, list) else set())
+            except Exception:
+                logger.warning(f"Falling back to empty set for {file_path}")
+                setattr(self, cache_attr, set())
+        return getattr(self, cache_attr)
+
+    def get_scraped_urls(self):
+        return self._load_urls_file(self.scraped_urls_file, "_scraped_urls_cache")
+
+    def get_bad_urls(self):
+        return self._load_urls_file(self.bad_urls_file, "_bad_urls_cache")
     
-    def extract_domain(self, url: str) -> str:
+    def _extract_domain(self, url: str) -> str:
         """Extract domain from URL safely"""
         try:
             parsed = urlparse(url)
@@ -117,38 +91,38 @@ class URLManager:
             logger.error(f"Error parsing URL {url}: {e}")
             return ""
     
-    def is_trusted_domain(self, url: str) -> bool:
+    def _is_trusted_domain(self, url: str) -> bool:
         """Check if URL belongs to a trusted domain"""
-        domain = self.extract_domain(url)
+        domain = self._extract_domain(url)
         return any(trusted in domain for trusted in self.trusted_domains.keys())
     
-    def should_avoid_domain(self, url: str) -> bool:
+    def _should_avoid_domain(self, url: str) -> bool:
         """Check if URL belongs to a domain that should be avoided"""
-        domain = self.extract_domain(url)
-        return any(avoid in domain for avoid in self.avoid_domains)\
+        domain = self._extract_domain(url)
+        return any(avoid in domain for avoid in self.avoid_domains)
             
-    def should_avoid_pattern(self, url: str) -> bool:
+    def _should_avoid_pattern(self, url: str) -> bool:
         if any(pattern in url for pattern in self.skip_patterns):
             return False
     
-    def get_delay_for_domain(self, url: str) -> Tuple[float, float]:
+    def _get_delay_for_domain(self, url: str) -> Tuple[float, float]:
         """Get appropriate delay range for a domain"""
-        domain = self.extract_domain(url)
+        domain = self._extract_domain(url)
         for trusted, delay in self.trusted_domains.items():
             if trusted in domain:
                 return delay
         return self.default_delay
     
-    def should_skip(self, url: str) -> Tuple[bool, str]:
+    def _should_skip(self, url: str) -> Tuple[bool, str]:
         """Check if URL should be skipped and return reason if so"""
-        domain = self.extract_domain(url)
+        domain = self._extract_domain(url)
         
         # Skip if domain should be avoided
-        if self.should_avoid_domain(url):
+        if self._should_avoid_domain(url):
             return True, "Avoided domain"
         
         # Skip if URL or its domain is already in bad_urls
-        if url in self.bad_urls or domain in self.bad_urls:
+        if (url in self.bad_urls or domain in self.bad_urls) and not self._is_trusted_domain(url):
             return True, "Bad URL"
         
         # Skip if already scraped
@@ -157,7 +131,7 @@ class URLManager:
             
         return False, ""
     
-    def mark_as_scraped(self, url: str) -> None:
+    def _mark_as_scraped(self, url: str) -> None:
         """Mark URL as successfully scraped"""
         try:
             self.scraped_urls.add(url)
@@ -171,10 +145,10 @@ class URLManager:
             logger.error(f"Scraped urls save failed: {e}")
             raise
     
-    def mark_as_bad(self, url: str) -> None:
+    def _mark_as_bad(self, url: str) -> None:
         """Mark URL or domain as bad"""
         try:
-            domain = self.extract_domain(url)
+            domain = self._extract_domain(url)
             self.bad_urls.add(domain)
             
             if not isinstance(self.bad_urls_file, (str, os.PathLike)):
@@ -186,170 +160,7 @@ class URLManager:
             logger.error(f"Bad urls save failed: {e}")
             raise
 
-class ContentCleaner:
-    """Handles cleaning and normalization of scraped content"""
-    
-    @staticmethod
-    def clean_text(text: str) -> str:
-        """Clean and normalize text content"""
-        if not text:
-            return ""
-            
-        # Remove extra whitespace
-        text = re.sub(r'\s+', ' ', text).strip()
-        
-        # Remove control characters
-        text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)
-        
-        # Remove citations like [1], [2], etc.
-        text = re.sub(r'\[\d+\]', '', text)
-        
-        # Remove common ads/cookie notice text
-        remove_patterns = [
-            r'accept all cookies',
-            r'we use cookies',
-            r'cookie policy',
-            r'privacy policy',
-            r'terms of service',
-            r'all rights reserved',
-            r'copyright \d{4}',
-        ]
-        
-        for pattern in remove_patterns:
-            text = re.sub(pattern, '', text, flags=re.IGNORECASE)
-        
-        return text.strip()
-
-    @staticmethod
-    def clean_code(code: str) -> str:
-        """Clean code examples"""
-        if not code:
-            return ""
-            
-        # Remove shell prompts ($ or > at the beginning of lines)
-        code = re.sub(r'^\s*[$>]\s*', '', code, flags=re.MULTILINE)
-        
-        # Remove extra line breaks and normalize whitespace
-        code = re.sub(r'\s+\n', '\n', code)
-        code = re.sub(r'\n\s+\n', '\n\n', code)
-        
-        return code.strip()
-
-class ContentExtractor:
-    """Handles extraction of content from HTML"""
-    
-    def __init__(self, cleaner: ContentCleaner):
-        self.cleaner = cleaner
-        self.code_selectors = CODE_SELECTORS
-        self.advanced_indicators = ADVANCED_INDICATORS
-        self.basic_indicators = BASIC_INDICATORS
-        self.elements_to_remove = ELEMENTS_TO_REMOVE
-        self.non_content_cases = NON_CONTENT_CASES
-    
-    def get_title(self, soup: BeautifulSoup) -> str:
-        """Extract page title"""
-        try:
-            if soup.title:
-                title = soup.title.string
-            else:
-                # Try to find h1
-                h1 = soup.find('h1')
-                title = h1.get_text() if h1 else "Untitled"
-                
-            return self.cleaner.clean_text(title)
-        except Exception as e:
-            logger.error(f"Error extracting title: {e}")
-            return "Untitled"
-
-    def extract_main_content(self, soup: BeautifulSoup) -> Optional[BeautifulSoup]:
-        """Extract clean main content without code/navigation/ads"""
-        try:
-            # First clean the soup of non-content elements
-            clean_soup = self._clean_content(soup)
-            
-            # Try all common content containers with minimum text check
-            containers = []
-            for selector in ["main", "article", "#content", ".content", 
-                            "#main", ".main", "div.content", "div.main",
-                            "section", ".post", ".article", ".entry"]:
-                elements = clean_soup.select(selector)
-                for el in elements:
-                    if len(el.get_text(strip=True)) > 120:  # Minimum text length
-                        containers.append(el)
-            
-            if containers:
-                # Combine all matching containers
-                combined = BeautifulSoup("", "html.parser")
-                for container in containers:
-                    combined.append(container)
-                return combined
-            
-            # Fallback: find paragraphs with substantial text
-            paragraphs = []
-            for p in clean_soup.find_all("p"):
-                text = p.get_text(strip=True)
-                if len(text) > 40:  # Minimum paragraph length
-                    paragraphs.append(p)
-            
-            if len(paragraphs) >= 3:  # Require at least 3 substantial paragraphs
-                combined = BeautifulSoup("", "html.parser")
-                for p in paragraphs:
-                    combined.append(p)
-                return combined
-                
-            return None
-        except Exception as e:
-            logger.error(f"Content extraction error: {e}")
-            return None
-
-    def extract_code_examples(self, soup: BeautifulSoup) -> List[str]:
-        """Extract code examples from a page"""
-        code_examples = []
-        
-        try:
-            # Look for code blocks in pre and code tags 
-            for selector in self.code_selectors:
-                for code_block in soup.select(selector):
-                    code = self.cleaner.clean_code(code_block.get_text(strip=True))
-                    if code:
-                        code_examples.append(code)
-                        
-        except Exception as e:
-            logger.error(f"Error extracting code examples: {e}")
-            
-        return code_examples
-    
-    def extract_content_with_selectors(self, soup: BeautifulSoup, 
-                                   content_selectors: List[str],
-                                   code_selectors: List[str]) -> Dict:
-        """Source-specific content extraction using configured selectors"""
-        content = {"text": "", "code": []}
-        
-        try:
-            # Clean the soup first
-            clean_soup = self._clean_content(soup)
-            
-            # Try all content selectors
-            for selector in content_selectors:
-                elements = clean_soup.select(selector)
-                for element in elements:
-                    text = self.cleaner.clean_text(element.get_text())
-                    if text and len(text) > 120:  # Minimum content threshold
-                        content["text"] += f"\n{text}"
-            
-            # Try all code selectors (from original soup)
-            for selector in self.code_selectors:
-                code_blocks = soup.select(selector)
-                for block in code_blocks:
-                    code = self.cleaner.clean_code(block.get_text())
-                    if code:
-                        content["code"].append(code)
-        except Exception as e:
-            logger.error(f"Error extracting content with selectors: {e}")
-        
-        return content if content["text"] else None
-
-    def find_links(self, soup: BeautifulSoup, base_url: str, avoid_patterns: List[str]) -> List[str]:
+    def _find_links(self, soup: BeautifulSoup, base_url: str, avoid_patterns: List[str]) -> List[str]:
         """Find relevant links on a page"""
         links = set()
         try:
@@ -366,7 +177,7 @@ class ContentExtractor:
             
         return list(links)
 
-    def determine_level(self, content: str, url: str) -> str:
+    def _determine_level(self, content: str, url: str) -> str:
         """Determine content difficulty level based on content and URL"""
         try:
             # Check URL for level indicators
@@ -399,717 +210,479 @@ class ContentExtractor:
         except Exception as e:
             logger.error(f"Error determining level: {e}")
             return "any level"
-        
-    def _clean_content(self, soup: BeautifulSoup) -> BeautifulSoup:
-        """Remove non-content elements from the soup"""
-        # Make a copy to avoid modifying the original
-        clean_soup = copy(soup)
-        
-        # Remove unwanted elements by tag name
-        for tag in self.elements_to_remove:
-            for element in clean_soup.find_all(tag):
-                element.decompose()
-        
-        # Remove elements with non-content classes/IDs
-        for class_name in self.non_content_cases:
-            # Match class or ID containing the pattern
-            for element in clean_soup.find_all(class_=re.compile(class_name, re.I)):
-                element.decompose()
-            for element in clean_soup.find_all(id=re.compile(class_name, re.I)):
-                element.decompose()
-        
-        # Remove empty elements
-        for element in clean_soup.find_all():
-            if not element.get_text(strip=True) and not element.find_all():
-                element.decompose()
-        
-        return clean_soup
 
-class BaseDetector:
-    """Base class for detecting paywalls, logins, etc."""
-    
+class Detector:
+    """Standard detector using regular HTTP requests"""
     def __init__(self):
+        self.url_manager = URLManager()
         # Paywall detection patterns
         self.paywall_patterns = PAYWALL_PATTERNS
-
-class StandardDetector(BaseDetector):
-    """Standard detector using regular HTTP requests"""
-    
-    def __init__(self):
-        super().__init__()
+        self.promo_keywords = PROMO_PATTERNS
+        self.brand_names = BRAND_NAMES
         self.headers = get_random_headers()
     
+    # def _is_promotional_or_low_quality(self, text: str) -> bool:
+    #     lowered = text.lower()
+
+    #     promo_hits = sum(kw in lowered for kw in self.promo_keywords)
+    #     brand_hits = sum(lowered.count(brand) for brand in self.brand_names)
+
+    #     # Check if content is mostly links or too short
+    #     is_mostly_links = lowered.count("http") > 5 or lowered.count("click") > 3
+    #     is_repetitive = brand_hits > 5
+    #     too_short = len(text.split()) < 100
+
+    #     # If too many hits or too short but marketing-heavy
+    #     return promo_hits >= 5 or is_mostly_links or is_repetitive or (too_short and promo_hits >= 1)
+        
     def is_login_required(self, url: str) -> bool:
         """Check if a URL requires login"""
-        try:
-            response = requests.get(url, headers=self.headers, timeout=10, allow_redirects=True)
-            
-            # Check HTTP status code
-            if response.status_code in [401, 403, 402]:
-                return True
-            
-            # Check for login redirects
-            final_url = response.url.lower()
-            if "login" in final_url or "signin" in final_url or "account" in final_url:
-                return True
-            
-            # Check for login-related content
-            soup = BeautifulSoup(response.text, 'html.parser')
-            text = soup.get_text().lower()
-            
-            login_keywords = ["login", "sign in", "register", "create account"]
-            login_forms = soup.find_all("form", id=lambda x: x and any(keyword in x.lower() for keyword in login_keywords))
-            login_forms += soup.find_all("form", class_=lambda x: x and any(keyword in x.lower() for keyword in login_keywords))
-            
-            # Count login keyword appearances
-            login_count = sum(text.count(keyword) for keyword in login_keywords)
-            
-            # If multiple login indicators present, it's likely login-required
-            return len(login_forms) > 0 or login_count > 3
-            
-        except Exception as e:
-            logger.error(f"Error checking login requirement for {url}: {str(e)}")
-            return True  # Skip if error occurs
+        if self.url_manager._is_trusted_domain(url):
+            return False
+        else: 
+            try:
+                response = requests.get(url, headers=self.headers, timeout=10, allow_redirects=True)
+                
+                # Check HTTP status code
+                if response.status_code in [401, 403, 402]:
+                    return True
+                
+                # Check for login redirects
+                final_url = response.url.lower()
+                if "login" in final_url or "signin" in final_url or "account" in final_url:
+                    return True
+                
+                # Check for login-related content
+                soup = BeautifulSoup(response.text, 'html.parser')
+                text = soup.get_text().lower()
+                
+                login_keywords = ["login", "sign in", "register", "create account"]
+                login_forms = soup.find_all("form", id=lambda x: x and any(keyword in x.lower() for keyword in login_keywords))
+                login_forms += soup.find_all("form", class_=lambda x: x and any(keyword in x.lower() for keyword in login_keywords))
+                
+                # Count login keyword appearances
+                login_count = sum(text.count(keyword) for keyword in login_keywords)
+                
+                # If multiple login indicators present, it's likely login-required
+                return len(login_forms) > 0 or login_count > 3
+                
+            except Exception as e:
+                logger.error(f"Error checking login requirement for {url}: {str(e)}")
+                return True  # Skip if error occurs
 
     def is_paywall_present(self, url: str) -> bool:
         """Check if a URL has a paywall"""
-        try:
-            response = requests.get(url, headers=self.headers, timeout=10)
-            
-            # Check HTTP status
-            if response.status_code in [401, 402, 403]:
-                return True
+        if self.url_manager._is_trusted_domain(url):
+            return False
+        else:
+            try:
+                response = requests.get(url, headers=self.headers, timeout=10)
                 
-            # Check for paywall indicators in the page content
-            soup = BeautifulSoup(response.text, 'html.parser')
-            text = soup.get_text().lower()
-            
-            # Count paywall keyword appearances
-            paywall_count = sum(text.count(keyword) for keyword in self.paywall_patterns)
-            
-            # Check for paywall-related elements
-            paywall_elements = soup.find_all(["div", "section"], id=lambda x: x and "paywall" in x.lower())
-            paywall_elements += soup.find_all(["div", "section"], class_=lambda x: x and "paywall" in x.lower())
-            paywall_elements += soup.find_all(["div", "section"], id=lambda x: x and "subscribe" in x.lower())
-            paywall_elements += soup.find_all(["div", "section"], class_=lambda x: x and "subscribe" in x.lower())
-            
-            # If multiple paywall indicators present, it's likely a paywall
-            return len(paywall_elements) > 0 or paywall_count > 3
-            
-        except Exception as e:
-            logger.error(f"Error checking paywall for {url}: {str(e)}")
-            return True  # Skip if error occurs
+                # Check HTTP status
+                if response.status_code in [401, 402, 403]:
+                    return True
+                    
+                # Check for paywall indicators in the page content
+                soup = BeautifulSoup(response.text, 'html.parser')
+                text = soup.get_text().lower()
+                
+                # Count paywall keyword appearances
+                paywall_count = sum(text.count(keyword) for keyword in self.paywall_patterns)
+                
+                # Check for paywall-related elements
+                paywall_elements = soup.find_all(["div", "section"], id=lambda x: x and "paywall" in x.lower())
+                paywall_elements += soup.find_all(["div", "section"], class_=lambda x: x and "paywall" in x.lower())
+                paywall_elements += soup.find_all(["div", "section"], id=lambda x: x and "subscribe" in x.lower())
+                paywall_elements += soup.find_all(["div", "section"], class_=lambda x: x and "subscribe" in x.lower())
+                
+                # If multiple paywall indicators present, it's likely a paywall
+                return len(paywall_elements) > 0 or paywall_count > 3
+                
+            except Exception as e:
+                logger.error(f"Error checking paywall for {url}: {str(e)}")
+                return True  # Skip if error occurs
 
-class BaseScraper(ABC):
-    """Abstract base class for content scrapers"""
+class PlaywrightWebScraper:
+    """Web scraper using Playwright, DDGS, and Trafilatura"""
     
-    def __init__(self, url_manager: URLManager, content_cleaner: ContentCleaner, 
-                 extractor: ContentExtractor, detector: BaseDetector):
-        self.url_manager = url_manager
-        self.cleaner = content_cleaner
-        self.extractor = extractor
-        self.detector = detector
-        
-        self.headers = get_random_headers()
-        
-        self.code_selectors = CODE_SELECTORS
+    def __init__(self):
+        self.knowledge_enhancer = KnowledgeEnhancer()
+        self.url_manager = URLManager()
+        self.detector = Detector()
         self.consent_selectors = CONSENT_SELECTORS
-        self.modal_selectors = MODAL_SELECTORS
-        self.common_content_selectors = COMMON_CONTENT_SELECTORS
-        
-        # Sources configuration
-        self.sources = {}
-
-class StandardScraper(BaseScraper):
-    """Standard scraper using regular HTTP requests"""
-    
-    def __init__(self, url_manager: URLManager, content_cleaner: ContentCleaner, 
-                 extractor: ContentExtractor, detector: StandardDetector):
-        super().__init__(url_manager, content_cleaner, extractor, detector)
-        self.session = requests.Session()
-        self.session.headers.update(self.headers)
-        
-    def _scrape_page(self, url: str) -> Dict:
-        """Scrape content from a single page"""
-        try:
-            response = self.session.get(url, timeout=15)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.text, "html.parser")
-            
-            # Extract title
-            title = self.extractor.get_title(soup)
-            
-            # Extract main content
-            main_content = self.extractor.extract_main_content(soup)
-            if not main_content:
-                return None
-                
-            # Clean text content
-            text = self.cleaner.clean_text(main_content.get_text())
-            
-            # Extract code examples
-            code_examples = self.extractor.extract_code_examples(soup)
-            
-            return {
-                "title": title, 
-                "text": text, 
-                "code": code_examples
-            }
-            
-        except Exception as e:
-            logger.error(f"Error scraping {url}: {str(e)}")
-            return None
-
-    def scrape_configured_sources(self) -> List[Dict]:
-        """Scrape content from pre-configured sources"""
-        knowledge = []
-        
-        for source_name, config in self.sources.items():
-            for topic, topic_config in config.topics.items():
-                logger.info(f"Scraping {topic} from {source_name}")
-
-                try:
-                    base_url = urljoin(config.base_url, topic_config["url"])
-                    
-                    delay_range = self.url_manager.get_delay_for_domain(base_url)
-                    time.sleep(random.uniform(*delay_range))
-                    
-                    response = self.session.get(base_url, timeout=15)
-                    response.raise_for_status()
-                    soup = BeautifulSoup(response.text, "html.parser")
-
-                    # Extract content using source-specific selectors
-                    main_content = self.extractor.extract_content_with_selectors(
-                        soup, 
-                        config.content_selectors,
-                        config.code_selectors
-                    )
-                
-                    if main_content and main_content.get("text"):
-                        content = ScrapedContent(
-                            title=self.extractor.get_title(soup) or f"{topic.capitalize()} Tutorial",
-                            text=main_content["text"],
-                            code=main_content.get("code", []),
-                            url=base_url,
-                            topic=topic,
-                            level=self.extractor.determine_level(main_content["text"], base_url)
-                        )
-                        
-                        knowledge.append(content.to_dict())
-                        self.url_manager.mark_as_scraped(base_url)
-                    else:
-                        logger.warning(f"No main content found at {base_url}")
-
-                    # Find and process additional pages
-                    page_links = self.extractor.find_links(soup, base_url, config.avoid_urls)
-                    for link in page_links[:topic_config["depth"]]:
-                        try:
-                            time.sleep(random.uniform(*self.url_manager.get_delay_for_domain(link)))
-                            
-                            # Skip if already processed
-                            should_skip, reason = self.url_manager.should_skip(link)
-                            if should_skip:
-                                logger.info(f"Skipping {link}: {reason}")
-                                continue
-                                
-                            page_content = self._scrape_page(link, topic)
-                            if page_content:
-                                knowledge.append(page_content.to_dict())
-                                self.url_manager.mark_as_scraped(link)
-                        except Exception as e:
-                            logger.error(f"Error scraping {link}: {str(e)}")
-                            self.url_manager.mark_as_bad(link)
-
-                except Exception as e:
-                    logger.error(f"Error scraping {topic} from {source_name}: {str(e)}")
-
-        return knowledge
-
-class PlaywrightScraper(BaseScraper):
-    """Playwright-based scraper for JavaScript-heavy pages"""
-    
-    def __init__(self, url_manager: URLManager, content_cleaner: ContentCleaner, 
-                 extractor: ContentExtractor, detector: BaseDetector):
-        super().__init__(url_manager, content_cleaner, extractor, detector)
-        
+        self.pagination_selectors = PAGINATION_SELECTORS
+        self.code_selectors = CODE_SELECTORS
+        self.non_educational_text = NON_EDUCATIONAL_TEXT
+        self.visited_urls = set()  # Track visited URLs
+        self.current_domain = None  # Track current domain being scraped
         self.headers = get_random_headers()
-        
         self.last_search_time = 0
         self.search_delay = (3, 6)  # Random delay between 3-6 seconds
         self.max_retries = 3
         
-        self.visited_urls = set()  # Track visited URLs
-        self.current_domain = None  # Track current domain being scraped
+        self.browser: Optional[Browser] = None
+        self.context: Optional[BrowserContext] = None
+        self.visited_urls: Set[str] = set()
+        self.content_hashes: Set[str] = set()  # Detect duplicate content
+        self.semaphore = asyncio.Semaphore(3)  # Limit concurrent requests
         
-        self.pagination_selectors = [
-            "a:has-text('Next')", "a:has-text('Next ❯')", 
-            "a:has-text('Continue')", ".next a", 
-            ".pagination a:last-child", "#nextbtn"
+    async def __aenter__(self):
+        """Context manager for browser lifecycle"""
+        await self._ensure_browser()
+        return self
+        
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self._cleanup_browser()
+
+    async def _ensure_browser(self):
+        """Initialize browser if not already done"""
+        if not self.browser:
+            p = await async_playwright().start()
+            self.browser = await p.chromium.launch(
+                headless=True,
+                args=[
+                    "--no-sandbox",
+                    "--disable-blink-features=AutomationControlled",
+                    "--disable-web-security",
+                    "--disable-features=VizDisplayCompositor"
+                ]
+            )
+            self.context = await self.browser.new_context(
+                viewport={"width": 1280, "height": 800},
+            )
+
+    async def _cleanup_browser(self):
+        """Clean up browser resources"""
+        if self.context:
+            await self.context.close()
+        if self.browser:
+            await self.browser.close()
+    
+    async def search_and_scrape(self, query: str, thinking_mode, level: str = "any level", max_results: int = 10) -> List[Dict]:
+        """Optimized version with concurrent processing"""
+        results = await self._search(query, level, max_results=max_results)
+        
+        # Filter URLs upfront
+        valid_urls = []
+        for result in results[:max_results]:
+            url = result['href']
+            should_skip, reason = self.url_manager._should_skip(url)
+            if not should_skip and not self.detector.is_login_required(url) and not self.detector.is_paywall_present(url):
+                valid_urls.append((url, result))
+            else:
+                logger.info(f"Skipping {url}: {reason}")
+
+        # Process URLs concurrently with rate limiting
+        tasks = []
+        for url, result in valid_urls:
+            task = self._scrape_single_url(url, result, thinking_mode)
+            tasks.append(task)
+
+        # Execute with controlled concurrency
+        scraped_data = []
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        for result in results:
+            if isinstance(result, dict):  # Successful scraping
+                scraped_data.append(result)
+            elif isinstance(result, Exception):
+                logger.error(f"Scraping failed: {result}")
+
+        return scraped_data
+    
+    async def _search(self, query: str, level: str = "any level", max_results: int = 10) -> List[Dict]:
+        # Enforce rate limit
+        elapsed = time.time() - self.last_search_time
+        delay = random.uniform(*self.search_delay)
+        if elapsed < delay:
+            await asyncio.sleep(delay - elapsed)
+
+        self.headers = get_random_headers()  # Shuffle headers
+
+        try:
+            # Apply headers to DDGS request if needed
+            enhanced_query = f"{query} for {level} course OR lessons OR tutorial"
+            
+            results = DDGS().text(enhanced_query, max_results=max_results)
+            self.last_search_time = time.time()
+            
+            # Filter results using URLManager
+            filtered_results = []
+            for result in results:
+                url = result.get('href', '')
+                should_skip, reason = self.url_manager._should_skip(url)
+                if not should_skip:
+                    filtered_results.append(result)
+                else:
+                    logger.info(f"Filtered out {url}: {reason}")
+            
+            return filtered_results
+        
+        except Exception as e:
+            logger.error(f"search error: {str(e)}")
+            return []
+
+    async def _scrape_single_url(self, url: str, result: dict, thinking_mode) -> Optional[Dict]:
+        """Scrape a single URL with semaphore protection"""
+        async with self.semaphore:
+            # Apply domain-specific delay
+            delay_range = self.url_manager._get_delay_for_domain(url)
+            await asyncio.sleep(random.uniform(*delay_range))
+            
+            logger.info(f"Scraping: {url}")
+            
+            try:
+                content = await self._scrape_website(url)
+                raw_text = content["text"]
+                
+                if not raw_text.strip():
+                    logger.info(f"Skipping {url}: Empty content.")
+                    return None
+
+                # Check for duplicate content
+                content_hash = hashlib.md5(raw_text.encode()).hexdigest()
+                if content_hash in self.content_hashes:
+                    logger.info(f"Skipping {url}: Duplicate content detected")
+                    return None
+                self.content_hashes.add(content_hash)
+
+                # Process content
+                chunks = self.split_dom_content(raw_text)
+                
+                # Batch AI processing to reduce API calls
+                ai_tasks = {
+                    'classification': chunks[:1],
+                    'topics': chunks[:1], 
+                    'difficulty': chunks[:1],
+                    'educational_content': chunks
+                }
+                
+                ai_results = {}
+                for task_name, task_chunks in ai_tasks.items():
+                    ai_results[task_name] = self.knowledge_enhancer.parse_with_model(
+                        task_chunks, task=task_name, thinking_mode=thinking_mode
+                    )
+
+                # Validate classification
+                if ai_results['classification'].strip().lower() != "true":
+                    logger.info(f"Skipping {url}: Classified as '{ai_results['classification']}'")
+                    self.url_manager._mark_as_bad(url)
+                    return None
+
+                # Process results
+                topics = [t.strip() for t in ai_results['topics'].split(",") if t.strip()]
+                
+                difficulty = ai_results['difficulty'].strip().lower()
+                if difficulty not in ["beginner", "intermediate", "advanced"]:
+                    difficulty = self.url_manager._determine_level(ai_results['educational_content'], url)
+
+                code_snippets = self._extract_code_content(content["raw_html"])
+                self.url_manager._mark_as_scraped(url)
+
+                return {
+                    "title": content["title"] or result.get('title', 'No title'),
+                    "url": url,
+                    "topics": topics,
+                    "level": difficulty,
+                    "cleaned_text": ai_results['educational_content'],
+                    "code_snippets": code_snippets
+                }
+
+            except Exception as e:
+                logger.error(f"Error scraping {url}: {e}")
+                self.url_manager._mark_as_bad(url)
+                return None
+
+    async def _scrape_website(self, website: str, with_pagination: bool = True) -> Dict:
+        """Optimized website scraping with reused browser"""
+        should_skip, reason = self.url_manager._should_skip(website)
+        if should_skip:
+            raise Exception(f"URL skipped: {reason}")
+
+        await self._ensure_browser()
+        
+        # Create new page for this URL
+        page = await self.context.new_page()
+        
+        try:
+            # Set headers and timeouts
+            is_trusted = self.url_manager._is_trusted_domain(website)
+            timeout = 15000 if is_trusted else 30000
+            page.set_default_timeout(timeout)
+            
+            headers = get_random_headers()
+            await page.set_extra_http_headers(headers)
+            
+            await page.goto(website, wait_until="domcontentloaded", timeout=timeout)
+            await page.wait_for_timeout(2000)  # Reduced wait time
+            await self._handle_cookie_popups(page)
+
+            # Get HTML once
+            html = await page.content()
+            
+            # Extract content once using trafilatura
+            readable_text = extract(html, include_comments=False, include_tables=True, 
+                                 no_fallback=True, favor_precision=True)
+            
+            combined_text = self._clean_educational_text(readable_text or "")
+            
+            # Handle pagination if enabled and content looks incomplete
+            if with_pagination and self._should_check_pagination(combined_text):
+                paginated_texts = await self._scrape_with_pagination(page, website)
+                if paginated_texts:
+                    combined_text = "\n\n".join([combined_text] + paginated_texts)
+
+            return {
+                "title": self._extract_title_from_html(html),
+                "raw_html": html,
+                "text": combined_text
+            }
+
+        finally:
+            await page.close()
+
+    def _should_check_pagination(self, text: str) -> bool:
+        """Determine if pagination should be checked based on content"""
+        # Skip pagination for very short or very long content
+        word_count = len(text.split())
+        return 100 < word_count < 5000
+
+    async def _scrape_with_pagination(self, page, base_url: str, max_pages: int = 5) -> List[str]:
+        """Optimized pagination with limits and duplicate detection"""
+        texts = []
+        pages_scraped = 0
+        
+        for selector in self.pagination_selectors:
+            if pages_scraped >= max_pages:
+                break
+                
+            try:
+                while pages_scraped < max_pages:
+                    next_link = await page.query_selector(selector)
+                    if not next_link or not await next_link.is_visible():
+                        break
+                        
+                    next_href = await next_link.get_attribute("href")
+                    if not next_href or next_href.startswith("javascript"):
+                        break
+                        
+                    next_url = urljoin(base_url, next_href)
+                    
+                    # Check if we've already visited this URL
+                    if next_url in self.visited_urls:
+                        break
+                    self.visited_urls.add(next_url)
+                    
+                    # Check if URL should be skipped
+                    should_skip, reason = self.url_manager._should_skip(next_url)
+                    if should_skip:
+                        break
+                    
+                    # Navigate to next page
+                    delay_range = self.url_manager._get_delay_for_domain(next_url)
+                    await asyncio.sleep(random.uniform(*delay_range))
+                    
+                    await page.goto(next_url, wait_until="domcontentloaded")
+                    await asyncio.sleep(1)
+                    
+                    # Extract content
+                    html = await page.content()
+                    readable_text = extract(html, include_comments=False, include_tables=True,
+                                          no_fallback=True, favor_precision=True)
+                    
+                    if readable_text:
+                        cleaned_text = self._clean_educational_text(readable_text)
+                        
+                        # Check for duplicate content
+                        content_hash = hashlib.md5(cleaned_text.encode()).hexdigest()
+                        if content_hash not in self.content_hashes:
+                            texts.append(cleaned_text)
+                            self.content_hashes.add(content_hash)
+                            pages_scraped += 1
+                        else:
+                            # Duplicate content found, stop pagination
+                            break
+                    else:
+                        break
+                        
+            except Exception as e:
+                logger.error(f"Pagination error: {e}")
+                break
+                
+        return texts
+    
+    def _extract_code_content(self, html_content: str) -> List[str]:
+        soup = BeautifulSoup(html_content, "html.parser")
+        code_snippets = []
+        
+        for selector in self.code_selectors:
+            elements = soup.select(selector)
+            if elements:
+                code_snippets = [el.get_text().strip() for el in elements if el.get_text().strip()]
+                break
+        
+        return code_snippets
+
+    def split_dom_content(self, dom_content: str, max_length: int = 6000) -> List[str]:
+        """Split DOM content into chunks"""
+        return [
+            dom_content[i : i + max_length] for i in range(0, len(dom_content), max_length)
         ]
     
+    def _fallback_extract_body_content(self, html_content: str) -> str:
+        soup = BeautifulSoup(html_content, "html.parser")
+        body = soup.body
+        return str(body) if body else ""
+
+    def _fallback_clean_body_content(self, body_content: str) -> str:
+        soup = BeautifulSoup(body_content, "html.parser")
+        for tag in soup(["script", "style"]):
+            tag.extract()
+        cleaned = soup.get_text(separator="\n")
+        return "\n".join(line.strip() for line in cleaned.splitlines() if line.strip())
+    
+    def _extract_title_from_html(self, html: str) -> str:
+        soup = BeautifulSoup(html, "html.parser")
+        if soup.title:
+            return soup.title.string.strip()
+        return "No title found"
+
+    def _clean_educational_text(self, text: str) -> str:
+        lines = text.splitlines()
+        cleaned_lines = [
+            line.strip() for line in lines
+            if line.strip() and not any(bad in line.lower() for bad in self.non_educational_text)
+        ]
+        clean_text = "\n".join(cleaned_lines)
+        # Normalize text
+        clean_text = unicodedata.normalize("NFKC", clean_text)
+        # Remove non-ASCII or strange characters (optional)
+        clean_text = re.sub(r'[^\x00-\x7F]+', ' ', clean_text)
+        # Collapse multiple spaces or newlines
+        clean_text = re.sub(r'[ \t]+', ' ', clean_text)
+        clean_text = re.sub(r'\n\s*\n+', '\n\n', clean_text)
+        
+        return clean_text.strip()
+
     async def _handle_cookie_popups(self, page) -> bool:
-        """Handle cookie consent popups""" 
         for selector in self.consent_selectors:
             try:
                 element = await page.query_selector(selector)
-                if element is not None and await element.is_visible():
+                if element and await element.is_visible():
                     await element.click()
                     await page.wait_for_timeout(1000)
                     return True
             except Exception:
                 continue
         return False
-    
-    async def _is_paywall_present_with_playwright(self, url: str, timeout: int = 10) -> bool:
-        """Wrapper method to handle exceptions gracefully during paywall detection"""
-        if self.url_manager.is_trusted_domain(url):
-            return False
         
-        try:
-            return await self._is_paywall_present_async(url, timeout)
-        except Exception as e:
-            logger.error(f"Error checking paywall with Playwright for {url}: {str(e)}")
-            return False
 
-    async def _is_paywall_present_async(self, url: str, timeout: int = 10) -> bool:
-        """Check if a URL has a paywall using Playwright (async implementation)"""    
-        try:
-            async with async_playwright() as p:
-                if not p:
-                    logger.error(f"Failed to initialize playwright for {url}")
-                    return False
-                    
-                browser = await p.chromium.launch(headless=True)
-                context = await browser.new_context(
-                    viewport={"width": 1280, "height": 800},
-                    user_agent=get_random_headers()["User-Agent"],
-                    extra_http_headers={
-                        k: v for k, v in self.headers.items() 
-                        if k.lower() not in ['user-agent']
-                    }
-                )
+    # Synchronious wrappers
+    def scrape_website_sync(self, website: str) -> str:
+        return asyncio.run(self._scrape_website(website))
 
-                # Avoid detection
-                await context.add_init_script("""
-                    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-                """)
+    def search_sync(self, query: str, max_results: int = 10) -> List[Dict]:
+        return asyncio.run(self._search(query, max_results))
 
-                page = await context.new_page()
-                page.set_default_timeout(timeout * 1000)
-
-                try:
-                    # Use a more flexible approach with timeout handling
-                    response = await page.goto(url, wait_until="domcontentloaded", timeout=timeout * 1000)
-                    # Wait a bit for potential dynamic content
-                    await page.wait_for_timeout(2000)
-                except Exception as nav_error:
-                    logger.warning(f"Navigation issue for {url}: {str(nav_error)}")
-                    await browser.close()
-                    return False  # Don't mark as paywall just because of navigation issues
-
-                # Handle cookies
-                await self._handle_cookie_popups(page)
-
-                if response.status in [401, 402, 403]:
-                    await browser.close()
-                    return True
-
-                content = await page.content()
-                soup = BeautifulSoup(content, "html.parser")
-                text = soup.get_text().lower()
-
-                paywall_keywords = ['subscribe', 'subscription', 'premium', 'paid membership', 'paywall']
-                paywall_count = sum(text.count(kw) for kw in paywall_keywords)
-
-                has_modal = False
-                for selector in self.modal_selectors:
-                    try:
-                        elements = await page.query_selector_all(selector)
-                        for el in elements:
-                            if await el.is_visible():
-                                has_modal = True
-                                break
-                        if has_modal:
-                            break
-                    except Exception:
-                        continue
-
-                # Specifically look for text that suggests free content
-                free_indicators = ["free", "tutorial", "learn", "documentation", "guide", "how to"]
-                has_free_indicator = any(indicator in text for indicator in free_indicators)
-
-                await browser.close()
-                
-                # Only mark as paywall if we have multiple strong indicators
-                # and no free content indicators
-                if has_free_indicator:
-                    return False
-                    
-                return has_modal and paywall_count > 5
-
-        except Exception as e:
-            logger.error(f"Error in async paywall check for {url}: {str(e)}")
-            return False
-    
-    async def scrape_page_async(self, url: str, topic: str = "", depth=0, max_depth=5) -> Optional[ScrapedContent]:
-        """Scrape content from a JavaScript-heavy page using Playwright and return ScrapedContent"""
-        self.headers = get_random_headers()
-        
-        # Initialize domain tracking if this is the first page
-        if depth == 0:
-            self.current_domain = urlparse(url).netloc
-            self.visited_urls = set()  # Reset for new scraping session
-        
-        # Check if we've already visited this URL
-        if url in self.visited_urls:
-            logger.info(f"Skipping already visited URL: {url}")
-            return None
-            
-        self.visited_urls.add(url)
-        
-        if depth >= max_depth:
-            return None
-        
-        browser = None
-        context = None
-        page = None
-        
-        try:
-            # Initialize Playwright
-            async with async_playwright() as p:
-                if p is None:
-                    logger.error(f"Failed to initialize Playwright for {url}")
-                    return None
-                
-                try:
-                    # Launch browser with null checks
-                    browser = await p.chromium.launch(headless=True)
-                    if browser is None:
-                        logger.error(f"Failed to launch browser for {url}")
-                        return None
-                    
-                    # Create context with null checks
-                    context = await browser.new_context(
-                        viewport={"width": 1280, "height": 800},
-                        user_agent=self.headers["User-Agent"]
-                    )
-                    if context is None:
-                        logger.error(f"Failed to create context for {url}")
-                        await self._safe_close_browser(browser)
-                        return None
-
-                    # Add stealth script
-                    try:
-                        await context.add_init_script(""" 
-                            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-                        """)
-                    except Exception as e:
-                        logger.warning(f"Could not add init script for {url}: {str(e)}")
-
-                    # Create page with null checks
-                    page = await context.new_page()
-                    if page is None:
-                        logger.error(f"Failed to create page for {url}")
-                        await self._safe_close_context(context)
-                        await self._safe_close_browser(browser)
-                        return None
-
-                    if page is not None:
-                        try:
-                            page.set_default_timeout(20000)
-                        except Exception as e:
-                            logger.warning(f"Could not set timeout for {url}: {str(e)}")
-                            
-                    # Navigation with response checking
-                    response = None
-                    try:
-                        response = await page.goto(url, wait_until="domcontentloaded", timeout=20000)
-                        if response is None:
-                            logger.warning(f"Navigation to {url} returned no response")
-                        await page.wait_for_timeout(2000)
-                    except Exception as e:
-                        logger.warning(f"Navigation issue for {url}, but continuing: {str(e)}")
-
-                    # Handle cookie popups
-                    try:
-                        if page is not None:
-                            await self._handle_cookie_popups(page)
-                    except Exception as e:
-                        logger.warning(f"Could not handle cookie popups for {url}: {str(e)}")
-
-                    # Get page content with null checks
-                    html_content = None
-                    try:
-                        if page is not None:
-                            html_content = await page.content()
-                    except Exception as e:
-                        logger.error(f"Could not get page content for {url}: {str(e)}")
-                        await self._safe_close_page(page)
-                        await self._safe_close_context(context)
-                        await self._safe_close_browser(browser)
-                        return None
-
-                    if html_content is None:
-                        logger.error(f"No content retrieved for {url}")
-                        await self._safe_close_page(page)
-                        await self._safe_close_context(context)
-                        await self._safe_close_browser(browser)
-                        return None
-
-                    # Parse content
-                    soup = BeautifulSoup(html_content, "html.parser")
-                    if soup is None:
-                        logger.error(f"Could not parse HTML for {url}")
-                        await self._safe_close_page(page)
-                        await self._safe_close_context(context)
-                        await self._safe_close_browser(browser)
-                        return None
-
-                    # Extract title with null check
-                    title = self.extractor.get_title(soup) or "No title found"
-                    
-                    # Extract main content with fallbacks
-                    main_content = self.extractor.extract_main_content(soup)
-                    if main_content is None or not main_content.get_text().strip(): 
-                        for selector in self.common_content_selectors:
-                            try:
-                                elements = soup.select(selector)
-                                if elements and elements[0].get_text().strip():
-                                    main_content = elements[0]
-                                    break
-                            except Exception:
-                                continue
-                    
-                    if main_content is None or not main_content.get_text().strip():
-                        logger.warning(f"Could not extract main content from {url}")
-                        await self._safe_close_page(page)
-                        await self._safe_close_context(context)
-                        await self._safe_close_browser(browser)
-                        return None
-
-                    # Clean and validate text
-                    text = self.cleaner.clean_text(main_content.get_text())
-                    if len(text.split()) < 120:
-                        logger.warning(f"Content from {url} is too short ({len(text.split())} words)")
-                        await self._safe_close_page(page)
-                        await self._safe_close_context(context)
-                        await self._safe_close_browser(browser)
-                        return None
-                    
-                    # Extract code examples with fallbacks
-                    code_examples = self.extractor.extract_code_examples(soup) or []
-                    if (any(keyword in url.lower() for keyword in ["tutorial", "learn", "guide", "howto"]) and 
-                        any(tech in url.lower() for tech in ["python", "javascript", "java", "sql", "code"]) and 
-                        not code_examples):
-                        
-                        for selector in self.code_selectors:
-                            try:
-                                elements = soup.select(selector)
-                                if elements:
-                                    code_examples = [el.get_text() for el in elements]
-                                    break
-                            except Exception:
-                                continue
-
-                    # Create and return scraped content
-                    scraped = ScrapedContent(
-                        title=title,
-                        text=text,
-                        code=code_examples,
-                        url=url,
-                        topic=topic,
-                        level=self.extractor.determine_level(text, url)
-                    )
-                    
-                    # Check for pagination/next links (W3Schools-specific and general patterns)
-                    next_links = []
-                    
-                    for selector in self.pagination_selectors:
-                        try:
-                            next_link = await page.query_selector(selector)
-                            if next_link:
-                                href = await next_link.get_attribute("href")
-                                if href and not href.startswith("#"):
-                                    next_url = urljoin(url, href)
-                                    next_links.append(next_url)
-                        except Exception:
-                            continue
-
-                    # Follow the first valid next link found
-                    if next_links:
-                        next_url = next_links[0]
-                        parsed_next = urlparse(next_url)
-                        
-                        # Only follow if same domain and not visited
-                        if (parsed_next.netloc == self.current_domain and 
-                            next_url not in self.visited_urls and
-                            depth < max_depth):
-                            
-                            logger.info(f"Following next page link: {next_url}")
-                            next_content = await self.scrape_page_async(
-                                next_url, topic, depth + 1, max_depth
-                            )
-                            if next_content:
-                                scraped.text += f"\n\n{next_content.text}"
-                                scraped.code.extend(next_content.code)
-                        else:
-                            logger.info(f"Skipping next link (domain/visited/depth): {next_url}")
-
-                    await self._safe_close_page(page)
-                    await self._safe_close_context(context)
-                    await self._safe_close_browser(browser)
-                    return scraped
-                except Exception as e:
-                    print(e)
-                    
-        except Exception as e:
-            logger.error(f"Playwright scraping error at {url}: {str(e)}")
-            await self._safe_close_page(page)
-            await self._safe_close_context(context)
-            await self._safe_close_browser(browser)
-            return None
-        
-    def scrape_page(self, url: str, topic: str = "") -> Optional[ScrapedContent]:
-        """Synchronous wrapper for the async scrape_page method"""
-        return asyncio.run(self.scrape_page_async(url, topic))
-
-    async def _safe_close_page(self, page):
-        """Safely close a page with error handling"""
-        if page is not None:
-            try:
-                await page.close()
-            except Exception as e:
-                logger.warning(f"Error closing page: {str(e)}")
-
-    async def _safe_close_context(self, context):
-        """Safely close a context with error handling"""
-        if context is not None:
-            try:
-                await context.close()
-            except Exception as e:
-                logger.warning(f"Error closing context: {str(e)}")
-
-    async def _safe_close_browser(self, browser):
-        """Safely close a browser with error handling"""
-        if browser is not None:
-            try:
-                await browser.close()
-            except Exception as e:
-                logger.warning(f"Error closing browser: {str(e)}")
-    
-    async def search_and_scrape_async(self, query: str, level = "any level", max_results: int = 10) -> List[Dict]:
-        """Async implementation of search and scrape"""
-        knowledge = []
-        try:
-            # Implement delay between searches to prevent ratelimiting
-            current_time = time.time()
-            time_since_last = current_time - self.last_search_time
-            if time_since_last < random.uniform(*self.search_delay):
-                delay = random.uniform(*self.search_delay) - time_since_last
-                await asyncio.sleep(delay)
-            
-            enhanced_query = f"{query} for {level} course OR tutorial OR guide OR learn"
-            results_list = []
-            
-            # Retry mechanism
-            for attempt in range(self.max_retries):
-                try:
-                    results = DDGS(headers=get_random_headers()).text(enhanced_query, max_results=max_results * 2)
-                    results_list = list(results)
-                    self.last_search_time = time.time()
-                    break
-                except Exception as search_error:
-                    if "Ratelimit" in str(search_error) or "429" in str(search_error):
-                        wait_time = (attempt + 1) * 5  # Exponential backoff
-                        logger.warning(f"Hit rate limit, waiting {wait_time} seconds (attempt {attempt + 1})")
-                        await asyncio.sleep(wait_time)
-                        continue
-                    logger.error(f"Search engine error: {str(search_error)}")
-                    # Fall back to a simplified query on final attempt
-                    if attempt == self.max_retries - 1:
-                        try:
-                            results = DDGS(headers=get_random_headers()).text(enhanced_query, max_results=max_results * 3)
-                            results_list = list(results)
-                            self.last_search_time = time.time()
-                        except Exception as fallback_error:
-                            logger.error(f"Fallback search failed: {str(fallback_error)}")
-                            return knowledge
-                    continue
-            
-            processed_count = 0
-            attempted_count = 0
-                
-            for result in results_list:
-                if processed_count >= max_results or attempted_count >= max_results * 2:
-                    break
-                
-                attempted_count += 1
-                url = result['href']
-                
-                # Skip certain problematic URLs
-                if self.url_manager.should_avoid_pattern(url):
-                    logger.info(f"Skipping problematic URL: {url}")
-                    continue
-
-                skip, reason = self.url_manager.should_skip(url)
-                if skip:
-                    logger.info(f"Skipping {url}: {reason}")
-                    continue
-                
-                try:
-                    delay_range = self.url_manager.get_delay_for_domain(url)
-                    await asyncio.sleep(random.uniform(*delay_range))
-                        
-                    # Skip paywall check for most educational sites to improve speed
-                    should_check_paywall = not self.url_manager.is_trusted_domain(url)
-                    
-                    if should_check_paywall:
-                        # Check for paywall, but be less strict
-                        has_paywall = await self._is_paywall_present_with_playwright(url)
-                        if has_paywall:
-                            logger.info(f"Skipping {url}: Paywall detected")
-                            self.url_manager.mark_as_bad(url)
-                            continue
-                        
-                    # Try Playwright scraping
-                    content = await self.scrape_page_async(url, query)
-                    
-                    if content:
-                        if isinstance(content, ScrapedContent):
-                            # Convert ScrapedContent to dict
-                            content_dict = content.to_dict()
-                            word_count = len(content.text.split())
-                        elif isinstance(content, dict):
-                            # Already a dictionary
-                            content_dict = content
-                            word_count = len(content.get('text', '').split())
-                        else:
-                            logger.info(f"Unexpected content type from {url}")
-                            continue
-                        
-                        if word_count < 25:
-                            logger.info(f"Skipping {url}: Content too short ({word_count} words)")
-                            continue
-                            
-                        knowledge.append(content_dict)
-                        self.url_manager.mark_as_scraped(url)
-                        processed_count += 1
-                        logger.info(f"Successfully scraped {url} ({word_count} words)")
-                    else:
-                        logger.info(f"No useful content found at {url}")
-                        self.url_manager.mark_as_bad(url)
-                        
-                except Exception as e:
-                    logger.error(f"Error processing {url}: {str(e)}")
-                    self.url_manager.mark_as_bad(url)
-                    continue
-                    
-        except Exception as e:
-            logger.error(f"Search error: {str(e)}")
-            
-        return knowledge
-
-    def search_and_scrape(self, query: str, level = "any level", max_results: int = 10) -> List[Dict]:
-        """Synchronous wrapper for the async search_and_scrape method"""
-        return asyncio.run(self.search_and_scrape_async(query, level, max_results))
+    def search_and_scrape_sync(self, query: str, thinking_mode, level: str = "any level", max_results: int = 10) -> List[Dict]:
+        return asyncio.run(self.search_and_scrape(query, thinking_mode, level, max_results))

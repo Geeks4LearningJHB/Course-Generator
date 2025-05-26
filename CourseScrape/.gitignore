@@ -17,13 +17,14 @@ staticfiles/
 *.sqlite3
 
 # Model Cache
-model_cache/
+enhancer_model_cache/
+scraper_model_cache/
 ~/.cache/huggingface/
 
 # Scraper files
 bad_urls.json
 scraped_urls.json
-knowledge_base.json
+#knowledge_base.json
 # Saved markdown files
 *.md
 
